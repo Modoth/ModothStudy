@@ -1,0 +1,9 @@
+<div #appBg class="app-bg"></div>
+<app-navbar *ngIf="navbarVisibility"></app-navbar>
+<div class="app-content">
+  <router-outlet></router-outlet>
+</div>
+<footer *ngIf="CONFIG_ICP">
+  <mat-divider></mat-divider>
+  <div class="icp">{{CONFIG_ICP}}</div>
+</footer>

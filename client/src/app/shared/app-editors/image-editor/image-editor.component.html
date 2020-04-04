@@ -1,0 +1,11 @@
+<div class="editor-container">
+  <div class="divider"></div>
+  <canvas #canvas></canvas>
+  <canvas class="canvasMask" #canvasMask></canvas>
+  <div class="divider"></div>
+</div>
+<div *ngIf="currentOp" class="image-editor-ops">
+  <ng-container *ngFor="let op of currentOp.ops">
+    <mat-icon *ngIf="!op.hidden || !(op.hidden())" (click)="op.func(op)">{{op.icon}}</mat-icon>
+  </ng-container>
+</div>

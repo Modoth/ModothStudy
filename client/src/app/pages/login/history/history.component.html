@@ -1,0 +1,14 @@
+<ng-container *ngIf="histories && histories.length > 0">
+  <mat-divider></mat-divider>
+  <div class='explorer-history'>
+    <div class="history-header">
+      <span class="history-title">{{'History' | lang | async}}</span>
+      <mat-icon (click)="clear.emit()">close</mat-icon>
+    </div>
+    <ul>
+      <li class="history-item" matButton *ngFor="let item of histories" [routerLink]="'/editor/'+ item.id">
+        <span mat-line class="history-item-title">{{item.title}}</span>
+      </li>
+    </ul>
+  </div>
+</ng-container>

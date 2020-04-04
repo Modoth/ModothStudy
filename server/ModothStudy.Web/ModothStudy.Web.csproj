@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>    
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>e9103285-4550-4491-aa9d-3b10d35e647f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Swashbuckle.AspNetCore.Cli" Version="4.0.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.4.4" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ModothStudy.App\ModothStudy.App.csproj" />
+    <ProjectReference Include="..\ModothStudy.Generator\ModothStudy.Generator.csproj" />
+    <ProjectReference Include="..\ModothStudy.RepositoryInterface\ModothStudy.RepositoryInterface.csproj" />
+    <ProjectReference Include="..\ModothStudy.Repository\ModothStudy.Repository.csproj" />
+    <ProjectReference Include="..\ModothStudy.ServiceInterface\ModothStudy.ServiceInterface.csproj" />
+    <ProjectReference Include="..\ModothStudy.Service\ModothStudy.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generated\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet swagger tofile  --output $(OutDir)api.json $(TargetDir)$(TargetFileName) api &amp;&amp; java -jar $(ProjectDir)swagger-codegen-cli.jar generate -l typescript-angular -i $(ProjectDir)$(OutDir)api.json -o $(SolutionDir)/../client/src/app/apis &amp;&amp; cd $(SolutionDir)/../client/src/app/apis &amp;&amp; grep 'let formParams: { append(param: string, value: any): void; };' ./ -r -l | xargs -n 1 sed -i -e 's/let formParams: { append(param: string, value: any): void; };/let formParams: { append(param: string, value: any): void | HttpParams; };/g'" />
+  </Target>
+</Project>

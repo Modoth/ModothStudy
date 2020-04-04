@@ -1,0 +1,61 @@
+:host {
+
+  &>div {
+    height: 100%;
+
+    iframe {
+      border: 0;
+    }
+
+    &>.mask-container {
+      position: relative;
+
+      &>.mask {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: absolute;
+        border-radius: 0px;
+
+        &>* {
+          position: absolute;
+          transform: translate(-50%, -50%);
+          top: 45%;
+          left: 50%;
+          height: auto;
+          width: auto;
+          background: transparent;
+          font-size: 4rem;
+          mix-blend-mode: luminosity;
+        }
+      }
+    }
+
+    &>.menus {
+      margin: 5px;
+      display: flex;
+
+      &>* {
+        font-size: 1rem;
+        vertical-align: middle;
+        display: inline-block;
+        align-self: center;
+        margin: 0 10px 0 0;
+      }
+
+      &>mat-icon {
+        font-size: 1.5rem;
+
+        &:last-child {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .python-terminal{
+    height: 4em;
+    margin: 0.5em;
+  }
+}

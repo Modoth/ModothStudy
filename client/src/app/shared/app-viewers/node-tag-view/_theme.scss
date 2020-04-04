@@ -1,0 +1,19 @@
+@mixin node-tag-view-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-node-tag-view {
+
+    .tag-value {
+      color: mat-color($primary, 'darker');
+    }
+
+    .tag-name {
+      color: mat-color($foreground, 'hint-text');
+    }
+  }
+}

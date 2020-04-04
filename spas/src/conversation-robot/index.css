@@ -1,0 +1,86 @@
+@keyframes sprite {
+    from {
+        background-position-x: 0;
+    }
+
+    to {
+        background-position-x: 100%;
+    }
+}
+
+.background {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.background>div {
+    flex: 1;
+    height: 48vw;
+    max-height: 96vh;
+    width: 48vw;
+    max-width: 96vh;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.message-box {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    background: #000000C0;
+    height: 3.4em;
+    margin: 0.1em 1em;
+    border-radius: 6px;
+    color: white;
+    padding: 0.2em 20px;
+    box-sizing: border-box;
+    font-family: cursive;
+}
+
+.message-arrow {
+    display: none;
+    height: 20px;
+    width: 3em;
+    background: #000000C0;
+    position: fixed;
+    /* margin: 0 auto; */
+    bottom: 3.5em;
+    -webkit-clip-path: polygon(50% 0, 100% 100%, 0% 100%);
+    clip-path: polygon(50% 0, 100% 100%, 0% 100%);
+}
+
+.talking .message-box,
+.talking .message-arrow {
+    display: block;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    display: none;
+}
+
+.voice-switch {
+    display: inline-block;
+    position: fixed;
+    right: 0;
+    top: 0;
+    color: gray;
+    font-size: 2rem;
+}
+
+.voice-switch.on {
+    color: red;
+}

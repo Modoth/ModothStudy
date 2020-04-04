@@ -1,0 +1,13 @@
+.tab-header {
+  width: 96%;
+  margin: 0 10px;
+
+  & .tab-item {
+    flex: 1;
+  }
+}
+
+.activeLink {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}

@@ -1,0 +1,32 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    ngx-monaco-editor {
+      margin: 0;
+      height: 100%;
+    }
+    &>app-python-terminal {
+      flex: 1;
+      z-index: 2;
+      margin: 0 1vw 8px 1vw;
+    }
+
+    .operators {
+      margin: 0;
+      padding: 5px 10px;
+      display: flex;
+    
+      &>mat-icon {
+        font-size: 1.5rem;
+        margin: 0 10px 0 0;
+    
+        &:last-child {
+          margin: 0;
+        }
+      }
+    }
+  }
+  
+ 

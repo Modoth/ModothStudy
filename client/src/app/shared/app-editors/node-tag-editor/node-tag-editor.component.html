@@ -1,0 +1,33 @@
+<div class='divider' (click)="closed.emit();"></div>
+<div class='editor'>
+  <mat-chip-list>
+    <ng-container *ngFor="let tag of addedTags">
+      <mat-chip [removable]="true" (removed)="removeTag(tag.tag)" (click)="editTag = tag.tag; selectTag = tag.nodeTag.value;
+      tag.nodeTag.type !== TagType.Bool && (tag.nodeTag.type === TagType.Enum ? enumPopup.show(): textPopup.show());"
+       color="primary"
+        selected>
+        <span *ngIf="tag.nodeTag.type !== TagType.Bool" class="tag-value">{{tag.nodeTag.value}}</span>
+        <span class="tag-name">{{tag.tag.name}}</span>
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <!-- <mat-icon color="warn" class="delete" (click)="; $event.stopPropagation();">close</mat-icon> -->
+    </ng-container>
+  </mat-chip-list>
+  <hr />
+  <mat-chip-list>
+    <ng-container *ngFor="let tag of tags">
+      <ng-container *ngIf="!tag.added" [ngSwitch]="tag.tag.type">
+        <mat-chip *ngSwitchCase="TagType.Enum" (click)="editTag = tag.tag; enumPopup.show();">{{tag.tag.name}}</mat-chip>
+        <mat-chip *ngSwitchCase="TagType.Bool" (click)="addBoolTag(tag.tag)">{{tag.tag.name}}</mat-chip>
+        <mat-chip *ngSwitchDefault (click)="editTag = tag.tag; textPopup.show();">{{tag.tag.name}}</mat-chip>
+      </ng-container>
+    </ng-container>
+  </mat-chip-list>
+</div>
+<app-popup #enumPopup type="page">
+    <button *ngFor="let enum of enumList" mat-button [color]="enum === selectTag ? 'primary':'basic'"
+      (click)="addEnumTag(enum);enumPopup.close();" cdkFocusInitial>{{ enum }}</button>
+</app-popup>
+<app-popup #textPopup [btnSaveStr]="okStr" (saved)="addTextTag(textForm.getData())">
+  <app-form-builder #textForm data="{value: selectTag}" [fields]="[{key: 'value'}]"></app-form-builder>
+</app-popup>

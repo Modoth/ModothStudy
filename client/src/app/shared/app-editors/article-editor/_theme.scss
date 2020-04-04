@@ -1,0 +1,15 @@
+@mixin article-editor-dialog-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-article-editor-dialog {
+    background: mat-color($background, background);
+    .headers {
+      background: mat-color($background, app-bar);
+      box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
+    }
+  }
+}

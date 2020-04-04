@@ -1,0 +1,49 @@
+:host {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .config-table {
+    .config-image {
+      width: 32px;
+      height: 32px;
+    }
+  
+    th.mat-column-key {
+      width: 30%;
+    }
+  
+    td.mat-column-key {
+      font-weight: bolder;
+    }
+  
+    th.mat-column-defaultValue {
+      width: 30%;
+    }
+  
+    th.mat-column-value {
+      width: 30%;
+    }
+  
+    td.mat-column-value>*,
+    td.mat-column-defaultValue>* {
+      overflow-y: auto;
+      max-height: 3.6em;
+      line-height: 1.2;
+    }
+  
+    th.mat-column-reset {
+      width: 10%;
+    }
+  }
+
+  .editor {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    z-index:4;
+  }
+}

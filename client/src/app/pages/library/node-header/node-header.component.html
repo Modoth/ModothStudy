@@ -1,0 +1,26 @@
+<nav *ngIf="currentNode" class="menu">
+  <button color="primary" class="back" mat-button [routerLink]="backPath">
+    <mat-icon>
+      arrow_back
+    </mat-icon>
+  </button>
+  <button color="primary" [class.non-shared-title]="!currentNode.shared" class="title"
+    (click)="isOwnNode && parentNode && reNamePopup.show()" mat-button>
+    {{ parentNode ? currentNode.name : (ownNode ? ((currentNode.path === '' ? "Mine" : "MySolution") | lang | async ): currentNode.user.nickName ) }}
+  </button>
+  <mat-icon *ngIf="isOwnNode && parentNode" color="primary" (click)="movePopup.show();">
+    open_with
+  </mat-icon>
+  <app-popup #reNamePopup [showCancel]="flase" (canceled)="reNameForm.reSetData()"
+    (saved)="rename(reNameForm.getData())">
+    <app-form-builder #reNameForm [data]="{name: currentNode.name}" [fields]="[{key: 'name'}]">
+    </app-form-builder>
+  </app-popup>
+  <app-popup #movePopup (opened)="selectNode.reload(parentNode)" [showCancel]="flase" [showSave]="canMoveTo"
+    (saved)="moveFloder()">
+    <app-select-node #selectNode [nodeFilter]="nodeFilter" (selectedChange)="selectedChanged($event)"></app-select-node>
+  </app-popup>
+</nav>
+<app-node-tag-view *ngIf="currentNode != null && currentNode.tags != null && currentNode.tags.length > 0"
+  [tags]="currentNode.tags">
+</app-node-tag-view>

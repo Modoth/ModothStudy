@@ -1,0 +1,18 @@
+@mixin html-viewer-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-html-viewer {
+    .menus {
+      color: mat-color($primary, 800);
+    }
+
+    .mask-container>.mask>* {
+      color: #ccc;
+    }
+  }
+}

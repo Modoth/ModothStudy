@@ -1,0 +1,10 @@
+<div #outputsRef class="outputs">
+  <div *ngFor="let output of outputs" class="{{output.type}}">{{output.value}}</div>
+  <div class="input-line stdin">
+    <div class="input-prefix">{{ isEvaling ? evalPrefix: (inputs.length > 0 ? (multilinePrefix +  tabIndent.repeat(nextIndent)):inputPrefix) }}</div>
+    <input [disabled]="isEvaling || useTerminalIme" #inputRef class="input" (keyup)="onKeyup($event)" type="text">
+  </div>
+</div>
+<app-terminal-ime [disabled]="isEvaling" (closed)="onImeClosed()" [class.hidden]="!imeTarget || !useTerminalIme" [target]="imeTarget">
+</app-terminal-ime>
+<iframe *ngIf="url" #iframeRef [src]="url"></iframe>

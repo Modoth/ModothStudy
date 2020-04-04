@@ -1,0 +1,11 @@
+{
+  "name": "spas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tools/spack/index.js",
+  "scripts": {
+    "test": "node tools/spack/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

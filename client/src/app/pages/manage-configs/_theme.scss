@@ -1,0 +1,22 @@
+@mixin manage-configs-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-manage-configs {
+    td.mat-column-defaultValue {
+      color: mat-color($foreground, secondary-text);
+    }
+
+    .editor {
+      background: mat-color($background, background);
+
+      .operators {
+        background: mat-color($background, app-bar);
+        box-shadow: 0 1px 3px 1px mat-color($background, divider);
+      }
+    }
+  }
+}

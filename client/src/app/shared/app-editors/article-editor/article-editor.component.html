@@ -1,0 +1,48 @@
+<section class="viewers">
+  <ng-container *ngIf="pythonService;else artivlePreview">
+    <ng-container [ngSwitch]="solutionToType">
+      <app-html-viewer *ngSwitchCase="'html'" [content]="solutionToContent"
+        [options]="{play:{value:true},pythonService:pythonService}"></app-html-viewer>
+      <app-python-viewer *ngSwitchCase="'python'" [content]="solutionToContent"
+        [options]="{play:{value:true},pythonService:pythonService}"></app-python-viewer>
+      <app-markdown-viewer *ngSwitchDefault [content]="solutionToContent"
+        [options]="{play:{value:true},pythonService:pythonService}"></app-markdown-viewer>
+    </ng-container>
+  </ng-container>
+  <ng-template #artivlePreview>
+    <ng-container [ngSwitch]="type">
+      <app-html-viewer *ngSwitchCase="'html'" [content]="changedContent"
+        [options]="Object.assign({}, viewerOptions, {play:{value:true}})">
+      </app-html-viewer>
+      <app-python-viewer *ngSwitchCase="'python'" [content]="changedContent"
+        [options]="Object.assign({}, viewerOptions, {play:{value:true}})">
+      </app-python-viewer>
+      <app-json-viewer *ngSwitchCase="'json'" [content]="changedContent"
+        [options]="Object.assign({}, viewerOptions, {hideSource:{value:true}, play:{value:true}})">
+      </app-json-viewer>
+      <app-markdown-viewer *ngSwitchDefault [content]="changedContent"
+        [options]="Object.assign({}, viewerOptions, {play:{value:true}})">
+      </app-markdown-viewer>
+    </ng-container>
+  </ng-template>
+</section>
+
+<section class="editors">
+  <ng-container [ngSwitch]="type">
+    <app-python-editor *ngSwitchCase="'python'" [defalutContent]="content" [type]="type"
+      [pythonService]="pythonService ? pythonService.value : null" (closed)="closed($event)"
+      (saved)="saved($event);changedContent=$event" (changed)="changedContent=$event">
+    </app-python-editor>
+    <app-html-editor *ngSwitchCase="'html'" [defalutContent]="content" [type]="type" [maxImageSize]="maxImageSize"
+      [errored]="errored" [imageInserted]="imageInserted" (closed)="closed($event)"
+      (saved)="saved($event);changedContent=$event" (changed)="changedContent=$event">
+    </app-html-editor>
+    <app-json-editor *ngSwitchCase="'json'" [defalutContent]="content" [type]="type" [errored]="errored"
+      (closed)="closed($event)" (saved)="saved($event);changedContent=$event" (changed)="changedContent=$event">
+    </app-json-editor>
+    <app-markdown-editor *ngSwitchDefault [defalutContent]="content" [type]="type" [maxImageSize]="maxImageSize"
+      [errored]="errored" [imageInserted]="imageInserted" (closed)="closed($event)"
+      (saved)="saved($event);changedContent=$event" (changed)="changedContent=$event">
+    </app-markdown-editor>
+  </ng-container>
+</section>

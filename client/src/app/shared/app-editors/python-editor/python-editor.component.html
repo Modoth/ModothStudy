@@ -1,0 +1,20 @@
+<app-editor-bar [operators]="operators" [isFullScreen]="isFullScreen" (saved)="saveContent()" (closed)="close()"
+  (livePreviewChanged)="livePreviewChanged($event)" [status]="hasChanged ? 'warn' : 'primary'">
+  <app-python-terminal [class.hidden]="!showTerminal" (focusChanged)="popTerminal = $event;isFullScreen = $event;"
+    [pythonService]="pythonService" (pythonServiceChanged)="pythonService = $event">
+  </app-python-terminal>
+  <div [class.hidden]='popTerminal' class="operators">
+    <mat-icon (click)="showTerminal = !showTerminal">
+      {{showTerminal ? 'expand_less':'expand_more'}}
+    </mat-icon>
+    <mat-icon (click)="reset()">
+      replay
+    </mat-icon>
+    <mat-icon (click)="resetAndRun()">
+      play_arrow
+    </mat-icon>
+  </div>
+</app-editor-bar>
+<ngx-monaco-editor [class.hidden]="isFullScreen" [options]="editorOptions" [(ngModel)]="changedContent"
+  (onInit)="initEditor($event)">
+</ngx-monaco-editor>

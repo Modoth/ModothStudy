@@ -1,0 +1,56 @@
+<ng-container *ngIf="!showEditor && isDir">
+  <nav *ngIf="selectedMenu == null" class="sub-menus">
+    <a *ngFor="let menu of menu.children" [routerLink]="menu.defaultLink">
+      <span>{{ menu.name }}</span>
+    </a>
+  </nav>
+  <nav *ngIf="selectedMenu != null" mat-tab-nav-bar class="tab-header">
+    <a mat-tab-link class="tab-item" *ngFor="let menu of menu.children" [routerLink]="menu.defaultLink"
+      [active]="selectedMenu == menu">
+      {{ menu.name }} </a>
+  </nav>
+</ng-container>
+<router-outlet></router-outlet>
+<div *ngIf="!isDir" [class]="showEditor ? 'hidden query': 'query'">
+  <div class="node-item" *ngFor="let node of nodes">
+    <div [routerLink]="'editor/' + node.id ">
+      <div class="title">
+        <mat-icon>
+          <!-- {{getIcon(node)}} -->
+          navigate_next
+        </mat-icon>
+        <!-- <img class="user-avatar" [src]="node.user.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)"> -->
+        <span> {{node.name }}</span>
+        <span class="divider"></span>
+        <span class="header-user-name"> {{ node.user.nickName }}</span>
+        <span class="header-created-time"> {{ node.created | friendlyDate }}</span>
+      </div>
+      <div *ngIf="node.content != null && node.content != ''" class="body">
+        <app-article-viewer [type]="node.docType" [content]="node.content"
+          [options]="{getApp:{value:getNodeApp(node)},play: {value: node.autoPlay}, summary:{value:true}, showBorder:{value:false}}">
+        </app-article-viewer>
+      </div>
+      <div class="tags" *ngIf="node != null && node.tags != null && node.tags.length > 0">
+        <app-node-tag-view [tags]="node.tags">
+        </app-node-tag-view>
+      </div>
+      <!-- <div class="title">
+        <span class="divider"></span>
+        <span class="header-user-name"> {{ node.user.nickName }}</span>
+        <span class="header-created-time"> {{ node.created | friendlyDate }}</span>
+      </div> -->
+    </div>
+  </div>
+  <div *ngIf="totalCount > pageSize" class="paginator">
+    <button mat-icon-button [disabled]="currentPage <= 0" [routerLink]="preLink">
+      <mat-icon>keyboard_arrow_left</mat-icon>
+    </button>
+    <span>{{currentPage+1}}/{{totalPage}}</span>
+    <button mat-icon-button [disabled]="currentPage >= totalPage -1" [routerLink]="nextLink">
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </button>
+  </div>
+  <nav class="ops">
+    <app-searcher [defaultFilter]="filter" (search)="search($event)"></app-searcher>
+  </nav>
+</div>

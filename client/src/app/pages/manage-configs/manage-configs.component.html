@@ -1,0 +1,45 @@
+<app-table [dataSource]="configs" [columns]="['key','defaultValue', 'value', 'reset']"
+[colTemplateRef]="{defaultValue: defaultValue, value: value, reset: reset}"
+[colOptions]="{value: {click: openChangeValueDialog}}" isRoutePaging="true"
+[pagination]="{pageSize: 10, total: totalCount, pageChanged: reloadConfigs,
+  routeLink: '/manage/configs/:filter/:pageId'}" class="config-table">
+  <ng-template  #defaultValue let-config="cell">
+      <div *ngIf="config.configType === ConfigItem.ConfigTypeEnum.Image && config.defaultValue;else defaultImage">
+          <img class="config-image" [src]="config.defaultValue">
+        </div>
+        <ng-template #defaultImage>
+          {{config.defaultValue }}
+        </ng-template>
+  </ng-template>
+  <ng-template #value let-config="cell" >
+      <div *ngIf="config.configType === ConfigItem.ConfigTypeEnum.Image && config.value;else image">
+          <img class="config-image" [src]="config.value">
+        </div>
+        <ng-template #image>
+          {{config.value }}
+        </ng-template>
+  </ng-template>
+  <ng-template #reset let-config="cell">
+      <mat-icon *ngIf="config.value != null" (click)="resetConfig(config)" color="warn">delete</mat-icon>
+  </ng-template>
+</app-table>
+<nav class="ops">
+  <app-searcher [defaultFilter]="filter" (search)="search($event)"></app-searcher>
+</nav>
+<app-popup #imagePopup [showBtnGroup]="false">
+  <app-image-selector (completed)="saveImage($event); imagePopup.close()"></app-image-selector>
+</app-popup>
+<app-popup #textPopup [btnSaveStr]="okStr" (saved)="saveText(textForm.getData())" >
+  <app-form-builder #textForm [data]="{value: editData.value || editData.defaultValue}" [fields]="[{key: 'value'}]">
+</app-form-builder>
+</app-popup>
+<app-popup #booleanPopup [btnSaveStr]="okStr" (saved)="saveText(booleanForm.getData())" >
+  <app-form-builder #booleanForm [data]="{value: editData.value || editData.defaultValue}" [fields]="[{key: 'value'}]">
+</app-form-builder>
+</app-popup>
+<div class="editor" *ngIf="showEditor">
+  <app-json-editor  [defalutContent]="editData.value"
+        (closed)="closeEditor($event)" (saved)="saveConfig($event);">
+  </app-json-editor>
+</div>
+

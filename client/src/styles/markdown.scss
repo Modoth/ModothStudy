@@ -1,0 +1,77 @@
+markdown {
+
+  p>img,
+  video {
+    max-width: 100%;
+    width: 100%;
+    margin: 10px auto;
+    display: block;
+  }
+
+  p {
+    text-align: justify;
+    font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, WenQuanYi Micro Hei, sans-serif;
+    line-height: 1.7;
+  }
+
+  a {
+    color: #666;
+    font-weight: bolder;
+  }
+
+  blockquote {
+    margin: 0 2em;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  th {
+    white-space: nowrap;
+  }
+
+  table,
+  th,
+  td {
+    border: 1px groove;
+    padding: 5px;
+    text-align: center;
+  }
+
+  code,
+  pre,
+  code[class*="language-"],
+  pre[class*="language-"] {
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 720px) {
+
+  markdown {
+
+    p>img,
+    p>video {
+      max-width: 360px;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}
+
+@media print {
+  markdown {
+
+    p>img,
+    p>video {
+      max-width: 360px;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}

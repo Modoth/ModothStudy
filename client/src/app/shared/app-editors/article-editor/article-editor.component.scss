@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+  .editors {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viewers {
+    overflow: auto;
+    max-height: 68vw;
+    box-sizing: border-box;
+    padding: 1vw;
+  }
+}
+
+@media (orientation:landscape) {
+  :host {
+    flex-direction: row;
+
+    .viewers {
+      flex: 1;
+      max-height: none !important;
+    }
+
+    .editors {
+      flex: 1;
+      border-width: 0 0 0 1px;
+      border-style: ridge;
+      display: flex;
+    flex-direction: column;
+    }
+  }
+}

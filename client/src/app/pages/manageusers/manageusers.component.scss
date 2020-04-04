@@ -1,0 +1,22 @@
+:host {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  ::ng-deep .user-table {
+    .mat-column-name {
+      width: 33%;
+    }
+  
+    td.mat-column-name {
+      font-weight: bolder;
+    }
+  
+    .mat-column-role {
+      width: 33%;
+    }
+  
+    .mat-column-state {
+      width: 33%;
+    }
+  }
+}

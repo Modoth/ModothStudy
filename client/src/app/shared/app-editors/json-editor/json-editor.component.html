@@ -1,0 +1,5 @@
+<app-editor-bar [operators]="operators" [livePreview]="livePreview" (livePreviewChanged)="livePreviewChanged($event)"
+  (saved)="saveContent()" (closed)="close()" [status]="hasChanged ? 'warn' : 'primary'">
+</app-editor-bar>
+<ngx-monaco-editor [options]="editorOptions" [(ngModel)]="changedContent" (onInit)="initEditor($event)">
+</ngx-monaco-editor>

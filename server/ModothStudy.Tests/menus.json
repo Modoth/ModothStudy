@@ -1,0 +1,101 @@
+[
+    {
+        "name": "最近",
+        "topQuery": {},
+        "query": {
+            "where": {
+                "type": "And",
+                "children": [
+                    {
+                        "type": "Or",
+                        "children": [
+                            {
+                                "type": "Equal",
+                                "prop": "Type",
+                                "value": "BlogNode"
+                            },
+                            {
+                                "type": "Equal",
+                                "prop": "类型",
+                                "value": "博客"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Not",
+                        "children": [
+                            {
+                                "type": "Has",
+                                "prop": "应用"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "orderBy": "Created",
+            "orderByDesc": true
+        },
+        "children": null
+    },
+    {
+        "name": "小工具",
+        "topQuery": {},
+        "query": {
+            "parent": "小工具",
+            "orderBy": "Name"
+        },
+        "children": null
+    },
+    {
+        "name": "开发",
+        "topQuery": "",
+        "query": null,
+        "children": [
+            {
+                "name": "设计",
+                "topQuery": "",
+                "query": {
+                    "parent": "开发计划",
+                    "where": {
+                        "type": "Equal",
+                        "prop": "任务状态",
+                        "value": "设计"
+                    },
+                    "orderBy": "Created",
+                    "orderByDesc": true
+                },
+                "children": null
+            },
+            {
+                "name": "开发",
+                "topQuery": "",
+                "query": {
+                    "parent": "开发计划",
+                    "where": {
+                        "type": "Equal",
+                        "prop": "任务状态",
+                        "value": "开发"
+                    },
+                    "orderBy": "Created",
+                    "orderByDesc": true
+                },
+                "children": null
+            },
+            {
+                "name": "发布",
+                "topQuery": "",
+                "query": {
+                    "parent": "开发计划",
+                    "where": {
+                        "type": "Equal",
+                        "prop": "任务状态",
+                        "value": "发布"
+                    },
+                    "orderBy": "Created",
+                    "orderByDesc": true
+                },
+                "children": null
+            }
+        ]
+    }
+]

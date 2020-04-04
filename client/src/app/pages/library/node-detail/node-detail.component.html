@@ -1,0 +1,53 @@
+<app-node-header [isOwnNode]="isOwnNode" [parentNode]="parentNode" [currentNode]="currentNode"></app-node-header>
+<ng-container *ngIf="isOwnNode">
+  <div class="library-blog" *ngIf="blog">
+    <app-article-viewer [type]="currentNode.docType" [content]="blog.content"
+      [options]="{getApp:{value:getNodeApp(currentNode)}, showBorder:{value:true},showMenus:{value:true}, pythonService:pythonService}">
+    </app-article-viewer>
+  </div>
+  <div *ngIf="solution" class="library-solution my-solution">
+    <app-article-viewer [type]="currentNode.solutionType" [content]="solution.content"
+      [options]="{showMenus:{value:true}, pythonService:pythonService}">
+    </app-article-viewer>
+  </div>
+  <div *ngIf="isEditTag " class="library-tag">
+    <app-node-tag-editor [nodeTags]="currentNode.tags" (tagRemoved)="removeTag($event)" (tagAdded)="addTag($event)"
+      (closed)="isEditTag = false">
+    </app-node-tag-editor>
+  </div>
+</ng-container>
+
+<app-toggle-button-group *ngIf="currentNode">
+  <button mat-mini-fab color="accent" [routerLink]="'/library/view/'+currentNode.id">
+    <mat-icon>chrome_reader_mode</mat-icon>
+  </button>
+  <ng-container *ngIf="isOwnNode">
+    <button mat-mini-fab [color]="currentNode.shared? 'primary': 'basic'" (click)="updateShared(!currentNode.shared)">
+      <mat-icon>share</mat-icon>
+    </button>
+    <button mat-mini-fab
+      [color]="currentNode && currentNode.tags != null && currentNode.tags.length > 0 ? 'primary': 'basic'"
+      (click)="isEditTag = true">
+      <mat-icon>loyalty</mat-icon>
+    </button>
+    <button *ngIf="currentNode && currentNode.reference; else edit" mat-mini-fab color="primary">
+      <mat-icon>directions</mat-icon>
+    </button>
+    <ng-template #edit>
+      <button mat-mini-fab color="primary" (click)="startEditContent(editPopup)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </ng-template>
+    <button *ngIf="currentNode && currentNode.solutionToId == null" mat-mini-fab
+      [color]=" solution ? 'primary': 'basic'" (click)="startEditSolution(editPopup)">
+      <mat-icon>question_answer</mat-icon>
+    </button>
+  </ng-container>
+  <app-popup #editPopup type="page" [option]="popupOption">
+    <app-article-editor [viewerOptions]="{getApp:{value:getNodeApp(currentNode)}}"
+      [maxImageSize]="editMode.maxImageSize" [content]="editMode.content" [type]="editMode.type"
+      [solutionToType]="editMode.solutionToType" [solutionToContent]="editMode.solutionToContent"
+      [imageInserted]="editMode.imageInserted" [saved]="editMode.saved" [closed]="editMode.closed"
+      [errored]="editMode.errored"></app-article-editor>
+  </app-popup>
+</app-toggle-button-group>

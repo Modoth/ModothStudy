@@ -1,0 +1,24 @@
+@mixin library-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  $dividerFg: mat-color($primary, 'lighter');
+
+  app-library {
+    fieldset {
+      border-color: $dividerFg;
+    }
+
+    legend {
+      color: $dividerFg;
+    }
+
+    .my-solution {
+      background: mat-color($primary, 50);
+      color: mat-color($foreground, hint-text);
+    }
+  }
+}

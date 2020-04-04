@@ -1,0 +1,94 @@
+:host {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+
+  &>.comments-viewer {
+    padding: 5px 0;
+    overflow-y: auto;
+    max-height: 40vh;
+    display: flex;
+    flex-direction: column;
+
+
+    &>.close {
+      align-self: flex-end;
+    }
+  }
+
+  .no-comments {
+    text-align: center;
+    margin: 10px;
+  }
+
+  .commens-list {
+    overflow-y: auto;
+  }
+
+  .comments {
+    margin: 5px 0;
+  }
+
+  .comment {
+    margin: 2px 0;
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 32px;
+      border-style: none;
+      padding: 1px;
+    }
+
+    .comment-content {
+      flex: 1;
+      margin: 0 5px;
+
+      .user-name {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .comment-form {
+    display: flex;
+    margin: 5px 0;
+
+    &>mat-icon {
+      padding: 10px;
+    }
+
+    &>textarea {
+      flex: 1;
+      font-size: 1rem;
+      padding: 10px;
+      margin-left: 10px;
+      border-radius: 6px;
+      border-style: solid;
+      border-width: 1px;
+    }
+
+    &>textarea:focus {
+      outline: none;
+    }
+  }
+
+  .load-more {
+    text-align: center;
+    margin-top: 5px;
+    padding: 5px 0;
+  }
+
+  .comment-title {
+    font-weight: bold;
+    font-size: 1.125em;
+    margin: 0 10px 0px 10px;
+  }
+}

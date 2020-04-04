@@ -1,0 +1,14 @@
+@mixin json-viewer-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-json-viewer {
+    .menus {
+      color: mat-color($primary, 800);
+    }
+  }
+}

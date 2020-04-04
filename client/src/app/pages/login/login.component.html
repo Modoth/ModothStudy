@@ -1,0 +1,41 @@
+<ng-container *ngIf="appService.canLogin && loginUser == null">
+  <div class="login-panel">
+    <mat-form-field>
+      <input matInput [(ngModel)]="name" [placeholder]="'UserName' | lang | async">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput [(ngModel)]="pwd" (keyup.enter)="login()" type="password"
+        [placeholder]="'Password' | lang | async ">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)=login() type="button">{{'Login' | lang | async}}</button>
+  </div>
+  <div *ngIf="isLoading" class="loading-panel">
+    <mat-spinner></mat-spinner>
+  </div>
+
+</ng-container>
+<ng-container *ngIf="loginUser != null">
+  <div class="user-panel">
+    <div class="user-info">
+      <img (click)="changeAvatarPopup.show()" class="user-avatar"
+        [src]="loginUser.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)">
+      <div (click)=changeNickNamePopup.show() class="user-name">{{loginUser.nickName}}</div>
+      <div>{{loginUser.name}}</div>
+    </div>
+    <button mat-raised-button (click)="changePwdPopup.show()" type="button">{{'ChangePwd' | lang | async}}</button>
+    <button mat-raised-button color="warn" (click)=logout() type="button">{{'Logout' | lang | async}}</button>
+  </div>
+  <app-popup #changeNickNamePopup (saved)="changeNickNameSave(changeNickNameForm.getData())">
+    <app-form-builder #changeNickNameForm [data]="{nickName: loginUser.nickName}" [fields]="[{key: 'nickName'}]">
+    </app-form-builder>
+  </app-popup>
+  <app-popup #changePwdPopup [title]="pwdPopupTitle" [subTitle]="pwdPopupSubTitle"
+    (canceled)="changePwdForm.clearData()" (saved)="changePwd(changePwdForm.getData())">
+    <app-form-builder #changePwdForm [fields]="pwdPopupConfig"></app-form-builder>
+  </app-popup>
+  <app-popup #changeAvatarPopup [showBtnGroup]="false">
+    <app-image-selector (completed)="changeAvatar($event); changeAvatarPopup.close()"></app-image-selector>
+  </app-popup>
+</ng-container>
+<app-history [histories]="explorerHistory" (clear)="clearHistory()"></app-history>

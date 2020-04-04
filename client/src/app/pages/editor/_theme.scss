@@ -1,0 +1,72 @@
+@mixin editor-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-editor {
+    .papper {
+      background: mat-color($background, background);
+      box-shadow: 0 0 0 0;
+    }
+
+    .editor-title-bar-bg {
+      background: #FFFE;
+      box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .14);
+    }
+
+    .node-title {
+      color: mat-color($primary);
+      border-color: transparent;
+    }
+
+    .node-blog {
+      border-color: mat-color($foreground, divider);
+    }
+
+    .node-content.my-solution {
+      background: mat-color($accent, 50);
+      color: mat-color($foreground, hint-text);
+    }
+
+    .node-content.other-solution {
+      background: mat-color($primary, 50);
+      color: mat-color($foreground, hint-text);
+    }
+
+    .reply-solution,
+    .view-solution {
+      color: mat-color($foreground, hint-text);
+    }
+  }
+
+
+  @media (min-width: 720px) {
+    app-editor {
+      .papper {
+        box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .14);
+        background: mat-color($background, card);
+
+        .node {
+          background: mat-color($background, card);
+
+          app-python-terminal .outputs {
+            background: mat-color($background, card);
+          }
+        }
+
+        .node-item {
+          background: mat-color($background, background);
+          box-shadow: 0 0 0 transparent;
+        }
+      }
+    }
+  }
+
+  @media print {
+    .papper {
+      background: transparent;
+    }
+  }
+}

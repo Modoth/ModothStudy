@@ -1,0 +1,31 @@
+<a mat-button i18n routerLink="explorer">
+  <img class="logo" *ngIf="logoUrl;else svgLogo;" [src]="logoUrl">
+  <ng-template #svgLogo>
+    <mat-icon color="primary" svgIcon="{{logoIcon | async }}" class="logo"></mat-icon>
+  </ng-template>
+</a>
+<div class="navbar-buttons">
+  <a *ngFor="let menu of menus" routerLinkActive="active-link" mat-button i18n [routerLink]="menu.defaultLink">
+    <span>{{ menu.name }}</span>
+  </a>
+  <a mat-button i18n routerLink="library" routerLinkActive="active-link">
+    <span>{{"Library" | lang | async }}</span>
+  </a>
+  <a mat-button i18n *ngIf="showManageTab" routerLink="manage" routerLinkActive="active-link">
+    <span>{{"Manage" | lang | async }}</span>
+  </a>
+</div>
+<!-- <a mat-button color="primary" routerLinkActive="active-link" routerLink="tools">
+  <mat-icon class='user-logo'>ac_unit</mat-icon>
+</a> -->
+<a mat-button color="primary" (click)="appService.changeTheme();">
+  <mat-icon class='user-logo'>color_lens</mat-icon>
+</a>
+<a mat-button *ngIf="appService.canLogin || loginUser" i18n routerLink="login">
+  <ng-container *ngIf="loginUser; else loginButton">
+    <img class="user-avatar" [src]="loginUser.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)">
+  </ng-container>
+  <ng-template #loginButton>
+    <mat-icon class='user-logo'>person</mat-icon>
+  </ng-template>
+</a>

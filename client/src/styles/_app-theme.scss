@@ -1,0 +1,133 @@
+@import "~@angular/material/theming";
+@import "./src/app/shared/navbar/_theme";
+@import "./src/app/shared/app-viewers/html-viewer/_theme";
+@import "./src/app/shared/terminal-ime/_theme";
+@import "./src/app/shared/python-terminal/_theme";
+@import "./src/app/shared/app-viewers/python-viewer/_theme";
+@import "./src/app/shared/app-viewers/json-viewer/_theme";
+@import "./src/app/shared/app-viewers/image-viewer/_theme";
+@import "./src/app/shared/app-editors/image-editor/_theme";
+@import "./src/app/shared/app-editors/article-editor/_theme";
+@import "./src/app/shared/app-viewers/node-tag-view/_theme";
+@import "./src/app/shared/app-editors/node-tag-editor/_theme";
+@import "./src/app/pages/library/node-item/_theme";
+@import "./src/app/pages/comments-viewer/_theme";
+@import "./src/app/pages/explorer/_theme";
+@import "./src/app/pages/editor/_theme";
+@import "./src/app/pages/login/_theme";
+@import "./src/app/pages/manage/_theme";
+@import "./src/app/pages/manage-configs/_theme";
+@import "./src/app/pages/manageusers/_theme";
+@import "./src/app/pages/manageroles/_theme";
+@import "./src/app/pages/manage-tags/_theme";
+@import "./src/app/pages/query/_theme";
+@import "./src/app/pages/tools/_theme";
+
+@mixin app-theme($theme) {
+  @include angular-material-theme($theme);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  .non-shared-title{
+    color:mat-color($foreground, secondary-text) !important;
+  }
+
+  body {
+    background: mat-color($background, background);
+    color: mat-color($foreground, text);
+  }
+
+  .fullscreen-dialog,
+  .image-viewer {
+    mat-dialog-container {
+      background: mat-color($background, background);
+    }
+  }
+
+  markdown {
+
+    code,
+    pre,
+    code[class*="language-"],
+    pre[class*="language-"] {
+      background: transparent; // mat-color($background, card);
+    }
+  }
+
+  .node-item {
+    background: mat-color($background, card);
+    box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
+  }
+
+  .app-content {
+    &>*:last-child {
+      flex: 1;
+    }
+  }
+
+  app-query,
+  app-nodes-manage {
+    markdown {
+      color: mat-color($foreground, secondary-text);
+    }
+  }
+
+  .paginator {
+    color: mat-color($primary);
+  }
+
+  .mat-chip.mat-standard-chip {
+    background-color: transparent;
+  }
+
+  @include image-viewer-theme($theme);
+  @include terminal-ime-theme($theme);
+  @include python-terminal-theme($theme);
+  @include html-viewer-theme($theme);
+  @include python-viewer-theme($theme);
+  @include json-viewer-theme($theme);
+  @include image-editor-theme($theme);
+  @include article-editor-dialog-theme($theme);
+  @include node-tag-view-theme($theme);
+  @include node-tag-editor-theme($theme);
+  @include nav-bar-theme($theme);
+  @include node-item-theme($theme);
+  @include comments-viewer-theme($theme);
+  @include explorer-theme($theme);
+  @include editor-theme($theme);
+  @include login-theme($theme);
+  @include manage-theme($theme);
+  @include manage-configs-theme($theme);
+  @include manage-users-theme($theme);
+  @include manage-roles-theme($theme);
+  @include manage-tags-theme($theme);
+  @include query-theme($theme);
+  @include tools-theme($theme);
+
+}
+
+@include mat-core();
+$theme-configs: ( //
+  indigo-pink : (primary: mat-palette($mat-indigo), accent: mat-palette($mat-pink, A200, A100, A400), warn: mat-palette($mat-red)),
+  deeppurple-amber: (primary: mat-palette($mat-deep-purple), accent: mat-palette($mat-amber, A200, A100, A400), warn: mat-palette($mat-red)),
+  pink-bluegrey : (primary:mat-palette($mat-pink), accent: mat-palette($mat-blue-gray, A200, A100, A400), warn: mat-palette($mat-indigo)),
+  purple-green : (primary: mat-palette($mat-purple), accent: mat-palette($mat-green, A200, A100, A400), warn:mat-palette($mat-red)),
+);
+
+@each $name,
+$config in $theme-configs {
+  $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
+  $warn: map-get($config, warn);
+
+  .theme-#{$name} {
+    $theme: mat-light-theme($primary, $accent, $warn);
+    @include app-theme($theme);
+  }
+
+  // .theme-#{$name}-dark {
+  //   $theme: mat-dark-theme($primary, $accent, $warn);
+  //   @include app-theme($theme);
+  // }
+}

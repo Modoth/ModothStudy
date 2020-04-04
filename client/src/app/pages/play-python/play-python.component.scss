@@ -1,0 +1,9 @@
+:host {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+
+  app-python-terminal {
+    flex: 1 1 0px;
+  }
+}

@@ -1,0 +1,15 @@
+<nav [class.hidden]="!hiddenOps" class="ops-left">
+  <ng-container *ngIf="icoRef">
+    <ng-container *ngTemplateOutlet="icoRef"></ng-container>
+  </ng-container>
+    <button color="primary" class="show-ops" mat-mini-fab (mouseenter)="hiddenOps = false"
+      (touchstart)="hiddenOps = false;$event.stopPropagation();">
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+</nav>
+<nav [class.hidden]="hiddenOps" (mouseleave)="hiddenOps = true" class="movable-ops ops-left hidden">
+  <ng-content></ng-content>
+  <button color="primary" mat-mini-fab (touchstart)="hiddenOps = true;$event.stopPropagation();">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+</nav>

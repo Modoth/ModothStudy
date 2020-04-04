@@ -1,0 +1,32 @@
+:host {
+  app-node-tag-view {
+    margin: 0 0 10px 0;
+  }
+    .menu {
+        width: 100%;
+        box-sizing: border-box;
+        align-items: center;
+        display: flex;
+        margin-bottom: 5px;
+    
+        .back {
+          min-width: 0;
+          padding: 0px;
+        }
+    
+        &>mat-icon {
+          padding: 0 8px;
+        }
+    
+        .title {
+          overflow-x: auto;
+          flex: 1;
+          min-width: 0;
+          margin: 0px 5px;
+          padding: 0px 5px;
+          text-overflow: ellipsis;
+          font-size: 1.15rem;
+          text-decoration: underline;
+        }
+      }
+}

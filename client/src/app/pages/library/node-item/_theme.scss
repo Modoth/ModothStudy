@@ -1,0 +1,12 @@
+@mixin node-item-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  // $basic: map-get($theme, basic);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-node-item {
+    
+  }
+}

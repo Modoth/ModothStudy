@@ -1,0 +1,10 @@
+@mixin image-editor-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  app-image-editor {
+    background: mat-color($background, background);
+    color: mat-color($primary);
+  }
+}

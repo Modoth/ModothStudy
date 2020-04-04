@@ -1,0 +1,6 @@
+<input name="select" type="file" accept="image/*"
+  (change)=" editingImage = $event.target.files[0];$event.target.value = null" />
+<div class='image-editor' *ngIf="editingImage">
+  <app-image-editor [image]="editingImage" (closed)="editedImage($event)">
+  </app-image-editor>
+</div>

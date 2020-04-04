@@ -1,0 +1,29 @@
+@mixin query-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-query {
+    .sub-menus>a {
+      background: mat-color($background, card);
+      color: mat-color($primary);
+      box-shadow: 0 1px 1px 1px mat-color($foreground, divider);
+    }
+
+    .title {
+      color: mat-color($primary, 800);
+
+      &>.header-user-name,
+      &>.header-created-time {
+        color: mat-color($foreground, hint-text);
+      }
+    }
+
+    .body {
+      border-color: transparent; //mat-color($foreground, dividers);
+      margin-top: -5px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<ng-template #popup>
+  <ng-container [ngSwitch]="type">
+    <ng-container *ngSwitchCase="'dialog'">
+      <h2 mat-dialog-title>{{title | lang | async}}</h2>
+      <div mat-dialog-content>
+        <div>{{subTitle | lang | async}}</div>
+      </div>
+      <div mat-dialog-content>
+        <ng-container *ngTemplateOutlet="popupContent"></ng-container>
+      </div>
+      <div *ngIf="showBtnGroup" mat-dialog-actions align="end">
+        <ng-container *ngTemplateOutlet="customizeBtnGroupRef || defalutBtnGroup"></ng-container>
+        <ng-template #defalutBtnGroup>
+          <button *ngIf="showCancel" mat-button (click)="close()">{{btnCancelStr | lang | async}}</button>
+          <button *ngIf="showSave" mat-button color='primary' (click)="save()">{{btnSaveStr | lang | async}}</button>
+        </ng-template>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'page'">
+      <ng-container *ngTemplateOutlet="popupContent"></ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>
+<ng-template #popupContent>
+  <ng-content></ng-content>
+</ng-template>

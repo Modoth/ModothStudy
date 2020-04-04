@@ -1,0 +1,45 @@
+.keyborad-line {
+  display: flex;
+  justify-content: center;
+}
+
+.keyborad-key {
+  flex: 1;
+  user-select: none;
+
+  &>div {
+    border-radius: 4px;
+    margin: 2px;
+    box-sizing: border-box;
+    align-items: stretch;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    &>div {
+      text-align: center;
+    }
+
+    &>.popup {
+      position: relative;
+      top: -2.4em;
+      padding: 10px 0;
+      border-radius: 1em 0;
+    }
+  }
+}
+
+.Space.keyborad-key {
+  flex: 3;
+}
+
+.pressed-key {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-size: 3em;
+  text-align: center;
+  border-radius: 4px;
+}

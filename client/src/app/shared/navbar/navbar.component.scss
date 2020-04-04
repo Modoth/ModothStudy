@@ -1,0 +1,48 @@
+:host {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 0px 5px 0px 0;
+
+  &>.mat-button {
+    min-width: 0;
+    padding: 0;
+    align-self: stretch;
+  }
+
+  & .logo {
+    height: 32px;
+    padding: 3px 10px 0 10px;
+    margin: -10px 0;
+  }
+
+  & .user-logo {
+    width: 24px;
+    padding: 5px 5px 0 5px;
+    margin: 0;
+  }
+
+  & .user-avatar {
+    width: 24px;
+    margin: 5px 5px 0 5px;
+    border-radius: 3px;
+  }
+}
+
+.navbar-buttons {
+  display: inline-flex;
+  overflow-x: auto;
+  flex-basis: 1;
+  flex-grow: 1;
+  padding: 0;
+  align-self: center;
+
+  .mat-button {
+    min-width: 0;
+    padding: 2px 10px;
+    font-size: 1.05rem;
+
+    &>:last-child {
+      margin-left: auto;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<div [class]="showBorder?'node-item':''">
+  <div *ngIf='showMenus' class="menus">
+    <span>{{"Preview" | lang | async }}</span>
+    <mat-icon color="primary" (click)="showSource = !showSource">
+      {{showSource ? 'keyboard_arrow_up' : 'code' }}
+    </mat-icon>
+    <mat-icon color="primary" *ngIf="popContentUrl != null" (click)="openContentUrl()">
+      open_in_new
+    </mat-icon>
+    <!-- <mat-icon color="primary" *ngIf="pythonService && !showTerminal" (click)="showTerminal=true">
+      keyboard
+    </mat-icon>
+    <mat-icon color="primary" *ngIf="showTerminal" (click)="showTerminal=false">
+      keyboard_arrow_up
+    </mat-icon> -->
+  </div>
+  <div class="mask-container" *ngIf="canPlay && !play">
+    <iframe [src]="nonScriptContentUrl" sandbox></iframe>
+    <div class="mask" (click)="play=true;$event.stopPropagation();">
+      <mat-icon>play_arrow
+      </mat-icon>
+    </div>
+  </div>
+  <iframe #iframeRef *ngIf='!canPlay || play' [src]="contentUrl" sandbox="allow-scripts"></iframe>
+  <!-- <div *ngIf="showTerminal" class="python-terminal">
+    <app-python-terminal [pythonService]="pythonService"></app-python-terminal>
+  </div> -->
+</div>
+<markdown [data]="mdSource" *ngIf="showSource && mdSource">
+</markdown>

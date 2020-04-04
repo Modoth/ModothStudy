@@ -1,0 +1,25 @@
+@mixin node-tag-editor-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-node-tag-editor {
+    background-color: mat-color($background, disabled-button);
+
+    .editor {
+      background: mat-color($background, background);
+      box-shadow: 0 -1px 3px 1px mat-color($foreground, divider);
+    }
+
+    .delete {
+      background: mat-color($background, background);
+    }
+
+    .tag-name {
+      color: mat-color($primary, 'lighter');
+    }
+  }
+}

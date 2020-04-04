@@ -1,0 +1,9 @@
+<button [color]="!defaultFilter ? 'primary' : 'accent'" mat-mini-fab (click)="searchPopup.show()">
+  <mat-icon>search</mat-icon>
+</button>
+
+<app-popup #searchPopup [btnSaveStr]="okStr" (canceled)="searchForm.reSetData()" (saved)="onEnter($event);">
+  <app-form-builder #searchForm [data]="{filter: defaultFilter}"
+    [fields]="[{key: 'filter', events: {keydown: onEnter}}]">
+  </app-form-builder>
+</app-popup>

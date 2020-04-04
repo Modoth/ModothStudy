@@ -1,0 +1,30 @@
+@mixin python-terminal-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-python-terminal {
+    .outputs {
+      background: mat-color($background, background);
+      color: mat-color($foreground, text);
+
+      .stdin {
+        color: mat-color($foreground, hint-text);
+
+        &>input,
+        &>input:disabled {
+          color: mat-color($foreground, hint-text);
+          opacity: unset;
+        }
+      }
+
+      .stderr {
+        color: mat-color($warn);
+      }
+    }
+  }
+}

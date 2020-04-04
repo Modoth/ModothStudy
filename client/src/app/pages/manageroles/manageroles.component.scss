@@ -1,0 +1,28 @@
+:host {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+
+    ::ng-deep .role-table {
+      .mat-slide-toggle{
+        margin: 5px;
+      }
+    
+      .mat-column-name {
+        width: 30%;
+      }
+    
+      td.mat-column-name {
+        font-weight: bolder;
+      }
+    
+      .mat-column-permissions {
+        width: 60%;
+      }
+    
+      .mat-column-delete {
+        width: 10%;
+      }
+    }
+  
+}

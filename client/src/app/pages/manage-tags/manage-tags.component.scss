@@ -1,0 +1,26 @@
+:host {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  ::ng-deep .tag-table {
+    .mat-column-name {
+      width: 20%;
+    }
+  
+    td.mat-column-name {
+      font-weight: bolder;
+    }
+  
+    .mat-column-type {
+      width: 20%;
+    }
+  
+    .mat-column-values {
+      width: 50%;
+    }
+  
+    .mat-column-delete {
+      width: auto;
+    }
+  }
+}

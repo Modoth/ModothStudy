@@ -1,0 +1,56 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+  &>app-editor {
+    position: absolute;
+    left: 0;
+    top: -56px;
+    z-index: 999;
+  }
+  footer{
+    color: #c0c0c0;
+  }
+  
+  .icp {
+    text-align: center;
+    font-size: small;
+    margin: 10px;
+  }
+}
+
+.app-bg {
+  filter: grayscale(60%);
+  position: fixed;
+  opacity: 0.01;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.app-content {
+  width: 720px;
+  align-self: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &>app-tools {
+    flex: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-content {
+    width: 100%;
+  }
+}
+
+:host {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

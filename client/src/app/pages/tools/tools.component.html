@@ -1,0 +1,7 @@
+<nav *ngIf="links && links.length > 1" mat-tab-nav-bar class="tab-header">
+  <a mat-tab-link class="tab-item" *ngFor="let link of links" (click)="activeLink = link" [routerLink]="link.url"
+    routerLinkActive="activeLink">
+    {{ link.name | lang | async }} </a>
+</nav>
+<div class='data-will-not-save-warn'>{{'DataWillNotSave' | lang | async}}</div>
+<router-outlet></router-outlet>

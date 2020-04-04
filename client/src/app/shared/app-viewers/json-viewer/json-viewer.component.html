@@ -1,0 +1,20 @@
+<div [class]="showBorder?'node-item':''">
+    <div *ngIf='showMenus' class="menus">
+        <mat-icon *ngIf="mergedContent" (click)="showSource=!showSource">
+            {{showSource ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
+        </mat-icon>
+        <mat-icon color="primary" *ngIf="mergedContent && popContentUrl != null" (click)="openContentUrl()">
+            open_in_new
+        </mat-icon>
+        <div class="divider"></div>
+        <ng-container *ngIf="menus && menus.length > 0">
+            <mat-icon *ngFor="let menu of menus" color="primary" (click)="menu.onClick()">
+                {{menu.icon}}
+            </mat-icon>
+        </ng-container>
+    </div>
+    <markdown [class.hidden]="hideSource || (mergedContent && !showSource)" [data]="markdownContent"></markdown>
+    <app-html-viewer *ngIf="mergedContent" (popContentUrlChange)="popContentUrl=$event" [content]="mergedContent"
+        [options]="appOptions">
+    </app-html-viewer>
+</div>

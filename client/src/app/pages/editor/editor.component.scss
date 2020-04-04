@@ -1,0 +1,140 @@
+.papper {
+  border-radius: 0px;
+  box-sizing: border-box;
+
+  app-article-viewer {
+    margin: 10px 0 0 0;
+  }
+
+  .node {
+    padding: 20px 10px 10px 10px;
+    margin: 0 0 1px 0;
+  }
+
+  .node-title {
+    font-size: 1.125em;
+    font-weight: bold;
+    display: flex;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    // position: sticky;
+    // top: 0;
+    // z-index: 2;
+
+  }
+
+  .node:first-of-type>.node-title {
+    border-width: 0;
+  }
+
+  mat-icon.comment {
+    margin: 3px 10px 0 0;
+  }
+
+  .node-content.my-solution,
+  .node-content.other-solution {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    min-height: 1em;
+
+    .reply-solution,
+    .view-solution {
+      width: 100%;
+      text-align: center;
+    }
+
+    .data-will-not-save {
+      font-size: 0.5rem;
+    }
+
+    &>mat-icon {
+      margin: 0 5px;
+    }
+
+    & app-article-viewer {
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  .node-blog {
+    padding-bottom: 20px;
+  }
+
+  .node-blog:last-child {
+    border-width: 0;
+  }
+
+  .tags {
+    margin: 5px -3px 20px -3px;
+    align-self: center;
+  }
+
+  markdown p {
+    margin-top: 0;
+  }
+}
+
+.blog {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-title-bar-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 2.5em;
+  z-index: 2;
+}
+
+.editor-title-bar {
+  position: fixed;
+  left: 20%;
+  top: 0;
+  right: 0;
+  text-align: end;
+  z-index: 3;
+  font-size: 1.125em;
+
+  &>.mat-button {
+    min-width: unset;
+    padding: 2.5px 10px;
+  }
+}
+
+@media (min-width: 720px) {
+  .papper {
+    margin: 10px;
+    box-sizing: border-box;
+
+    .node{
+      padding: 10px 20px;
+    }
+
+    .node-item {
+      border: 0;
+      box-shadow: 0;
+    }
+  }
+}
+
+@media print {
+  .papper {
+    margin: 20px;
+    padding: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 0;
+    column-count: 2;
+  }
+
+  .editor-title-bar {
+    display: none;
+  }
+}

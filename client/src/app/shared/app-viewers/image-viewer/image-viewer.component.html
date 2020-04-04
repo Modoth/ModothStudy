@@ -1,0 +1,9 @@
+<div class="divider"></div>
+<div class="main-image">
+  <img [src]='current'>
+</div>
+<div class="divider"></div>
+<div *ngIf=" imgs && imgs.length > 1" class="image-list">
+  <img (click)="current=img" [class]="img === current? 'current': ''" *ngFor="let img of imgs" [src]="img">
+</div>
+<mat-icon class="close" color="warn" (click)="closed.emit($event)">close</mat-icon>

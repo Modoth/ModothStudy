@@ -1,0 +1,25 @@
+@mixin image-viewer-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  $bg: mat-color($background, app-bar);
+  $fg: mat-color($primary);
+
+  app-image-viewer-dialog {
+    background: mat-color($background, background);
+
+    .image-list {
+
+      // background: mat-color($background, app-bar);
+
+      &>img {
+        background: mat-color($background, app-bar);
+      }
+
+      &>.current {
+        border-color: mat-color($primary);
+      }
+    }
+  }
+}

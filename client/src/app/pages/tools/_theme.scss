@@ -1,0 +1,16 @@
+@mixin tools-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-tools {
+    display: flex;
+    flex-direction: column;
+
+    &>*:last-child {
+      flex: 1;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+<mat-form-field *ngFor="let item of fields">
+    <ng-container [ngSwitch]="item.type">
+      <textarea *ngSwitchCase="'textarea'" [appRegisterEvent]="item.events" rows="6" matInput cdkFocusInitial [(ngModel)]="formData[item.key]" [placeholder]="item.label || '' | lang | async "></textarea>
+      <ng-container *ngSwitchCase="'customize'">
+        <ng-container *ngTemplateOutlet="refs[item.key]; context: {data: formData}"></ng-container>
+      </ng-container>
+      <input *ngSwitchDefault [appRegisterEvent]="item.events" matInput cdkFocusInitial [(ngModel)]="formData[item.key]" [placeholder]="item.label || '' | lang | async "
+        [type]="item.type || 'text'">
+    </ng-container>
+</mat-form-field>

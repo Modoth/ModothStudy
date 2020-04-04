@@ -1,0 +1,10 @@
+<nav class="parent-div">
+  <a class="parent" *ngFor="let node of parents" (click)="getSubFloder(node)">/{{node.name}}</a>
+</nav>
+<nav class="child-div">
+  <div class="child" mat-button *ngFor="let node of children">
+    <app-node-item [summary]="true" (selected)="getSubFloder($event)" [node]="node" [loginUser]="null"
+      [isOwnNode]="isOwnNode" [isTopLevel]="!nodeId && !filter ">
+    </app-node-item>
+  </div>
+</nav>

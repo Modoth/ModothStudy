@@ -1,0 +1,55 @@
+@mixin comments-viewer-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  app-comments-viewer {
+
+    background-color: mat-color($background, disabled-button);
+
+    .comment-title {
+      color: mat-color($primary);
+    }
+
+    .comments-viewer {
+      background: mat-color($background, background);
+      box-shadow: 0 -1px 3px 1px mat-color($foreground, divider);
+    }
+
+    .no-comments {
+      color: mat-color($foreground, hint-text);
+    }
+
+    .commens-list {
+      background: mat-color($background, app-bar);
+    }
+
+    .load-more,
+    .comment {
+      background: mat-color($background, background);
+    }
+
+    .comment-form>textarea {
+      border-color: mat-color($primary, 50);
+    }
+
+    .comment-form>textarea:focus {
+      border-color: mat-color($primary);
+    }
+
+    .user-avatar {
+      background: mat-color($primary, 50);
+    }
+
+    .comment-content {
+      color: mat-color($foreground, hint-text);
+
+      .user-name {
+        color: mat-color($foreground, text);
+      }
+    }
+
+  }
+}

@@ -1,0 +1,23 @@
+<app-table [dataSource]="roles" [columns]="['name', 'permissions', 'delete']"
+[colTemplateRef]="{permissions: permissions, delete: delete}"
+[colHeaders]="{permissions: 'Permission'}" class="role-table">
+  <ng-template  #permissions let-role="cell">
+    <mat-chip-list>
+      <mat-slide-toggle *ngFor="let permission of objectKeys(role.permissions)"
+        (change)="switchRolePermission(role, permission, $event)" checked="{{role.permissions[permission] == true}}">
+        {{permission | lang | async }} </mat-slide-toggle>
+    </mat-chip-list>
+  </ng-template>
+  <ng-template #delete let-role="cell" >
+    <mat-icon (click)="deleteRole(role)" color="warn">delete</mat-icon>
+  </ng-template>
+</app-table>
+<nav class="ops">
+  <button mat-mini-fab (click)="createPopup.show()" color="primary">
+    <mat-icon>add</mat-icon>
+  </button>
+</nav>
+<app-popup #createPopup [btnSaveStr]="okStr" (canceled)="creatForm.clearData()" (saved)="create(creatForm.getData())" >
+    <app-form-builder #creatForm [fields]="[{key: 'role'}]">
+</app-form-builder>
+</app-popup>
