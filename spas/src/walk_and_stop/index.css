@@ -34,10 +34,10 @@ body {
     position: fixed;
     top: 0;
     right: 0;
-    margin: 10px;
+    margin: 5px;
     color: aliceblue;
     background: #00000080;
-    padding: 10px;
+    padding: 2px 5px;
     border-radius: 8px;
     user-select: none;
 }
@@ -45,14 +45,6 @@ body {
 #direction{
     display: inline-block;
     transform: rotate(90deg);
-}
-
-.table {
-    display: flex;
-    flex-direction: column;
-    width: 100vmin;
-    height: 100vmin;
-    margin: 0 auto;
 }
 
 .row {
@@ -73,10 +65,89 @@ body {
     background-color: whitesmoke;
 }
 
-.cell-start {
-    background-color: red;
-}
+@keyframes end {
+    from { background-color: blue; }
+    to   { background-color: white; }
+  }
 
 .cell-end {
-    background-color: red;
+    animation: 1s linear infinite end;
 }
+
+@keyframes start {
+    from { background-color: red; }
+    to   { background-color: white; }
+  }
+
+.cell-start{
+    animation: 1s linear infinite start;
+}
+
+.map-editor-btn {
+    flex: 1;
+    color: white;
+    background: #FFFFFF80;
+    margin: 0 10px;
+    text-align: center;
+    border-radius: 8px;
+    user-select: none;
+}
+
+.map-editor-btn.highlight{
+    color:lightskyblue;
+}
+
+.table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+
+.editor{
+    flex:1;
+        display: flex;
+    background-color: #00000080;
+}
+
+.map-editor-btn-group{
+    display: flex;
+    margin: 10px;
+}
+
+@media (orientation: portrait){ 
+    .editor{    
+        flex-direction: column;
+    }
+    .table {
+        
+    }
+    
+    .map-editor-btn-group{
+        flex-direction: row;;
+    }
+}
+
+@media (orientation: landscape){
+    .editor{
+        flex-direction: row;
+    }
+    .table {
+        
+    }
+    .map-editor-btn-group{
+        flex-direction: column;
+        height: 100%;
+        margin: 0 5px 0 0;
+    }
+    .map-editor-btn {
+        margin: 2px 0px;
+        text-align: center;
+        border-radius: 8px;
+        user-select: none;
+        word-wrap: break-word;
+        width: 1em;
+        padding: 5px;
+        font-size: 0.625rem;
+    }
+} 

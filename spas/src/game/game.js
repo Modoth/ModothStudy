@@ -21,10 +21,10 @@ export class Vector2 {
 }
 
 export class Gbject {
-    constructor(name,/**@type Component[] */...components) {
+    constructor(name, x, y,/**@type Component[] */...components) {
         this.components = [];
         this.name = name;
-        this.position = new Vector2(0, 0);
+        this.position = new Vector2(x, y);
         this.positionUpdated = true;
         this.addComponents(...components);
         this.enabled = true;
@@ -205,8 +205,12 @@ export class Walker extends Component {
     }
 
     walkTo(/**@type Vector2 */ loc) {
-        this.mTarget = loc;
-        this.mStepPoints = [];
+        if (!this.mTarget) {
+            this.mTarget = loc;
+            this.mStepPoints = [];
+        } else {
+            this.mNextTarget = loc;
+        }
     }
 
     mWalkStep(/**@type GameContext */ctx) {
@@ -220,9 +224,15 @@ export class Walker extends Component {
         if (opt > 1) {
             self.position = next;
             self.positionUpdated = true;
-            this.mStepPoints.shift()
-            if (!this.mStepPoints.length) {
-                this.mTarget = null;
+            if (this.mNextTarget) {
+                this.mTarget = this.mNextTarget;
+                this.mNextTarget = null;
+                this.mStepPoints = [];
+            } else {
+                this.mStepPoints.shift()
+                if (!this.mStepPoints.length) {
+                    this.mTarget = null;
+                }
             }
             return;
         }
@@ -295,7 +305,7 @@ export class Walker extends Component {
                 }
             }
         }
-        if (!path) {
+        if (!path || !path.length) {
             this.mTarget = null;
         } else {
             // let str = '';
@@ -359,8 +369,7 @@ export class GameContext {
         return value > 0 ? Math.ceil(value) : Math.floor(value);
     }
 
-    getAdjData(/**@type Gbject*/gbj, /**@type Vector2 */ target, /**@type boolean */ limitInCamera) {
-        const cellDevide = 0;
+    getAdjData(/**@type Gbject*/gbj, /**@type Vector2 */ target, /**@type boolean */ limitInCamera, cellDevide = 0) {
         const source = gbj.position;
         const sourceSize = gbj[Rigid.name].size;
         let left, top, right, bottom;

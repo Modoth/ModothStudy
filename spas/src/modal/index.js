@@ -73,7 +73,7 @@ export class Modal {
         });
     }
 
-    popup(/**@type HTMLElement */ ele) {
+    popup(/**@type HTMLElement */ ele, callback = null, showClose = true) {
         return new Promise(resolve => {
             let panel = document.createElement('div');
             panel.className = "popup-panel"
@@ -81,13 +81,18 @@ export class Modal {
                 this.mContainer.removeChild(panel);
                 resolve(ok);
             }
-            let btnClose = document.createElement("span");
-            btnClose.innerText = '×';
-            btnClose.classList.add("close")
-            btnClose.onclick = () => closeModal(false);
-            panel.appendChild(btnClose);
+            if (showClose) {
+                let btnClose = document.createElement("span");
+                // btnClose.innerText = '×';
+                btnClose.classList.add("close")
+                btnClose.onclick = () => closeModal(false);
+                panel.appendChild(btnClose);
+            }
             panel.appendChild(ele);
             this.mContainer.appendChild(panel);
+            if (callback) {
+                callback(closeModal);
+            }
         })
     }
 

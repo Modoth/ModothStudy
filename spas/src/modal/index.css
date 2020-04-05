@@ -22,20 +22,6 @@
     background: #00000080;
 }
 
-.close{
-    position: fixed;
-    top: 0;
-    left: 0px;
-    margin: 10px;
-    background: #00000080;
-    border-radius: 24px;
-    color: white;
-    font-size: 32px;
-    width: 48px;
-    height: 48px;
-    text-align: center;
-}
-
 .modal-panel {
     background-color: #00000080;
 }
@@ -95,3 +81,34 @@
     padding: 2px 8px;
     flex: 1;
 }
+
+.close {
+    --box-size:36px;
+    --size:32px;
+    --half-size:20px;
+    position: absolute;
+    width:  var(--box-size);
+    height:  var(--box-size);
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 2px;
+    background: #00000080;
+    border-radius: var(--size);
+  }
+
+  .close:before, .close:after {
+    position: absolute;
+    left: var(--half-size);
+    content: ' ';
+    height: var(--size);
+    width: 2px;
+    top: 4px;
+    background:white;
+  }
+  .close:before {
+    transform: rotate(45deg);
+  }
+  .close:after {
+    transform: rotate(-45deg);
+  }

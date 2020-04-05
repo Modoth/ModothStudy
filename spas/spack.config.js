@@ -27,23 +27,38 @@ class FileUtils {
 }
 
 
-const getEntriesInSrc = async () => {
+const getLocalConfigs = async () => {
     const srcFolder = path.join(__dirname, 'src');
     const subfolders = await FileUtils.readdir(srcFolder);
     let entries = {};
-    for (let subfolder of subfolders) {
-        const indexFile = path.join(srcFolder, subfolder, 'index.html');
-        if (await FileUtils.exists(indexFile)) {
-            entries[subfolder] = indexFile;
+    let localCfg;
+    let localCfgFile = './.local.spack.config.js';
+    if (localCfgFile && await FileUtils.exists(localCfgFile)) {
+        try {
+            localCfg = require(localCfgFile);
+        }
+        catch  {
+            console.log(`Config File Error: ${localCfgFile}`);
         }
     }
-    return entries;
+    for (let subfolder of subfolders) {
+        const indexFile = path.join(srcFolder, subfolder, 'index.html');
+        if (!await FileUtils.exists(indexFile)) {
+            continue;
+        }
+        entries[subfolder] = Object.assign({ path: indexFile }, localCfg && localCfg.entries[subfolder]);
+    }
+    return {
+        cd: localCfg.cd || {},
+        entries
+    };
 }
 
-module.exports = getEntriesInSrc().then(entries => ({
+module.exports = getLocalConfigs().then(({ cd, entries }) => ({
     entries,
     output: {
         path: path.join(__dirname, 'dist'),
         filename: '[name]'
-    }
+    },
+    cd
 }));

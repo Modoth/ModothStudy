@@ -1,4 +1,4 @@
-export class MapEditor {
+export class MapGenerator {
     generate(width, height) {
         //[j][i]
         let cells = Array.from({ length: height }, () =>

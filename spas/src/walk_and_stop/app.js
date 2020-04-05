@@ -1,142 +1,101 @@
 import { Modal } from '../modal/index.js'
 import { Game, Camera, Gbject, Rigid, Body, Session, Walker, Controller, ColorBodyProvider, MapBodyProvider, TextBodyProvider, ColorTranslator, GameContext } from '../game/game.js'
-import { MapEditor } from './mapEditor.js';
-import { Config } from './config.js';
-
+import { MapGenerator } from './map_generator.js';
 export class App {
     constructor(/**@type HTMLElement */ root, appData) {
         this.mRoot = root;
-        this.mAppData = appData || new Config().appData;
+        this.mAppData = appData;
         this.mModal = new Modal();
-        this.colorTranslator = new ColorTranslator();
+        this.mColorTranslator = new ColorTranslator();
     }
 
-    async mRunSession(sessionData, options) {
-        let mapHeight = sessionData.cells.length;
-        if (!mapHeight) {
-            return;
-        }
-        let mapWidth = sessionData.cells[0].length;
-        if (!mapWidth) {
-            return;
-        }
-        let mapScale = sessionData.scale || 1;
-        let mapData = [];
-        let cellColors = sessionData.cellTypes.map(t => this.colorTranslator.translate(t.color));
-        let transParent = { r: 0, g: 0, b: 0, a: 0 };
-        sessionData.cellTypes.forEach(t => t.rgba = this.colorTranslator.translate(t.color));
-        for (let j = 0; j < mapHeight; j++) {
-            for (let i = 0; i < mapWidth; i++) {
-                let typeIdx = sessionData.cells[j][i] >>> 0;
-                let type = sessionData.cellTypes[typeIdx];
-                if (!type) {
-                    mapData.push(transParent)
-                    continue;
-                }
-                if (type.rigid) {
-                    mapData.push(transParent)
-                }
-                else {
-                    mapData.push(cellColors[typeIdx])
-                }
-            }
-        }
-        let map = new Gbject("map", new Body(new MapBodyProvider(mapWidth, mapHeight, mapData, mapScale)));
-        map.position.x = (mapWidth - 1) * mapScale / 2;
-        map.position.y = (mapHeight - 1) * mapScale / 2;
-        let objects = [];
-        sessionData.objects.forEach(t => t.rgba = this.colorTranslator.translate(t.color));
-        for (let c of sessionData.objects) {
-            let cScale = c.scale || 1;
-            let obj = new Gbject('',
-                new Body(c.text ?
-                    new TextBodyProvider(cScale, cScale, c.text, c.color) :
-                    new ColorBodyProvider(cScale, cScale, c.rgba)),
-                ...(c.rigid ? [new Rigid(cScale, cScale)] : [])
-            );
-            obj.position.x = c.pos[1] * mapScale;
-            obj.position.y = c.pos[0] * mapScale;
-            objects.push(obj);
-        }
-        let game = new Game(this.mRoot, options || {});
-        let success = false;
-        let player = objects[sessionData.start];
-        let terminal = objects[sessionData.end];
-        let session = new Session();
-        let wallVisiableTable = new Map();
-        let wallPool = new Map();
-        for (let type of sessionData.cellTypes) {
-            wallPool.set(type, []);
-        }
-        let captureWall = (type) => {
-            let wall = wallPool.get(type).pop();
-            if (!wall) {
-                wall = new Gbject('',
+    async mRunSession(appData, sessionData, cache) {
+        const game = new Game(this.mRoot, appData);
+        let sessionRet;
+        const session = new Session();
+        const mapHeight = sessionData.cells.length;
+        const mapWidth = sessionData.cells[0].length;
+        const mapScale = sessionData.scale;
+        const transparentColor = { r: 0, g: 0, b: 0, a: 0 };
+        const map = new Gbject("map", (mapWidth - 1) * mapScale / 2, (mapHeight - 1) * mapScale / 2,
+            new Body(new MapBodyProvider(mapWidth, mapHeight,
+                Array.from({ length: mapWidth * mapHeight }, (_, i) => {
+                    const type = appData.types[sessionData.cells[Math.floor(i / mapWidth)][i % mapWidth]];
+                    return !type || type.rigid ? transparentColor : cache.rgbaColors.get(type)
+                }), mapScale)));
+        const objects = sessionData.objects.map(obj => {
+            const type = appData.types[obj.type];
+            return new Gbject('', obj.pos[1] * mapScale, obj.pos[0] * mapScale,
+                new Body(obj.text ?
+                    new TextBodyProvider(obj.scale, obj.scale, type.text, type.color) :
+                    new ColorBodyProvider(obj.scale, obj.scale, cache.rgbaColors.get(type))),
+                ...(type.rigid ? [new Rigid(obj.scale, obj.scale)] : [])
+            )
+        })
+
+        const player = objects[sessionData.start];
+        const endPoint = objects[sessionData.end];
+
+        const objectsPool = new Map(appData.types.map(t => [t, []]));
+        const captureObject = (type) => {
+            let obj = objectsPool.get(type).pop();
+            if (!obj) {
+                obj = new Gbject('', 0, 0,
                     new Body(
                         type.text ?
                             new TextBodyProvider(mapScale, mapScale, type.text, type.color) :
-                            new ColorBodyProvider(mapScale, mapScale, type.rgba)
+                            new ColorBodyProvider(mapScale, mapScale, cache.rgbaColors.get(type))
                     ),
                     new Rigid(mapScale, mapScale));
-                wall.__wall_type__ = type;
-                session.gbjects.push(wall);
+                obj.__obj_type__ = type;
+                session.gbjects.push(obj);
             }
             else {
-                wall.enabled = true;
+                obj.enabled = true;
             }
-            return wall;
+            return obj;
+        }
+        const releaseObject = (obj) => {
+            obj.enabled = false;
+            objectsPool.get(obj.__obj_type__).push(obj);
         }
 
-        let releaseWall = (wall) => {
-            wall.enabled = false;
-            wallPool.get(wall.__wall_type__).push(wall);
-        }
+        let success = false;
+        let wallVisiableTable = new Map();
         let lastMapRegion = {};
         let lastRefreshLocTime = 0;
         let refreshLocRegion = 1000;
         let lastDist = 0;
-        let display = document.getElementById('display');
-        let direction = document.getElementById('direction');
-        let distance = document.getElementById('distance');
-        display.onclick = async () => {
-            let tableEle = document.createElement("div");
-            tableEle.classList.add('table')
-            let startPos = sessionData.objects[sessionData.start].pos;
-            let endPos = sessionData.objects[sessionData.end].pos;
-            for (let j = 0; j < sessionData.cells.length; j++) {
-                let row = sessionData.cells[j];
-                let rowEle = document.createElement('div');
-                rowEle.classList.add("row");
-                tableEle.appendChild(rowEle);
-                for (let i = 0; i < row.length; i++) {
-                    let cell = row[i] * 1;
-                    let cellEle = document.createElement('div');
-                    cellEle.classList.add("cell");
-                    cellEle.classList.add(`cell-${cell}`)
-                    if (j == startPos[0] && i == startPos[1]) {
-                        cellEle.classList.add(`cell-start`)
-                    }
-                    if (j == endPos[0] && i == endPos[1]) {
-                        cellEle.classList.add(`cell-end`)
-                    }
-                    rowEle.appendChild(cellEle);
-                }
+        let playerPos = sessionData.objects[sessionData.start].pos
+
+        const displayElement = document.getElementById('display');
+        const directionElement = document.getElementById('direction');
+        const distanceElement = document.getElementById('distance');
+        displayElement.onclick = async () => {
+            const newSession = this.mCloneSession(sessionData);
+            const newAppData = Object.assign({}, appData);
+            newAppData.sessions = [newSession];
+            newSession.objects[newSession.start].pos = [...playerPos]
+            const editor = new MapEditor(this.mModal);
+            if (await editor.edit(newAppData, newSession)) {
+                game.stop();
+                sessionRet = newSession;
             }
-            await this.mModal.popup(tableEle);
         }
-        distance.innerHTML = '';
-        display.classList.remove("hiden")
+        distanceElement.innerHTML = '';
+        displayElement.classList.remove("hiden")
+
         player.addComponents(
             new Walker(sessionData.objects[sessionData.start].speed || sessionData.viewSize / 2, true),
             new Camera(sessionData.viewSize, 1),
             new Controller({
                 onclick: (loc) => player[Walker.name].walkTo(loc),
                 onframe: async (/**@type GameContext */ ctx) => {
-                    let dist = Math.hypot(terminal.position.x - player.position.x,
-                        terminal.position.y - player.position.y) / mapScale
+                    let dist = Math.hypot(endPoint.position.x - player.position.x,
+                        endPoint.position.y - player.position.y) / mapScale
                     if (dist < 1) {
                         success = true;
-                        display.classList.add("hiden")
+                        displayElement.classList.add("hiden")
                         game.stop();
                         return;
                     }
@@ -144,13 +103,14 @@ export class App {
                     if (now - lastRefreshLocTime > refreshLocRegion && lastDist != Math.floor(dist)) {
                         lastDist = Math.floor(dist);
                         lastRefreshLocTime = now;
-                        let deg = Math.floor(Math.acos((terminal.position.x - player.position.x) / dist / mapScale) * 180 / Math.PI);
-                        if (terminal.position.y < player.position.y) {
+                        let deg = Math.floor(Math.acos((endPoint.position.x - player.position.x) / dist / mapScale) * 180 / Math.PI);
+                        if (endPoint.position.y < player.position.y) {
                             deg = 360 - deg;
                         }
-                        direction.style.transform = `rotate(${deg}deg)`
-                        distance.innerText = `终点: ${lastDist}`;
+                        directionElement.style.transform = `rotate(${deg}deg)`
+                        distanceElement.innerText = `终点: ${lastDist}`;
                     }
+                    playerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
                     let mLeft = Math.max(Math.floor(ctx.wxmin / mapScale) - 1, 0);
                     let mRight = Math.min(Math.ceil(ctx.wxmax / mapScale) + 1, mapWidth - 1);
                     let mTop = Math.max(Math.floor(ctx.wymin / mapScale) - 1, 0);
@@ -169,9 +129,9 @@ export class App {
                                 wallVisiableTable.delete(idx);
                             }
                             else {
-                                let type = sessionData.cellTypes[sessionData.cells[j][i] >>> 0];
+                                let type = appData.types[sessionData.cells[j][i]];
                                 if (type.rigid) {
-                                    let wall = captureWall(type)
+                                    let wall = captureObject(type)
                                     wall.position.x = i * mapScale;
                                     wall.position.y = j * mapScale;
                                     nextWallVisiableTable.set(idx, wall);
@@ -181,70 +141,222 @@ export class App {
                         }
                     }
                     for (let p of wallVisiableTable) {
-                        releaseWall(p[1])
+                        releaseObject(p[1])
                     }
                     wallVisiableTable = nextWallVisiableTable;
                 }
             }));
+
         session.gbjects.push(map, ...objects);
         await game.start(session);
-        return success;
+        return { success, sessionRet };
     }
 
     async run() {
-        const style = document.getElementById("styleBackground");
+        if (this.mAppData.background) {
+            document.getElementById("styleBackground").innerText = `
+                #app {
+                    background:${this.mAppData.background}
+                }`;
+        }
+        const cache = { rgbaColors: new Map() };
+        this.mAppData.types.forEach(t => cache.rgbaColors.set(t, this.mColorTranslator.translate(t.color)));
+        for (let session of this.mAppData.sessions || []) {
+            session.scale = session.scale >>> 0 || 1;
+            session.objects.forEach(obj => obj.scale = obj.scale >>> 0 || 1)
+            for (let i = 0; i < session.cells.length; i++) {
+                session.cells[i] = Array.from(session.cells[i], c => c >>> 0);
+            }
+        }
         let sessionIdx = 0;
-        while (this.mAppData.sessions && this.mAppData.sessions[0].cells) {
-            while (this.mAppData.sessions && this.mAppData.sessions[sessionIdx]) {
-                await this.mModal.toast(`第 ${sessionIdx + 1} 关`);
-                style.innerText = `
-            #app {
-                background:${this.mAppData.sessions[sessionIdx].background || ''}
-            }`;
-                await this.mRunSession(this.mAppData.sessions[sessionIdx], this.mAppData.options);
-                sessionIdx++;
+        let getSessionData = async () => {
+            if (this.mAppData.sessions) {
+                if (sessionIdx < this.mAppData.sessions.length) {
+                    return this.mAppData.sessions[sessionIdx];
+                }
+                if (!this.mAppData.allowRandom) {
+                    while (await !this.mModal.confirm("重新开始?")) {
+                    }
+                    sessionIdx = 0;
+                    return this.mAppData.sessions[sessionIdx];
+                }
             }
-            if (this.mAppData.options.allowRandom) {
-                break;
-            }
-            while (await !this.mModal.confirm("重新开始?")) {
-
-            }
-            sessionIdx = 0;
+            let mapGen = new MapGenerator();
+            let mapData = mapGen.generate(100, 100);
+            let revTypes = [...this.mAppData.types].reverse();
+            let startType = revTypes.length - 1 - revTypes.findIndex(t => t.rigid);
+            let endType = revTypes.length - 1 - revTypes.findIndex(t => !t.rigid);
+            let sessionData = {
+                cells: mapData.cells,
+                objects: [
+                    {
+                        type: startType,
+                        pos: mapData.start,
+                        scale: 1,
+                    },
+                    {
+                        type: endType,
+                        pos: mapData.end,
+                        scale: 1,
+                    },
+                ],
+                start: 0,
+                end: 1,
+                viewSize: 15,
+                scale: 1
+            };
+            return sessionData;
         }
+        let toloadSession;
         while (true) {
-            let templateSession = this.mAppData.sessions[0];
-            let templateStart = templateSession.objects[templateSession.start];
-            templateStart.speed = undefined;
-            let templateEnd = templateSession.objects[templateSession.end];
-            style.innerText = `
-            #app {
-                background:${templateSession.background || ''}
-            }`;
-            while (true) {
-                await this.mModal.toast(`第 ${sessionIdx + 1} 关`);
-                let mapEditor = new MapEditor();
-                let mapData = mapEditor.generate(100, 100);
-                templateStart.pos = mapData.start;
-                templateEnd.pos = mapData.end;
-                let sessionData = {
-                    cells: mapData.cells,
-                    cellTypes: [
-                        templateSession.cellTypes.find(t => t.rigid),
-                        templateSession.cellTypes.find(t => !t.rigid)],
-                    objects: [
-                        templateStart,
-                        templateEnd
-                    ],
-                    start: 0,
-                    end: 1,
-                    viewSize: templateSession.viewSize,
-                    background: templateSession.background,
-                    scale: templateSession.scale
-                };
-                await this.mRunSession(sessionData, this.mAppData.options);
+            const sessionData = toloadSession || await getSessionData();
+            this.mModal.toast(`第 ${sessionIdx + 1} 关`);
+            const { sessionRet } = await this.mRunSession(this.mAppData, sessionData, cache);
+            toloadSession = sessionRet
+            if (!sessionRet) {
                 sessionIdx++;
             }
         }
+    }
+
+    mCloneSession(sessionData) {
+        return Object.assign({}, sessionData, {
+            cells: sessionData.cells.map(row => [...row]),
+            objects: sessionData.objects.map(obj => ({
+                type: obj.type,
+                pos: [...obj.pos],
+                scale: obj.scale
+            }))
+        })
+    }
+}
+
+class MapEditor {
+    constructor(/**@type Modal */ modal) {
+        this.mModal = modal;
+    }
+
+    async edit(appData, sessionData) {
+        let editorEle = document.createElement('div');
+        editorEle.classList.add('editor');
+        let btnGroup = document.createElement("div");
+        let placeStart = false;
+        let placeEnd = false;
+        let closeModal;
+        btnGroup.classList.add('map-editor-btn-group');
+        const btns = [{
+            name: '返回',
+            onclick: () => {
+                closeModal(false);
+            }
+        }, {
+            name: '起点',
+            onclick: (btn) => {
+                placeStart = !placeStart
+                if (placeStart) {
+                    btn.ele.classList.add('highlight')
+                }
+                else {
+                    btn.ele.classList.remove('highlight')
+                }
+            }
+        }, {
+            name: '终点',
+            onclick: (btn) => {
+                placeEnd = !placeEnd;
+                if (placeEnd) {
+                    btn.ele.classList.add('highlight')
+                }
+                else {
+                    btn.ele.classList.remove('highlight')
+                }
+            }
+        }, {
+            name: '导出',
+            onclick: async () => {
+                let strSession = Object.assign({}, sessionData, { cells: sessionData.cells.map(r => r.join("")) })
+                await this.mModal.prompt("请复制", JSON.stringify(Object.assign({}, appData, {
+                    sessions: [strSession]
+                })));
+            }
+        }, {
+            name: '确定',
+            onclick: () => {
+                closeModal(true);
+            }
+        }];
+        btns.forEach(btn => {
+            const btnEle = document.createElement('span')
+            btnEle.innerText = btn.name;
+            btn.ele = btnEle;
+            btnEle.onclick = () => btn.onclick(btn)
+            btnEle.classList.add('map-editor-btn')
+            btnGroup.appendChild(btnEle);
+        })
+        let tableEle = document.createElement("div");
+        tableEle.classList.add('table')
+        let startPos = sessionData.objects[sessionData.start].pos;
+        let endPos = sessionData.objects[sessionData.end].pos;
+        let standType = sessionData.cells[startPos[0]][startPos[1]];
+        let startCell;
+        let endCell;
+        for (let j = 0; j < sessionData.cells.length; j++) {
+            let row = sessionData.cells[j];
+            let rowEle = document.createElement('div');
+            rowEle.classList.add("row");
+            tableEle.appendChild(rowEle);
+            for (let i = 0; i < row.length; i++) {
+                let cell = row[i] * 1;
+                let cellEle = document.createElement('div');
+                cellEle.classList.add("cell");
+                cellEle.classList.add(`cell-${cell}`)
+                if (j == startPos[0] && i == startPos[1]) {
+                    cellEle.classList.add(`cell-start`)
+                    startCell = cellEle;
+                }
+                if (j == endPos[0] && i == endPos[1]) {
+                    cellEle.classList.add(`cell-end`)
+                    endCell = cellEle;
+                }
+                cellEle.onclick = () => {
+                    if (placeStart) {
+                        if (sessionData.cells[j][i] != standType) {
+                            return
+                        }
+                        startCell.classList.remove('cell-start')
+                        startPos[0] = j;
+                        startPos[1] = i;
+                        startCell = cellEle;
+                        startCell.classList.add('cell-start')
+                        btns[0].onclick(btns[0])
+                        return;
+                    }
+                    if (placeEnd) {
+                        if (sessionData.cells[j][i] != standType) {
+                            return
+                        }
+                        endCell.classList.remove('cell-end')
+                        endPos[0] = j;
+                        endPos[1] = i;
+                        endCell = cellEle;
+                        endCell.classList.add('cell-end')
+                        btns[1].onclick(btns[1])
+                        return;
+                    }
+                    if ((j == startPos[0] && i == startPos[1]) || (j == endPos[0] && i == endPos[1])) {
+                        return;
+                    }
+                    cellEle.classList.remove(`cell-${sessionData.cells[j][i]}`)
+                    sessionData.cells[j][i] = sessionData.cells[j][i] == 0 ? 1 : 0;
+                    cellEle.classList.add(`cell-${sessionData.cells[j][i]}`)
+                }
+                rowEle.appendChild(cellEle);
+            }
+        }
+        editorEle.appendChild(tableEle);
+        editorEle.appendChild(btnGroup);
+        return await this.mModal.popup(editorEle, (close) => {
+            closeModal = close;
+        }, false);
     }
 }

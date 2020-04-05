@@ -41,3 +41,4 @@ typings
 yarn-error.log
 build
 wwwroot
+.local.*
