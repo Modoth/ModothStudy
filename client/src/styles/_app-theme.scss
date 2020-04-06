@@ -81,15 +81,6 @@
     background-color: transparent;
   }
 
-  .fullscreen-node-item{
-    .menus{
-      padding: 8px 2px;
-      margin-bottom: 1px;
-      background-color: mat-color($background, app-bar);
-        box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
-    }
-  }
-
   @include image-viewer-theme($theme);
   @include terminal-ime-theme($theme);
   @include python-terminal-theme($theme);
@@ -114,6 +105,14 @@
   @include query-theme($theme);
   @include tools-theme($theme);
 
+  .fullscreen-node-item{
+    .menus{
+      padding: 8px 3px;
+      margin: 0 0 1px !important;
+      background-color: mat-color($background, app-bar);
+      box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
+    }
+  }
 }
 
 @include mat-core();

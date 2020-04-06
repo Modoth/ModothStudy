@@ -3,94 +3,68 @@ body,
 #app {
     height: 100%;
     min-height: 100%;
-}
-
-body {
     margin: 0;
-    color: #333;
-    background: repeating-linear-gradient(90deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px, repeating-linear-gradient(180deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px;
 }
 
 #app {
     width: 100vw;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    color: darkblue;
+    background: repeating-linear-gradient(90deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px, repeating-linear-gradient(180deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px;
+}
+
+#searchBar{
+    position: fixed;
     display: flex;
-    flex-direction: column;
+    background: #ffffff80;
+    width: 100%;
+}
+
+#txbFilter {
+    margin: 10px 5px 0px 5px;
+    padding: 5px;
+    border: #C0C0C0 solid 1px;
+    border-radius: 8px;
+    flex: 1;
+    outline: 0!important;
+    background: #ffffff;
+    font-size: 1.25rem;
+}
+
+#table {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-direction: row;
+    margin-top: 48px;
+}
+
+#table>div {
+    flex: 1;
+    display: inline-flex;
+}
+
+#table>div>* {
+    margin: 5px;
+    padding: 10px;
+    border: #C0C0C0 solid 1px;
+    overflow: hidden;
+    border-radius: 0.5em;
+    height: 1.5em;
+    width: 1.5em;
+    text-align: center;
+    font-family: 'keys-font';
+}
+#table>div>*::selection {
+    background: transparent;
 }
 
 .trans-text{
     color: transparent !important;
 }
 
-#filterBar {
-    display: flex;
-    padding: 0 10px;
-}
-
-#txbFilter {
-    background: #fff;
-    flex: 1;
-    color:darkblue;
-    font-size: 1.25rem;
-    padding: 2px;
-    margin: 5px auto;
-    padding: 5px;
-    border: #C0C0C0 solid 1px;
-    border-radius: 8px;
-    outline: 0!important;
-    color: -internal-light-dark-color(black, white);
-    background-color: -internal-light-dark-color(white, black);
-}
-
-#btnExport {
-    margin: 10px;
-    margin-right: 5px;
-    border: #C0C0C0 solid 1px;
-    border-radius: 8px;
-    align-self: center;
-    padding: 10px 5px;
-}
-
 .hiden {
     display: none;
-}
-
-#table {
-    display: flex;
-    flex-wrap: wrap;
-    overflow-y: auto;
-    /* margin-top: 10px; */
-    padding: 0 8px;
-    flex: 1;
-    align-content: flex-start;
-    -webkit-align-content: flex-start;
-    flex-direction: row;
-}
-
-#table>div {
-    flex: 1;
-    /* width: 15%; */
-    display: inline-flex;
-    margin: 0 2px;
-}
-
-#table>div>* {
-    margin: 5px auto;
-    border: #C0C0C0 solid 1px;
-    padding: 10px;
-    height: 1.5em;
-    overflow: hidden;
-    max-width: 5em;
-    color: darkblue;
-    /* background: chocolate; */
-    border-radius: 0.5em;
-    min-width: 1em;
-    text-align: center;
-    font-family: 'keys-font';
-    font-weight: normal;
-    font-style: normal;
-    /* user-select: none; */
-}
-#table>div>*::selection {
-    background: transparent;
 }

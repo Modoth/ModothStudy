@@ -136,14 +136,6 @@ namespace ModothStudy.Service.EntityServices
 
             if (string.IsNullOrWhiteSpace(filter))
             {
-                if (user != null)
-                {
-                    nodes = nodes.Where(n => n.User == user || n.Path == "");
-                }
-                else
-                {
-                    nodes = nodes.Where(n => n.Path == "");
-                }
                 nodes = nodes.Where(n => n.Parent == null).WhereOwnedOrShared(user);
             }
             else
@@ -836,17 +828,21 @@ namespace ModothStudy.Service.EntityServices
         {
             var user = await _operatorService.CheckOperator();
             path = GetIndexedPath(path);
-            var node = await _nodesRepository.Retrieve().Where(n => n.Path == path && n.User == user).FirstOrDefaultAsync();
+            var node = await _nodesRepository.Retrieve().Where(n => n.Path == path)
+            .Include(n => n.User).FirstOrDefaultAsync();
             if (node != null)
             {
-                if (node is BlogNode blogNode)
+                if (node.User == user && node is BlogNode)
                 {
+                    var blogNode = await _nodesRepository.Retrieve().Where(n => n.Id == node.Id)
+                    .OfType<BlogNode>().Include(b => b.Detail).FirstAsync();
                     if (blogNode.Detail == null)
                     {
                         blogNode.Detail = new BlogDetail();
                     }
                     blogNode.Detail.Content = content;
-                    return; ;
+                    await _nodesRepository.Update(blogNode);
+                    return;
                 }
                 throw new ServiceException(nameof(ServiceMessages.NoSuchNode));
             }
