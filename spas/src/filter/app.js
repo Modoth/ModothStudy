@@ -132,33 +132,41 @@ export class App {
     }
 
     async editStyleProp(appData, startIdx = 0) {
-        return await this.editProp(appData, "style", (item, propStr) => {
-            item.style = propStr || undefined;
-            return true;
-        }, startIdx);
+        return await this.editProp(appData, "style",
+            (item, prop) => {
+                return item[prop] || '';
+            },
+            (item, propStr) => {
+                item.style = propStr || undefined;
+                return true;
+            }, startIdx);
     }
 
     async editNamesProp(appData, startIdx = 0) {
-        return await this.editProp(appData, "names", (item, propStr) => {
-            let names = [...new Set(propStr.split(" ").filter(s => s != "" && s != " "))]
-            item.names = names.length == 0 ? undefined : names;
-            return true;
-        }, startIdx);
+        return await this.editProp(appData, "names",
+            (item, prop) => {
+                return (item[prop] && item[prop].join(' ')) || '';
+            },
+            (item, propStr) => {
+                let names = [...new Set(propStr.split(" ").filter(s => s != "" && s != " "))]
+                item.names = names.length == 0 ? undefined : names;
+                return true;
+            }, startIdx);
     }
 
-    async editProp(appData, prop, updateProp, startIdx = 0) {
+    async editProp(appData, prop, getProp, setProp, startIdx = 0) {
         let items = appData.items;
         for (var i = startIdx; i < items.length; i++) {
             let item = items[i]
             if (!item) {
                 throw "Invalid Data";
             }
-            let propStr = await this.modal.prompt(`【${item.key}】的${prop}属性:`, item[prop] && item[prop].join(" ") || '')
+            let propStr = await this.modal.prompt(`【${item.key}】的${prop}属性:`, getProp(item, prop))
             if (propStr === null || propStr === undefined) {
                 return false;
             }
             propStr = propStr && propStr.trim();
-            if (!updateProp(item, propStr)) {
+            if (!setProp(item, propStr)) {
                 return false;
             }
         }

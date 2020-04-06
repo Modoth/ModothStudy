@@ -7,8 +7,7 @@
   }
 
   .node {
-    padding: 20px 10px 10px 10px;
-    margin: 0 0 1px 0;
+    margin: 10px;
   }
 
   .node-title {
@@ -16,11 +15,7 @@
     font-weight: bold;
     display: flex;
     border-width: 1px 0 0 0;
-    border-style: solid;
-    // position: sticky;
-    // top: 0;
-    // z-index: 2;
-
+    border-style: solid;  
   }
 
   .node:first-of-type>.node-title {
@@ -28,7 +23,11 @@
   }
 
   mat-icon.comment {
-    margin: 3px 10px 0 0;
+    margin: 2.5px 2px 0 0;
+  }
+
+  mat-icon.folder {
+    margin: 1.5px 2px 0 0;
   }
 
   .node-content.my-solution,
@@ -61,16 +60,12 @@
     }
   }
 
-  .node-blog {
-    padding-bottom: 20px;
-  }
-
   .node-blog:last-child {
     border-width: 0;
   }
 
   .tags {
-    margin: 5px -3px 20px -3px;
+    margin: 0px -3px;
     align-self: center;
   }
 
@@ -110,13 +105,8 @@
 
 @media (min-width: 720px) {
   .papper {
-    margin: 10px;
     box-sizing: border-box;
-
-    .node{
-      padding: 10px 20px;
-    }
-
+    padding: 10px 0 0 0;
     .node-item {
       border: 0;
       box-shadow: 0;

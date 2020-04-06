@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-json-viewer',
   templateUrl: './json-viewer.component.html',
-  styleUrls: ['./json-viewer.component.sass']
+  styleUrls: ['./json-viewer.component.scss']
 })
 export class JsonViewerComponent implements OnInit {
 

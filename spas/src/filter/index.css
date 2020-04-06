@@ -34,7 +34,7 @@ body {
     font-size: 1.25rem;
     padding: 2px;
     margin: 5px auto;
-    padding: 8px;
+    padding: 5px;
     border: #C0C0C0 solid 1px;
     border-radius: 8px;
     outline: 0!important;
@@ -90,4 +90,7 @@ body {
     font-weight: normal;
     font-style: normal;
     /* user-select: none; */
+}
+#table>div>*::selection {
+    background: transparent;
 }

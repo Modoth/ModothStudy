@@ -1,11 +1,13 @@
-<div [class]="showBorder?'node-item':''">
+<div [class]="showBorder?'node-item':''" [class.fullscreen-node-item]="fullscreen">
   <div *ngIf='showMenus' class="menus">
-    <span>{{"Preview" | lang | async }}</span>
-    <mat-icon color="primary" (click)="showSource = !showSource">
-      {{showSource ? 'keyboard_arrow_up' : 'code' }}
+    <mat-icon color="primary" (click)="fullscreen=!fullscreen">
+      {{fullscreen ? 'close' : 'zoom_out_map'}}
     </mat-icon>
     <mat-icon color="primary" *ngIf="popContentUrl != null" (click)="openContentUrl()">
       open_in_new
+    </mat-icon>
+    <mat-icon color="primary" (click)="showSource = !showSource">
+      {{showSource ? 'keyboard_arrow_up' : 'code' }}
     </mat-icon>
     <!-- <mat-icon color="primary" *ngIf="pythonService && !showTerminal" (click)="showTerminal=true">
       keyboard

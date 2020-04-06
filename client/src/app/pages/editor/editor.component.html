@@ -25,7 +25,7 @@
 
     <div [class]="'node node-dir node-level-' +  node.pathLevel" *ngIf="node.isFolder">
       <div class="node-title">
-        <mat-icon class="comment">folder</mat-icon>
+        <mat-icon class="folder">folder</mat-icon>
         {{node.node.name}}
       </div>
       <div class="tags" *ngIf="node.node != null && node.node.tags != null && node.node.tags.length > 0">

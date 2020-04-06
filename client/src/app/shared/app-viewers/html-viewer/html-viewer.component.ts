@@ -24,6 +24,8 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
 
   contentUrl: any;
 
+  @Input() fullscreen = false;
+
   nonScriptContentUrl: any;
 
   popContentUrl: string = null;
@@ -55,8 +57,12 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('options' in changes && this.options) {
+      if (!changes['options'].firstChange) {
+        return;
+      }
       if (this.options.play) {
         this.play = this.options.play.value;
+        console.log("changed play")
       }
       if (this.options.showMenus) {
         this.showMenus = this.options.showMenus.value;
