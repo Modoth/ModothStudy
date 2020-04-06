@@ -1,0 +1,572 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <style>
+    html,
+    body {
+      height: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #app {
+      left: 5px;
+      right: 5px;
+      top: 5px;
+      bottom: 5px;
+      position: fixed;
+      overflow: hidden;
+      display: flex;
+      box-sizing: border-box;
+      flex-direction: column;
+      box-shadow: 1px 1px 3px;
+      background: radial-gradient(#000 15%, transparent 16%) 0 0,
+        radial-gradient(#000 15%, transparent 16%) 8px 8px,
+        radial-gradient(rgba(255, 255, 255, .1) 15%, transparent 20%) 0 1px,
+        radial-gradient(rgba(255, 255, 255, .1) 15%, transparent 20%) 8px 9px;
+      background-color: #888;
+      background-size: 16px 16px;
+    }
+
+    .devider {
+      flex: 1;
+    }
+
+    #playground {
+      width: 96vw;
+      height: 96vw;
+      align-self: center;
+      position: relative;
+    }
+
+    #board {
+      position: absolute;
+      width: 75%;
+      height: 75%;
+      left: 12.5%;
+      top: 12.5%;
+      display: flex;
+      flex-wrap: wrap;
+      border-width: 0;
+      color: #ccc;
+      border-style: solid;
+    }
+
+    #board>div {
+      border-width: 1;
+      border-style: solid;
+      background: rgba(127, 127, 127, 0.6);
+    }
+
+    #pieces {
+      background: transparent;
+      position: absolute;
+      box-sizing: border-box;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 96%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #pieces>div {
+      display: flex;
+      border-width: 1;
+      border-style: solid;
+      border-color: transparent;
+      align-items: center;
+      height: 25%;
+    }
+
+    #pieces>div>* {
+      margin: 0 auto;
+      width: 60%;
+      height: 60%;
+      border-radius: 60%;
+      background: transparent;
+      border-style: solid;
+      border-color: transparent;
+      display: inline-block;
+    }
+
+    .current.player1,
+    .current.player2 {
+      box-shadow: 5px 5px 10px #87CEFA !important;
+    }
+
+    .player1 {
+      background: #666 !important;
+      box-shadow: 2px 2px 5px #87CEFA;
+    }
+
+    .player2 {
+      background: #eee !important;
+      box-shadow: 2px 2px 5px #333;
+    }
+
+    @media (orientation:landscape) {
+      #app {
+        flex-direction: row;
+      }
+
+      #playground {
+        width: 96vh;
+        height: 96vh;
+      }
+    }
+  </style>
+  <script>
+    "use strict"
+
+    const sleep = (timeout) => {
+      return new Promise(resolve => setTimeout(resolve, timeout));
+    }
+
+    class Foolish {
+      constructor(game, player, level) {
+        this.game = game;
+        this.player = player;
+        this.thinkSteps = [level * 2 - 1, level * 2 + 1, level * 2 + 3];
+        this.fools = Array.from({
+          length: Math.floor(level)
+        }, (_, i) => 1);
+        this.fools.push([1, 1, 0.8])
+        this.maxScore = 1 << 28;
+      }
+
+      findAllStep(pieces, rank, player) {
+        let from = [];
+        let to = [];
+        let steps = [];
+        for (let j = 0; j < rank; j++) {
+          for (let i = 0; i < rank; i++) {
+            let piece = pieces[i][j];
+            if (piece != player) {
+              continue;
+            }
+            from = [i, j];
+            let tos = []
+            if (i - 1 >= 0) {
+              tos.push([i - 1, j]);
+            }
+            if (i + 1 < rank) {
+              tos.push([i + 1, j]);
+            }
+            if (j - 1 >= 0) {
+              tos.push([i, j - 1]);
+            }
+            if (j + 1 < rank) {
+              tos.push([i, j + 1]);
+            }
+            for (let to of tos) {
+              let toPiece = pieces[[to[0]]] && pieces[to[0]][to[1]];
+              if (!toPiece) {
+                steps.push([from, to])
+              }
+            }
+          }
+        }
+        return steps;
+      }
+
+      copyPieces(pieces) {
+        return Array.from(pieces, l => Array.from(l));
+      }
+
+      findCount(iPlayer, pieces, rank) {
+        let iPieces = 0;
+        let oPieces = 0;
+        for (let j = 0; j < rank; j++) {
+          for (let i = 0; i < rank; i++) {
+            if (pieces[i][j] === iPlayer) {
+              iPieces++;
+            } else if (pieces[i][j]) {
+              oPieces++;
+            }
+          }
+        }
+        return [iPieces, oPieces];
+      }
+
+      calculateScore(iPlayer, pieces, rank, deep) {
+        let count = rank + Math.floor(rank / 2);
+        let [iPieces, oPieces] = this.findCount(iPlayer, pieces, rank);
+        if (iPieces == 0) {
+          return -this.maxScore + deep;
+        }
+        if (oPieces == 0) {
+          return this.maxScore - deep;
+        }
+        return (1 << (count - oPieces)) - (1 << (count - iPieces))
+      }
+
+      findMax(trees) {
+        let max = trees[0];
+        for (let i = 1; i < trees.length; i++) {
+          if (trees[i].score >= max.score) {
+            max = trees[i];
+          }
+        }
+        return max;
+      }
+
+      findMin(trees) {
+        let min = trees[0];
+        for (let i = 1; i < trees.length; i++) {
+          if (trees[i].score < min.score) {
+            min = trees[i];
+          }
+        }
+        return min;
+      }
+
+      async buildGameTree(iPlayer, pieces, rank, step, player, deep, maxStep) {
+        var tree = {
+          step,
+          player,
+          pieces
+        };
+        deep++;
+        await sleep(0);
+        if (deep < maxStep) {
+          tree.steps = this.findAllStep(pieces, rank, player);
+          if (tree.steps.length === 0) {
+            tree.score = iPlayer === player ? -(this.maxScore - deep) : (this.maxScore - deep);
+            return tree;
+          }
+          let promises = [];
+          for (let step of tree.steps) {
+            let nextPieces = this.copyPieces(pieces);
+            this.game.updatePieces(nextPieces, rank, step[0], step[1], player);
+            let nextPlayer = player == 1 ? 2 : 1;
+            promises.push(this.buildGameTree(iPlayer, nextPieces, rank, step, nextPlayer, deep, maxStep))
+          }
+          tree.subTrees = await Promise.all(promises);
+          if (player == iPlayer) {
+            let bestTree = this.findMax(tree.subTrees);
+            tree.score = bestTree.score;
+            tree.bestStep = bestTree.step;
+          } else {
+            let bestTree = this.fools[deep] > Math.random() ? this.findMin(tree.subTrees) : tree.subTrees[Math.floor(
+              Math.random() * tree.subTrees.length)];
+            tree.score = bestTree.score;
+            tree.bestStep = bestTree.step;
+          }
+        } else {
+          tree.score = this.calculateScore(iPlayer, pieces, rank, deep)
+        }
+        return tree;
+      }
+
+      async getNextStep() {
+        let pieces = this.copyPieces(this.game.pieces);
+        this.currentDeep = 0;
+        let [oPieces, iPieces] = this.findCount(this.player, this.game.pieces, this.game.rank);
+        let maxStep = this.thinkSteps[0];
+        if (oPieces + iPieces < 5) {
+          maxStep = this.thinkSteps[1];
+        } else if (oPieces + iPieces < 4) {
+          maxStep = this.thinkSteps[2];
+        }
+        let gameTree = await this.buildGameTree(this.player, pieces, this.game.rank, null, this.player, 0, maxStep);
+        if (!gameTree.bestStep) {
+          throw new Error();
+        }
+        return gameTree.bestStep;
+      }
+    }
+
+    class Game {
+      constructor(rank) {
+        if (rank < 3) {
+          throw new Error();
+        }
+        this.rank = rank;
+      }
+      start() {
+        this.winner = undefined;
+        this.pieces = Array.from({
+          length: this.rank
+        }, (_, i) => Array.from({
+          length: this.rank
+        }, (_, j) => 0));
+        for (let i = 0; i < this.rank; i++) {
+          this.pieces[0][i] = 1;
+          this.pieces[this.rank - 1][i] = 2;
+        }
+        let half = Math.floor(this.rank / 2);
+        for (let i = 1; i < half; i++) {
+          this.pieces[i][0] = 1;
+          this.pieces[i][this.rank - 1] = 1;
+          this.pieces[this.rank - i - 1][0] = 2;
+          this.pieces[this.rank - i - 1][this.rank - 1] = 2;
+        }
+      }
+
+      updatePieces(pieces, rank, from, to, player) {
+        pieces[from[0]][from[1]] = 0;
+        pieces[to[0]][to[1]] = player; {
+          let owns = [];
+          let others = [];
+          for (let i = 0; i < rank; i++) {
+            let piece = pieces[i][to[1]];
+            if (piece == player) {
+              owns.push(i);
+            } else if (piece) {
+              others.push(i);
+            }
+          }
+          if (owns.length === 2 &&
+            Math.abs(owns[0] - owns[1]) === 1 &&
+            others.length === 1 && (
+              (others[0] === (Math.min(owns[0], owns[1]) - 1)) ||
+              (others[0] === (Math.max(owns[0], owns[1] + 1))))) {
+            pieces[others[0]][to[1]] = 0;
+          }
+        } {
+          let owns = [];
+          let others = [];
+          for (let j = 0; j < rank; j++) {
+            let piece = pieces[to[0]][j];
+            if (piece == player) {
+              owns.push(j);
+            } else if (piece) {
+              others.push(j);
+            }
+          }
+          if (owns.length === 2 &&
+            Math.abs(owns[0] - owns[1]) === 1 && others.length === 1 && (
+              (others[0] === (Math.min(owns[0], owns[1]) - 1)) ||
+              (others[0] === (Math.max(owns[0], owns[1] + 1))))) {
+            pieces[to[0]][others[0]] = undefined;
+          }
+        }
+      }
+
+      move(from, to, player) {
+        let toPiece = this.pieces[to[0]][to[1]];
+        if (toPiece) {
+          throw new Error();
+        }
+        let fromPiece = this.pieces[from[0]][from[1]];
+        if (fromPiece !== player) {
+          throw new Error();
+        }
+        if (Math.abs(from[0] - to[0]) + Math.abs(from[1] - to[1]) !== 1) {
+          return false;
+        }
+        this.updatePieces(this.pieces, this.rank, from, to, player);
+        for (let j = 0; j < this.rank; j++) {
+          for (let i = 0; i < this.rank; i++) {
+            let piece = this.pieces[i][j];
+            if (piece && piece != player) {
+              return true;
+            }
+          }
+        }
+        this.winner = player;
+        return true;
+      }
+    }
+
+    class App {
+      constructor() {
+        this.game = new Game(4);
+        this.drawBoard();
+      }
+      start() {
+        this.game.start();
+        this.ai = new Foolish(this.game, 1, 4);
+        this.player = 2;
+        this.redrawPieces();
+        this.currentPlayer = this.player;
+        if (this.currentPlayer === this.ai.player) {
+          this.aiRun();
+        }
+      }
+
+      async aiRun() {
+        let [from, to] = await this.ai.getNextStep();
+        this.game.move(from, to, this.ai.player);
+        this.redrawPieces();
+        this.currentPlayer = this.player;
+      }
+
+      drawBoard() {
+        var borad = document.getElementById('board');
+        borad.innerHTML = '';
+        var boardCellFlex = `1 1 ${Math.ceil(100/this.game.rank)}%`;
+        for (let j = 0; j < this.game.rank - 1; j++) {
+          for (let i = 0; i < this.game.rank - 1; i++) {
+            var cell = document.createElement('div');
+            cell.style.flex = boardCellFlex;
+            board.appendChild(cell);
+          }
+        }
+        var pieces = document.getElementById('pieces');
+        pieces.innerHTML = '';
+        this.pieceElems = [];
+        var piecesCellFlex = `1 1 ${Math.ceil(100/(this.game.rank + 1))}%`;
+        var piecesCellHeight = `${Math.ceil(100/this.game.rank )}%`;
+        for (let j = 0; j < this.game.rank; j++) {
+          var piecesCellLine = [];
+          this.pieceElems.push(piecesCellLine);
+          for (let i = 0; i < this.game.rank; i++) {
+            var cell = document.createElement('div');
+            var btn = document.createElement('div');
+            btn.classList.add('button');
+            cell.appendChild(btn);
+            btn.onclick = () => this.select(j, i);
+            cell.style.flex = piecesCellFlex;
+            cell.style.height = piecesCellHeight;
+            pieces.appendChild(cell);
+            piecesCellLine.push(btn);
+          }
+        }
+      }
+
+      redrawPieces() {
+        for (let j = 0; j < this.game.rank; j++) {
+          for (let i = 0; i < this.game.rank; i++) {
+            let piece = this.game.pieces[i][j];
+            this.pieceElems[i][j].classList.remove('player1')
+            this.pieceElems[i][j].classList.remove('player2')
+            switch (piece) {
+              case 1:
+                this.pieceElems[i][j].classList.add('player1')
+                break;
+              case 2:
+                this.pieceElems[i][j].classList.add('player2')
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+
+      async select(i, j) {
+        if (this.game.winner) {
+          this.start();
+        }
+        if (this.current) {
+          this.pieceElems[this.current[0]][this.current[1]].classList.remove('current');
+        }
+        let lastPos = this.current;
+        this.current = [i, j];
+        let piece = this.game.pieces[i][j];
+        if (piece && piece !== this.player) {
+          return
+        }
+        this.pieceElems[this.current[0]][this.current[1]].classList.add('current');
+        if (this.currentPlayer !== this.player) {
+          return;
+        }
+        if (piece === this.player) {
+          return;
+        }
+        if (!lastPos) {
+          return;
+        }
+        let lastPiece = this.game.pieces[lastPos[0]][lastPos[1]];
+        if (lastPiece === this.player && !piece) {
+          let moveResult = this.game.move(lastPos, [i, j], this.player);
+          if (moveResult) {
+            this.redrawPieces();
+            this.currentPlayer = this.ai.player;
+            if (!this.game.winner) {
+              await this.aiRun();
+            }
+          }
+        }
+      }
+    }
+    window.onload = () => {
+      window.app = new App();
+      window.app.start();
+    }
+  </script>
+</head>
+
+<body>
+  <div id="app">
+    <div id="headers">
+
+    </div>
+    <div class="devider"></div>
+    <div id="playground">
+      <div id="board">
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+        <div style="flex: 1 1 25%;"></div>
+      </div>
+      <div id="pieces">
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player1"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+        <div style="flex: 1 1 20%; height: 25%;">
+          <div class="button player2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="devider"></div>
+  </div>
+</body>
+
+</html>

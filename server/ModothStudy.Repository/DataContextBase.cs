@@ -44,9 +44,10 @@ namespace ModothStudy.Repository
                 .HasValue<BlogNode>(nameof(BlogNode));
 
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Type));
-            modelBuilder.Entity<Node>().HasIndex(nameof(Node.Path));
+            modelBuilder.Entity<Node>().HasIndex(nameof(Node.Path)).IsUnique();
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Name));
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Shared));
+            modelBuilder.Entity<Node>().HasIndex(nameof(Node.GroupShared));
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Created));
 
             modelBuilder.Entity<Node>()

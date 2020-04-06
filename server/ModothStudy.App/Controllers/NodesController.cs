@@ -44,6 +44,14 @@ namespace ModothStudy.App.Controllers
         }
 
         [HttpPost]
+        public async Task<ApiResult> UpdateNodeGroupShared(Guid nodeId, bool shared,
+        [FromServices] INodesService nodesService)
+        {
+            await nodesService.UpdateNodeGroupShared(nodeId, shared);
+            return true;
+        }
+
+        [HttpPost]
         public async Task<ApiResult> Move(Guid nodeId, Guid folderId,
         [FromServices] INodesService nodesService)
         {
@@ -163,6 +171,16 @@ namespace ModothStudy.App.Controllers
         [FromServices]INodesService nodesService)
         {
             await nodesService.DeleteTempBlogFiles(blogId);
+            return true;
+        }
+
+        [Permission(nameof(PermissionDescriptions.PERMISSION_POST_BLOG))]
+        [HttpPut]
+        public async Task<ApiResult> CreateOrUpdateBlogContent([Required]string path,
+         [FromBody]string content,
+        [FromServices] INodesService nodesService)
+        {
+            await nodesService.CreateOrUpdateBlogContent(path, content);
             return true;
         }
 

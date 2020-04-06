@@ -62,7 +62,6 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
       }
       if (this.options.play) {
         this.play = this.options.play.value;
-        console.log("changed play")
       }
       if (this.options.showMenus) {
         this.showMenus = this.options.showMenus.value;

@@ -1,0 +1,719 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <style>
+    html,
+    body,
+    #app {
+      height: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background-image:
+        radial-gradient(#FFCCCC, rgba(255, 255, 255, 0.2) 40px, transparent 80px),
+        radial-gradient(#CCCCFF, rgba(255, 255, 255, 0.3) 30px, transparent 100px),
+        radial-gradient(#99CCCC, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+      background-size: 300px 300px, 200px 200px, 300px 300px;
+      background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
+    }
+
+    #app {
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #outputs {
+      display: flex;
+      flex-direction: column;
+      flex: 4;
+    }
+
+    #string {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 3;
+    }
+
+    #string>div {
+      flex: 1 1 10.1%;
+      display: flex;
+    }
+
+    #string>div>*,
+    input {
+      border-width: 0px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      padding: 0px;
+      margin: 4px;
+      width: 90%;
+      flex: 1;
+      box-shadow: 1px 1px 1px #888;
+    }
+
+    #inputs {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #inputs>* {
+      display: flex;
+      flex: 1;
+    }
+
+    input {
+      background: transparent;
+      box-shadow: 1px 1px 3px #87CEFA !important;
+      -webkit-appearance: none;
+    }
+
+    #regs {
+      flex: 1;
+      display: flex;
+    }
+
+    .disabled {
+      opacity: 0.2;
+      box-shadow: 0px 0px 0px #87CEFA !important;
+    }
+
+    .selected {
+      box-shadow: 2px 2px 5px green !important;
+    }
+
+    .matched {
+      opacity: 1;
+      box-shadow: 2px 2px 5px green !important;
+    }
+
+    .current {
+      box-shadow: 2px 2px 5px yellow !important;
+    }
+
+    *[data-flag="true"] {
+      box-shadow: 2px 2px 5px #00f !important;
+    }
+
+    *[data-danger="true"] {
+      box-shadow: 1px 1px 3px red !important;
+    }
+
+    *[data-char="0"] {
+      background: #CCCCCCC0 !important;
+    }
+
+    *[data-char="1"] {
+      background: #99CC66C0 !important;
+    }
+
+    *[data-char="2"] {
+      background: #CCCCFFC0 !important;
+    }
+
+    *[data-char="3"] {
+      background: #CCCC99C0 !important;
+    }
+
+    *[data-char="4"] {
+      background: #FFCCCCC0 !important;
+    }
+
+    *[data-char="5"] {
+      background: #99CCCCC0 !important;
+    }
+
+    *[data-char="6"] {
+      background: #FFFFCCC0 !important;
+    }
+
+    *[data-char="7"] {
+      background: #E9AE6AC0 !important;
+    }
+
+    *[data-char="8"] {
+      background: #CC9999C0 !important;
+    }
+
+    @media (orientation:landscape) {}
+  </style>
+  <script>
+    "use strict"
+    const maxLength = 1024;
+
+    class CharReg {
+      constructor(char) {
+          this.char = char;
+        }
+        * match(str, idx) {
+          yield this.char === str[idx] ? [true, 1, idx] : [false, 0, idx];
+        }
+    }
+
+    class NotCharReg {
+      constructor(chars) {
+          this.chars = new Set(chars)
+        }
+        * match(str, idx) {
+          yield this.chars.has(str[idx]) ? [false, 0, idx] : [true, 1, idx];
+        }
+    }
+
+    class AnyCharReg {
+      * match(str, idx) {
+        yield [true, 1, idx]
+      }
+    }
+
+    class LengthCharReg {
+      constructor(reg, from, to) {
+          this.reg = reg;
+          this.from = from == null ? 0 : from;
+          this.to = to == null ? maxLength : to;
+        }
+        * match(str, idx) {
+          if (this.to == 0) {
+            yield [true, 0, idx];
+            return
+          }
+          for (var i of this.reg.match(str, idx)) {
+            if (i.trace) {
+              yield i;
+              continue;
+            }
+            if (!i[0]) {
+              yield i;
+              continue;
+            }
+            var matchedCount = [1];
+            for (var c = this.from + 2; c < this.to + 1; c++) {
+              var match = true;
+              for (var k = 0; k < i[1]; k++) {
+                if (str[idx + k + (c - 1) * i[1]] === str[idx + k]) {
+                  yield {
+                    trace: true,
+                    data: [true, k + c * i[1], idx + k + c * i[1]]
+                  }
+                } else {
+                  match = false;
+                  break;
+                }
+              }
+              if (match) {
+                matchedCount.push(c);
+              } else {
+                break;
+              }
+            }
+            matchedCount.reverse();
+            for (var c of matchedCount) {
+              yield [true, c * i[1], idx + c * i[1]];
+            }
+            yield [true, 0, idx];
+          }
+        }
+    }
+
+    class OrReg {
+      constructor(regs) {
+          this.regs = Array.from(regs);
+        }
+        * match(str, idx) {
+          for (var reg of this.regs) {
+            for (var i of reg.match(str, idx)) {
+              if (i.trace) {
+                yield i
+              }
+              yield i;
+            }
+          }
+        }
+    }
+
+    class AndReg {
+      constructor(leftReg, rightReg) {
+          this.leftReg = leftReg;
+          this.rightReg = rightReg;
+        }
+        * match(str, idx) {
+          for (var i of this.leftReg.match(str, idx)) {
+            if (i.trace) {
+              yield i;
+              continue;
+            }
+            if (i[0]) {
+              yield {
+                trace: true,
+                data: [...i]
+              }
+              for (var j of this.rightReg.match(str, idx + i[1])) {
+                if (j.trace) {
+                  yield j;
+                  continue;
+                }
+                yield [j[0], j[1] + i[1], j[2]]
+              }
+            } else {
+              yield [...i];
+            }
+          }
+        }
+    }
+
+    class TracedReg {
+      constructor(exp) {
+          this.reg = this.parse(exp);
+        }
+        * match(str) {
+          for (var idx = 0; idx < str.length; idx++)
+            for (var i of this.reg.match(str, idx)) {
+              if (i.trace) {
+                yield {
+                  trace: true,
+                  data: [idx, ...i.data]
+                };
+                continue;
+              }
+              if (i[0]) {
+                yield [idx, ...i, true]
+                if (i[1] > 0) {
+                  idx += i[1] - 1;
+                }
+                break;
+              } else {
+                yield [idx, ...i]
+              }
+            }
+        }
+
+      parse(exp) {
+        let subExps = [];
+        let deepLevel = 0;
+        let lastIdx = 0;
+        for (var i = 0; i < exp.length; i++) {
+          let c = exp[i];
+          if (c === '(') {
+            deepLevel++;
+            continue;
+          }
+          if (c === ')') {
+            deepLevel--;
+            continue;
+          }
+          if (c === '|' && deepLevel === 0) {
+            var subExp = exp.slice(lastIdx, i);
+            lastIdx = i + 1;
+            if (subExp === '') {
+              throw Error();
+            }
+            subExps.push(subExp);
+          }
+        } {
+          var subExp = exp.slice(lastIdx, exp.length)
+          if (subExp === '') {
+            throw Error();
+          }
+          subExps.push(subExp);
+        }
+        var regs = subExps.map(exp => this.parseAnd(exp));
+        return regs.length == 1 ? regs[0] : new OrReg(regs);
+      }
+
+      parseAnd(exp) {
+        let subExps = [];
+        let deepLevel = 0;
+        let lastIdx = 0;
+        for (var i = 0; i < exp.length; i++) {
+          var c = exp[i];
+          if (c === '(') {
+            if (deepLevel === 0) {
+              lastIdx = i + 1;
+            }
+            deepLevel++;
+            continue;
+          }
+          if (c === ')') {
+            deepLevel--;
+            if (deepLevel === 0) {
+              var subExp = exp.slice(lastIdx, i);
+              lastIdx = i + 1;
+              subExps.push(subExp);
+            }
+            continue;
+          }
+          if (deepLevel === 0) {
+            var subExp = exp.slice(lastIdx, i + 1);
+            subExps.push(subExp);
+            lastIdx = i + 1;
+          }
+        }
+        return this.parseSimple(subExps);
+
+      }
+
+      parseSimple(exps) {
+        var reg = null;
+        if (exps.length > 0 && exps[0] === '!') {
+          return new NotCharReg(exps.slice(1));
+        }
+        for (var c of exps) {
+          if (c === '.') {
+            var newReg = new AnyCharReg()
+            reg = reg == null ? newReg : new AndReg(reg, newReg);
+            continue;
+          }
+          if (c === '*') {
+            if (reg == null || reg instanceof LengthCharReg) {
+              throw Error();
+            }
+            var lastReg = reg;
+            var lastParent = null;
+            while (lastReg instanceof AndReg) {
+              lastParent = lastReg;
+              lastReg = lastReg.rightReg;
+            }
+            if (lastParent != null) {
+              lastParent.rightReg = new LengthCharReg(lastParent.rightReg, 0)
+            } else {
+              reg = new LengthCharReg(reg, 0);
+            }
+            continue;
+          }
+          if (c.length === 1) {
+            reg = reg == null ? new CharReg(c) : new AndReg(reg, new CharReg(c));
+            continue;
+          } {
+            var newReg = this.parse(c);
+            reg = reg == null ? newReg : new AndReg(reg, newReg);
+          }
+        }
+        if (reg == null) {
+          throw Error()
+        }
+        return reg;
+      }
+    }
+
+    class Game {
+      constructor(charsLength, stringLength) {
+        this.charsLength = charsLength;
+        this.stringLength = stringLength;
+      }
+      generateString() {
+        let str = [];
+        let ignoreDanger = -1;
+        for (var i = 0; i < this.stringLength; i++) {
+
+          let score = Math.floor(Math.random() * 20);
+          let flag = score > 16;
+          let danger = score < 6;
+          if (flag && str[i - 1] && str[i - 1].danger) {
+            ignoreDanger = i + 1;
+          }
+          str.push({
+            char: Math.floor(Math.random() * this.charsLength),
+            flag,
+            danger: danger && ignoreDanger != i
+          });
+        }
+        this.str = str;
+        return str;
+      }
+
+      * test(exp, str) {
+        var str = this.str.map(s => s.char).join('');
+        var reg = new TracedReg(exp);
+        let success = false;
+        for (var i of reg.match(str)) {
+          if (i.trace) {
+            yield i.data;
+            continue;
+          }
+          if (i[4]) {
+            for (let k = i[0]; k < i[0] + i[2]; k++) {
+              let char = this.str[k]
+              if (char.flag) {
+                success = true;
+              }
+              if (char.danger) {
+                yield {
+                  success: false,
+                  ...i
+                }
+                return;
+              }
+            }
+          }
+          yield i;
+        }
+        yield {
+          success,
+          ...i
+        };
+      }
+    }
+    class App {
+      constructor() {
+        ['string', 'regs', 'operators', 'chars'].forEach(
+          e => this[e] = document.getElementById(e));
+        this.operators.innerHTML = '';
+        ['(', ')', '!', '.', '*', '|'].forEach(e =>
+          this.createButton(e, this.operators, () => this.insert(e)));
+        this.createButton('⌫', this.operators, () => this.deleteChar());
+        this.createButton('⥁', this.operators, () => this.start());
+        this.createButton('▶', this.operators, () => this.test());
+      }
+      createButton(e, parent, onclick) {
+        let btn = document.createElement('input');
+        btn.type = 'button';
+        btn.value = e;
+        btn.onclick = onclick;
+        parent.appendChild(btn);
+        return btn;
+      }
+
+      insert(char) {
+        if (!this.game) {
+          this.start()
+        }
+        let btn = this.createButton('', this.regs)
+        btn.dataset.char = char;
+        if (isNaN(char)) {
+          btn.value = char;
+        }
+        this.insertedChars.push({
+          char,
+          btn
+        });
+      }
+
+      deleteChar() {
+        if (!this.game) {
+          this.start()
+        }
+        var char = this.insertedChars.pop();
+        if (char != null) {
+          char.btn.remove()
+        }
+      }
+
+      sleep(timeout) {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+      }
+
+      async test() {
+        if (!this.game) {
+          this.start()
+        }
+        if (this.isTesting) {
+          return;
+        }
+        if (this.insertedChars.length == 0) {
+          return;
+        }
+        this.isTesting = true;
+        var exp = this.insertedChars.map(c => c.char).join('');
+        var success = false;
+        let current = 0;
+        try {
+          for (let i of this.game.test(exp)) {
+            this.strElems.forEach(e => {
+              e.classList.remove('disabled');
+              e.classList.remove('selected');
+              e.classList.remove('current');
+            })
+            for (let k = 0; k < i[0]; k++) {
+              if (this.strElems[k]) {
+                this.strElems[k].classList.add('disabled');
+              }
+            }
+            for (let k = i[0]; k < i[0] + i[2]; k++) {
+              if (this.strElems[k]) {
+                this.strElems[k].classList.add('selected');
+                if (i[4]) {
+                  this.strElems[k].classList.add('matched');
+                }
+              }
+            }
+            if (this.strElems[i[3]]) {
+              this.strElems[i[3]].classList.add('current');
+              current = i[3];
+            }
+            if (i.success) {
+              success = true;
+              await this.sleep(150);
+              break;
+            }
+            await this.sleep(150);
+          }
+        } catch (e) {
+          alert(e);
+        } {
+          for (let k = 0; k <= current; k++) {
+            if (this.strElems[k]) {
+              this.strElems[k].classList.add('disabled');
+            }
+          }
+        }
+        if (success) {
+          this.game = null;
+        }
+        this.isTesting = false;
+      }
+
+      start() {
+        if (this.isTesting) {
+          return
+        }
+        if (!this.game) {
+          this.game = new Game()
+          this.charsLength = 9;
+          this.stringLength = 27;
+          this.chars.innerHTML = '';
+          this.game = new Game(this.charsLength, this.stringLength);
+          for (var i = 0; i < this.charsLength; i++) {
+            let c = i;
+            var btn = this.createButton('', this.chars, () => {
+              this.insert(c);
+            })
+            btn.dataset.char = c;
+          }
+          this.str = this.game.generateString();
+        }
+        this.isTesting = false;
+        this.string.innerHTML = '';
+        this.insertedChars = [];
+        this.regs.innerHTML = '';
+        this.strElems = [];
+        for (var {
+            char,
+            danger,
+            flag
+          } of this.str) {
+          var div = document.createElement('div');
+          div.dataset.char = char;
+          div.dataset.danger = danger;
+          div.dataset.flag = flag;
+          let container = document.createElement('div');
+          container.appendChild(div);
+          this.string.appendChild(container);
+          this.strElems.push(div);
+        }
+      }
+    }
+    window.onload = () => {
+      window.app = new App();
+      window.app.start();
+    }
+  </script>
+</head>
+
+<body>
+  <div id="app">
+    <div id="outputs">
+      <div id="string">
+        <div>
+          <div data-char="8" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="6" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="4" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="5" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="6" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="6" data-danger="true" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="5" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="1" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="2" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="5" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="7" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="4" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="0" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="0" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="0" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="3" data-danger="true" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="7" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="2" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="3" data-danger="false" data-flag="true"></div>
+        </div>
+        <div>
+          <div data-char="2" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="3" data-danger="true" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="7" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="8" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="4" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="6" data-danger="true" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="3" data-danger="false" data-flag="false"></div>
+        </div>
+        <div>
+          <div data-char="8" data-danger="false" data-flag="false"></div>
+        </div>
+      </div>
+      <div id="regs"></div>
+    </div>
+    <div id="inputs">
+      <div id="operators">
+        <input type="button" value="("><input type="button" value=")"><input type="button" value="!"><input
+          type="button" value="."><input type="button" value="*"><input type="button" value="|"><input type="button"
+          value="⌫"><input type="button" value="⥁"><input type="button" value="▶"></div>
+      <div id="chars"><input type="button" value="" data-char="0"><input type="button" value="" data-char="1"><input
+          type="button" value="" data-char="2"><input type="button" value="" data-char="3"><input type="button" value=""
+          data-char="4"><input type="button" value="" data-char="5"><input type="button" value="" data-char="6"><input
+          type="button" value="" data-char="7"><input type="button" value="" data-char="8"></div>
+    </div>
+  </div>
+</body>
+
+</html>

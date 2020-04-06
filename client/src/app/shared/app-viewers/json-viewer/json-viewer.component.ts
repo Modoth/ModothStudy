@@ -16,6 +16,8 @@ export class JsonViewerComponent implements OnInit {
 
   mergedContent: string;
 
+  fullscreen = false;
+
   menus: { icon: string, onClick: () => any }[];
 
   summary = false;

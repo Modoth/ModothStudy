@@ -189,6 +189,66 @@ export class NodesService {
     /**
      * 
      * 
+     * @param path 
+     * @param content 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public createOrUpdateBlogContent(path: string, content?: string, observe?: 'body', reportProgress?: boolean): Observable<ApiResult>;
+    public createOrUpdateBlogContent(path: string, content?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<ApiResult>>;
+    public createOrUpdateBlogContent(path: string, content?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<ApiResult>>;
+    public createOrUpdateBlogContent(path: string, content?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+        if (path === null || path === undefined) {
+            throw new Error('Required parameter path was null or undefined when calling createOrUpdateBlogContent.');
+        }
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (path !== undefined && path !== null) {
+            queryParameters = queryParameters.set('path', <any>path);
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json-patch+json',
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected != undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        return this.httpClient.put<ApiResult>(`${this.basePath}/api/Nodes/CreateOrUpdateBlogContent`,
+            content,
+            {
+                params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
      * @param name 
      * @param parentId 
      * @param refId 
@@ -1126,6 +1186,58 @@ export class NodesService {
 
         return this.httpClient.put<ApiResultGuid>(`${this.basePath}/api/Nodes/UpdateBlogSolution`,
             content,
+            {
+                params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param nodeId 
+     * @param shared 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateNodeGroupShared(nodeId?: string, shared?: boolean, observe?: 'body', reportProgress?: boolean): Observable<ApiResult>;
+    public updateNodeGroupShared(nodeId?: string, shared?: boolean, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<ApiResult>>;
+    public updateNodeGroupShared(nodeId?: string, shared?: boolean, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<ApiResult>>;
+    public updateNodeGroupShared(nodeId?: string, shared?: boolean, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (nodeId !== undefined && nodeId !== null) {
+            queryParameters = queryParameters.set('nodeId', <any>nodeId);
+        }
+        if (shared !== undefined && shared !== null) {
+            queryParameters = queryParameters.set('shared', <any>shared);
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.post<ApiResult>(`${this.basePath}/api/Nodes/UpdateNodeGroupShared`,
+            null,
             {
                 params: queryParameters,
                 withCredentials: this.configuration.withCredentials,

@@ -14,6 +14,8 @@ export class PythonViewerComponent implements OnInit, OnChanges {
 
   @Input() content: string;
 
+  fullscreen = false;
+
   loopPlay = false;
 
   appContent: string;

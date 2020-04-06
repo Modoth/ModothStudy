@@ -24,6 +24,8 @@ namespace ModothStudy.Entity
 
         public bool Shared { get; set; }
 
+        public bool GroupShared { get; set; }
+
         public ICollection<NodeTag>? Tags { get; set; }
 
         public Node? Reference { get; set; }

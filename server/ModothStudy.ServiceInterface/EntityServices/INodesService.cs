@@ -33,6 +33,9 @@ namespace ModothStudy.ServiceInterface.EntityServices
 
         Task MoveNode(Guid nodeId, Guid? parentId);
 
+        Task CreateOrUpdateBlogContent(string path, string content);
+
+
         Task UpdateBlogContent(Guid blogId, string content, string[]? files);
 
         Task<Guid> UpdateBlogSolution(Guid blogId, string title, string content, string[]? files);
@@ -44,6 +47,8 @@ namespace ModothStudy.ServiceInterface.EntityServices
         Task<IQueryable<BlogNode>> GetBlogCustomSolution(Guid blogId);
 
         Task UpdateNodeShared(Guid nodeId, bool shared);
+
+        Task UpdateNodeGroupShared(Guid nodeId, bool shared);
 
         Task AddTag(Guid nodeId, Guid tagId, string? value);
 

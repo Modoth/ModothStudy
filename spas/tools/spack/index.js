@@ -301,7 +301,7 @@ class Packer {
             results[m] = await importer.import(m, context);
         }
         let apiClient;
-        if (entryModules.some(m => entries[m.name].blogId)) {
+        if (entryModules.some(m => entries[m.name].blogPath)) {
             let client = new Client(this.cdConfig.url, { acceptUnauthorized: this.cdConfig.acceptUnauthorized });
             apiClient = !client.invalidUrl
                 && (await client.login(this.cdConfig.name, this.cdConfig.password))
@@ -313,8 +313,8 @@ class Packer {
                 name: m.name
             }) + ".html");
             if (!await FileUtils.exists(output) || (await FileUtils.fileStat(output)).mtimeMs < packed.mtime) {
-                if (entries[m.name].blogId) {
-                    if (!apiClient || !await apiClient.createOrUpdateBlog(entries[m.name].blogId, packed.data)) {
+                if (entries[m.name].blogPath) {
+                    if (!apiClient || !await apiClient.createOrUpdateBlog(entries[m.name].blogPath, packed.data)) {
                         console.log(`${m.name}: Failed`)
                         continue;
                     }
@@ -437,8 +437,8 @@ class Client {
     }
 
 
-    async createOrUpdateBlog(blogId, content) {
-        let res = await this.put(`/api/Nodes/UpdateBlogContent?blogId=${blogId}`, content);
+    async createOrUpdateBlog(blogPath, content) {
+        let res = await this.put(`/api/Nodes/CreateOrUpdateBlogContent?path=${blogPath}`, content);
         return res && res.result
     }
 }

@@ -199,7 +199,7 @@ namespace ModothStudy.Service.EntityServices
 
         private string JoinPath(string basePath, string name)
         {
-            return basePath + PATH_SEP + GetIndexedPath(name);
+            return basePath + PATH_SEP + GetIndexedName(name);
         }
 
         private Dictionary<char, char> ChineseNumbers = new Dictionary<char, char>
@@ -215,7 +215,7 @@ namespace ModothStudy.Service.EntityServices
             ['八'] = '8',
             ['九'] = '9',
         };
-        private string GetIndexedPath(string name)
+        private string GetIndexedName(string name)
         {
             var indexed = new StringBuilder();
             foreach (var c in name)
@@ -227,6 +227,23 @@ namespace ModothStudy.Service.EntityServices
                 indexed.Append(c);
             }
             return indexed.ToString();
+        }
+
+        private string GetIndexedPath(string path)
+        {
+            var names = path.Split(PATH_SEP);
+            if (names.Length < 3)
+            {
+                return path;
+            }
+            var sb = new StringBuilder();
+            sb.Append(names[0]);
+            sb.Append(names[1]);
+            for (var i = 2; i < names.Length; i++)
+            {
+                sb.Append(GetIndexedName(names[i]));
+            }
+            return String.Join(PATH_SEP, names);
         }
 
         public async Task<Node> AddFolder(Guid? parentId, string name)
@@ -310,14 +327,14 @@ namespace ModothStudy.Service.EntityServices
 
         private async Task<FolderNode> GetOrCreateUserRootFolder(User user)
         {
-            const string rootPath = "";
-            return await GetOrCreateUserDefaultFolder(rootPath, user);
+            string prefix = "";
+            return await GetOrCreateUserDefaultFolder(prefix + PATH_SEP + user.Name, user);
         }
 
         private async Task<FolderNode> GetOrCreateUserSolutionsFolder(User user)
         {
-            const string rootPath = "!";
-            return await GetOrCreateUserDefaultFolder(rootPath, user);
+            string prefix = "!";
+            return await GetOrCreateUserDefaultFolder(prefix + PATH_SEP + user.Name, user);
         }
 
         private async Task<FolderNode> GetOrCreateUserDefaultFolder(string rootPath, User user)
@@ -742,7 +759,8 @@ namespace ModothStudy.Service.EntityServices
                 var parents = nodes.Where(n => n is FolderNode);
                 if (!string.IsNullOrWhiteSpace(query.Parent))
                 {
-                    parentPaths = await nodes.Where(n => n is FolderNode && n.Name == query.Parent).Select(
+                    var indexedParentPath = GetIndexedPath(query.Parent!);
+                    parentPaths = await nodes.Where(n => n is FolderNode && n.Path == indexedParentPath).Select(
                     n => new NodeParentId { Path = n.Path + PATH_SEP, UserId = n.User!.Id }
                 ).ToArrayAsync();
                     if (parentPaths.Count() == 0)
@@ -803,6 +821,56 @@ namespace ModothStudy.Service.EntityServices
             var fileService = _fileService.Value;
             await fileService.DeleteFiles(deletingFiles);
         }
+
+        private (string?, string?) GetParentPath(string path)
+        {
+            var lastIdx = path.LastIndexOf('/');
+            if (lastIdx < 0)
+            {
+                return (null, path);
+            }
+            return (path.Substring(0, lastIdx), path.Substring(lastIdx + 1, path.Length - lastIdx - 1));
+        }
+
+        public async Task CreateOrUpdateBlogContent(string path, string content)
+        {
+            var user = await _operatorService.CheckOperator();
+            path = GetIndexedPath(path);
+            var node = await _nodesRepository.Retrieve().Where(n => n.Path == path && n.User == user).FirstOrDefaultAsync();
+            if (node != null)
+            {
+                if (node is BlogNode blogNode)
+                {
+                    if (blogNode.Detail == null)
+                    {
+                        blogNode.Detail = new BlogDetail();
+                    }
+                    blogNode.Detail.Content = content;
+                    return; ;
+                }
+                throw new ServiceException(nameof(ServiceMessages.NoSuchNode));
+            }
+            var nodeName = path.StartsWith(PATH_SEP) ? String.Join(PATH_SEP, path.Split(PATH_SEP).Skip(2)) : path;
+            node = new BlogNode { Detail = new BlogDetail { Content = content } };
+            await AddNode(null, nodeName, node, user);
+        }
+
+        public async Task UpdateNodeGroupShared(Guid nodeId, bool shared)
+        {
+            var user = await _operatorService.CheckOperator();
+            var node = await (await GetNodeById(nodeId)).Where(n => n.User == user).FirstOrDefaultAsync();
+            if (node == null)
+            {
+                throw new ServiceException(nameof(ServiceMessages.NoSuchNode));
+            }
+            if (node.GroupShared == shared)
+            {
+                return;
+            }
+            node.GroupShared = shared;
+            await this._nodesRepository.Update(node);
+            return;
+        }
     }
 
     public static class NodesServiceFilters
@@ -810,6 +878,8 @@ namespace ModothStudy.Service.EntityServices
         public static IQueryable<Node> WhereOwnedOrShared(this IQueryable<Node> nodes, User? user) => user == null ? nodes.WhereShared() : nodes.WhereOwned(user);
 
         public static IQueryable<Node> WhereOwned(this IQueryable<Node> nodes, User user) => nodes.Where(n => n.User == user || n.Shared);
+
+        public static IQueryable<Node> WhereOwnedOrGroupShared(this IQueryable<Node> nodes, User user) => nodes.Where(n => n.User == user || (n.GroupShared && n.User != null && n.User.Role != null && n.User.Role == user.Role));
 
         public static IQueryable<Node> WhereShared(this IQueryable<Node> nodes) => nodes.Where(n => n.Shared && n.User != null);
     }
