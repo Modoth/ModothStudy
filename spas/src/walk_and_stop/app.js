@@ -243,6 +243,7 @@ class MapEditor {
         let placeStart = false;
         let placeEnd = false;
         let closeModal;
+        let edit = false;
         btnGroup.classList.add('map-editor-btn-group');
         const btns = [{
             name: '返回',
@@ -250,7 +251,15 @@ class MapEditor {
                 closeModal(false);
             }
         }, {
+            name: '编辑',
+            class: "no-editing",
+            onclick: () => {
+                edit = true;
+                btnGroup.classList.add("editing")
+            }
+        }, {
             name: '起点',
+            class: "editing",
             onclick: (btn) => {
                 placeStart = !placeStart
                 if (placeStart) {
@@ -262,6 +271,7 @@ class MapEditor {
             }
         }, {
             name: '终点',
+            class: "editing",
             onclick: (btn) => {
                 placeEnd = !placeEnd;
                 if (placeEnd) {
@@ -281,6 +291,7 @@ class MapEditor {
             }
         }, {
             name: '确定',
+            class: "editing",
             onclick: () => {
                 closeModal(true);
             }
@@ -291,6 +302,9 @@ class MapEditor {
             btn.ele = btnEle;
             btnEle.onclick = () => btn.onclick(btn)
             btnEle.classList.add('map-editor-btn')
+            if (btn.class) {
+                btnEle.classList.add(btn.class);
+            }
             btnGroup.appendChild(btnEle);
         })
         let tableEle = document.createElement("div");
@@ -319,6 +333,9 @@ class MapEditor {
                     endCell = cellEle;
                 }
                 cellEle.onclick = () => {
+                    if (!edit) {
+                        return;
+                    }
                     if (placeStart) {
                         if (sessionData.cells[j][i] != standType) {
                             return

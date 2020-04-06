@@ -93,6 +93,18 @@ body {
     user-select: none;
 }
 
+.map-editor-btn.editing{
+    display: none;
+}
+
+.editing>.map-editor-btn.editing{
+    display: inline-block;
+}
+
+.editing>.map-editor-btn.no-editing{
+    display: none;
+}
+
 .map-editor-btn.highlight{
     color:lightskyblue;
 }

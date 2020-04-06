@@ -49,7 +49,7 @@ const getLocalConfigs = async () => {
         entries[subfolder] = Object.assign({ path: indexFile }, localCfg && localCfg.entries[subfolder]);
     }
     return {
-        cd: localCfg.cd || {},
+        cd: (localCfg && localCfg.cd) || {},
         entries
     };
 }

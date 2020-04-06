@@ -533,6 +533,9 @@ export class Game {
         this.mContext.currentCamera = camera;
         const canvasOpt = this.mRoot.clientWidth / this.mRoot.clientHeight;
         const nextCanvasWidth = Math.floor(Math.min(this.mRoot.clientWidth, this.mMaxCanvasWidth));
+        if(!nextCanvasWidth){
+            return
+        }
         const nextCanvasHeight = Math.floor(nextCanvasWidth / canvasOpt);
         if (this.mCanvas.width != nextCanvasWidth) {
             this.mCanvas.width = nextCanvasWidth;
