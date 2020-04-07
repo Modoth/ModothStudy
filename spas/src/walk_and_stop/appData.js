@@ -13,7 +13,12 @@ export const AppData = {
             "color": "#99CC33",
         },
         {
+            "rigid": 1,
             "color": "#99CC33"
+        },
+        {
+            "rigid": 1,
+            "color": "#ff6666"
         }
     ],
     "background": "transparent",
@@ -39,7 +44,13 @@ export const AppData = {
                     "pos": [
                         4,
                         5
-                    ]
+                    ],
+                    "failedCondition": {
+                        "prop": " 生命"
+                    },
+                    "initProps": {
+                        " 生命": 1
+                    }
                 },
                 {
                     "type": 3,
@@ -47,6 +58,18 @@ export const AppData = {
                         7,
                         10
                     ]
+                },
+                {
+                    "type": 4,
+                    "pos": [
+                        5,
+                        7
+                    ],
+                    "attack": {
+                        "other": {
+                            " 生命": -1
+                        }
+                    }
                 }
             ],
             "start": 0,

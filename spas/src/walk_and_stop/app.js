@@ -22,6 +22,28 @@ export class App {
         return new Body(provider);
     }
 
+    async mCalculate(props, rules) {
+        if (!rules) {
+            return;
+        }
+        for (let k of Object.keys(rules)) {
+            props[k] = (props[k] >>> 0) + rules[k]
+        }
+    }
+
+    async mDoFight(objsProps, attacker, defender) {
+        let attackerProps = objsProps.get(attacker);
+        let defenderProps = objsProps.get(defender);
+        if (attacker.attack) {
+            this.mCalculate(defenderProps, attacker.attack.other)
+            this.mCalculate(attackerProps, attacker.attack.self)
+        }
+        if (defender.attack) {
+            this.mCalculate(attackerProps, defender.attack.other)
+            this.mCalculate(defenderProps, defender.attack.self)
+        }
+    }
+
     async mRunSession(appData, sessionData, cache) {
         const game = new Game(this.mRoot, appData);
         let sessionRet;
@@ -84,9 +106,10 @@ export class App {
         let playerPos = sessionData.objects[sessionData.start].pos
 
         const displayElement = document.getElementById('display');
+        const propsElement = document.getElementById('props');
         const directionElement = document.getElementById('direction');
         const distanceElement = document.getElementById('distance');
-        displayElement.onclick = async () => {
+        document.getElementById('map').onclick = async () => {
             const newSession = this.mCloneSession(sessionData);
             const newAppData = Object.assign({}, appData);
             newAppData.sessions = [newSession];
@@ -101,20 +124,91 @@ export class App {
         displayElement.classList.remove("hiden")
         let lastPos;
         let lastAnimation;
+        let initProps = (obj) => {
+            return Object.assign({}, obj.initProps);
+        }
+        let refreshProps = (props) => {
+            propsElement.innerHTML = '';
+            propsElement.classList.add('hiden');
+            let hasProps = false;
+            for (let prop in props) {
+                hasProps = true;
+                let div = document.createElement('div');
+                let propEle = document.createElement('span');
+                propEle.innerText = prop;
+                propEle.classList.add('object-prop');
+                let valueEle = document.createElement('span');
+                valueEle.innerText = props[prop] || ' ';
+                valueEle.classList.add('object-value');
+                div.appendChild(propEle);
+                div.appendChild(valueEle);
+                propsElement.appendChild(div);
+            }
+            if (hasProps) {
+                propsElement.classList.remove('hiden');
+            }
+        }
+        let objsProps = new Map(sessionData.objects.map(obj => [obj, initProps(obj)]))
+        let attacker = sessionData.objects[sessionData.start];
+        refreshProps(objsProps.get(attacker));
         player.addComponents(
             new Walker(sessionData.objects[sessionData.start].speed || sessionData.ppu / 3, true),
             new Camera(sessionData.ppu, 1),
             new Controller({
-                onclick: (loc) => player[Walker.name].walkTo(loc),
+                onclick: (loc) => {
+                    let clickPos = [Math.floor(loc.y / mapScale + 0.5), Math.floor(loc.x / mapScale + 0.5)]
+                    let isWall = appData.types[sessionData.cells[clickPos[0]][clickPos[1]]].rigid;
+                    let defenderIdx = sessionData.objects.findIndex(obj => obj.pos[0] == clickPos[0] && obj.pos[1] == clickPos[1])
+                    let defender = sessionData.objects[defenderIdx];
+                    if (objects[defenderIdx] && defender) {
+                        isWall = appData.types[defender.type].rigid;
+                        let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
+                        if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
+                            if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
+                                success = true;
+                                displayElement.classList.add("hiden")
+                                game.stop();
+                                return;
+                            }
+                            this.mDoFight(objsProps, attacker, defender);
+                            refreshProps(objsProps.get(attacker));
+                            if (defender.failedCondition
+                                && objsProps.get(defender)[defender.failedCondition.prop] <= (defender.failedCondition.threshold || 0)) {
+                                objects[defenderIdx].enabled = false;
+                                player.positionUpdated = true;
+                                objects[defenderIdx] = undefined;
+                            }
+                            if (attacker.failedCondition
+                                && objsProps.get(attacker)[attacker.failedCondition.prop] <= (attacker.failedCondition.threshold || 0)) {
+                                this.mModal.toast("失败，从新来过").then(() => {
+                                    success = false;
+                                    displayElement.classList.add("hiden")
+                                    game.stop()
+                                })
+                                return;
+                            }
+
+                            if (attacker.successCondition
+                                && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
+                                this.mModal.toast("成功").then(() => {
+                                    success = true;
+                                    displayElement.classList.add("hiden")
+                                    game.stop()
+                                })
+                                return;
+                            }
+                            return
+                        }
+                    }
+                    let avaliablePos = isWall ?
+                        [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([y, x]) => [y + clickPos[0], [x + clickPos[1]]])
+                        : [clickPos]
+                    avaliablePos = avaliablePos.map(([y, x]) => new Vector2(x * mapScale, y * mapScale));
+                    player[Walker.name].walkTo(...avaliablePos);
+                },
                 onframe: async (/**@type GameContext */ ctx) => {
                     let dist = Math.hypot(endPoint.position.x - player.position.x,
                         endPoint.position.y - player.position.y) / mapScale
-                    if (dist < 1) {
-                        success = true;
-                        displayElement.classList.add("hiden")
-                        game.stop();
-                        return;
-                    }
                     let animationController = player[AnimationController.name];
                     if (animationController) {
                         if (lastPos) {
@@ -188,7 +282,7 @@ export class App {
 
         session.gbjects.push(map, ...objects);
         await game.start(session);
-        return { success, sessionRet };
+        return { success, sessionRet: success ? sessionRet : sessionData };
     }
 
     async run() {
@@ -235,11 +329,18 @@ export class App {
                     return this.mAppData.sessions[sessionIdx];
                 }
             }
+            let templateSession = this.mAppData.sessions[0];
             let mapGen = new MapGenerator();
             let mapData = mapGen.generate(100, 100);
-            let revTypes = [...this.mAppData.types].reverse();
-            let startType = revTypes.length - 1 - revTypes.findIndex(t => t.rigid);
-            let endType = revTypes.length - 1 - revTypes.findIndex(t => !t.rigid);
+            let startType, endType
+            if (templateSession) {
+                startType = templateSession.objects[templateSession.start].type
+                endType = templateSession.objects[templateSession.end].type
+            } else {
+                let revTypes = [...this.mAppData.types].reverse();
+                startType = revTypes.length - 1 - revTypes.findIndex(t => t.rigid);
+                endType = revTypes.length - 1 - revTypes.findIndex(t => !t.rigid);
+            }
             let sessionData = {
                 cells: mapData.cells,
                 objects: [

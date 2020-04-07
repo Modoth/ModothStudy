@@ -27,16 +27,27 @@ body {
     display: none;
 }
 
-#display{
+#map, #props{
     position: fixed;
     top: 0;
-    right: 0;
     margin: 5px;
     color: aliceblue;
     background: #00000080;
     padding: 2px 5px;
     border-radius: 8px;
     user-select: none;
+}
+
+#props{
+    left: 0;
+}
+
+.object-prop,.object-value{
+    padding: 2px 5px;
+}
+
+#map{
+    right: 0;
 }
 
 #direction{

@@ -323,12 +323,12 @@ export class Walker extends Component {
         this.mUseViewLimit = useViewLimit;
     }
 
-    walkTo(/**@type Vector2 */ loc) {
-        if (!this.mTarget) {
-            this.mTarget = loc;
+    walkTo(/**@type Vector2 */ ...loc) {
+        if (!this.mTargets) {
+            this.mTargets = loc;
             this.mStepPoints = [];
         } else {
-            this.mNextTarget = loc;
+            this.mNextTargets = loc;
         }
     }
 
@@ -343,14 +343,14 @@ export class Walker extends Component {
         if (opt > 1) {
             self.position = next;
             self.positionUpdated = true;
-            if (this.mNextTarget) {
-                this.mTarget = this.mNextTarget;
-                this.mNextTarget = null;
+            if (this.mNextTargets) {
+                this.mTargets = this.mNextTargets;
+                this.mNextTargets = null;
                 this.mStepPoints = [];
             } else {
                 this.mStepPoints.shift()
                 if (!this.mStepPoints.length) {
-                    this.mTarget = null;
+                    this.mTargets = null;
                 }
             }
             return;
@@ -362,11 +362,11 @@ export class Walker extends Component {
 
     mFindStepPoints(/**@type GameContext */ctx) {
         if (!this.gbject[Rigid.name]) {
-            this.mStepPoints = [this.mTarget];
+            this.mStepPoints = [this.mTargets];
             return;
         }
-        const { sIdx, sIdy, tIdx, tIdy, fixX, fixY, cWidth, cHeight, width, height, matrix }
-            = ctx.getAdjData(this.gbject, this.mTarget, this.mUseViewLimit);
+        const { sIdx, sIdy, tIds, cWidth, cHeight, width, height, matrix }
+            = ctx.getAdjData(this.gbject, this.mTargets, this.mUseViewLimit);
         const allSet = [];
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
@@ -374,12 +374,12 @@ export class Walker extends Component {
             }
         }
         const start = allSet[sIdx + sIdy * width];
-        const goal = allSet[tIdx + tIdy * width];
+        const goals = new Set(tIds.map(({ tIdx, tIdy }) => allSet[tIdx + tIdy * width]));
         const openSet = new Set([start]);
         const closedSet = new Set();
         const traces = new Map();
         const scores = new Map();
-        scores.set(start, this.mDistance(start, goal));
+        scores.set(start, Math.max(...Array.from(goals.keys()).map(goal => this.mDistance(start, goal))));
         let path;
         while (openSet.size) {
             let minScore = Number.MAX_VALUE;
@@ -391,9 +391,9 @@ export class Walker extends Component {
                     current = p;
                 }
             }
-            if (current == goal) {
+            if (goals.has(current)) {
                 path = [];
-                this.mBuildPath(traces, goal, path);
+                this.mBuildPath(traces, current, path);
                 break;
             }
             if (!current) {
@@ -425,7 +425,7 @@ export class Walker extends Component {
             }
         }
         if (!path || !path.length) {
-            this.mTarget = null;
+            this.mTargets = null;
         } else {
             // let str = '';
             // for (let j = 0; j < height; j++) {
@@ -458,11 +458,11 @@ export class Walker extends Component {
     }
 
     onframe(/**@type GameContext */ctx) {
-        if (this.mTarget && this.mStepPoints.length) {
+        if (this.mTargets && this.mStepPoints.length) {
             this.mWalkStep(ctx);
             return;
         }
-        if (this.mTarget && !this.mStepPoints.length) {
+        if (this.mTargets && !this.mStepPoints.length) {
             this.mFindStepPoints(ctx);
             return;
         }
@@ -488,7 +488,7 @@ export class GameContext {
         return value > 0 ? Math.ceil(value) : Math.floor(value);
     }
 
-    getAdjData(/**@type Gbject*/gbj, /**@type Vector2 */ target, /**@type boolean */ limitInCamera, cellDevide = 0) {
+    getAdjData(/**@type Gbject*/gbj, /**@type Vector2[] */ targets, /**@type boolean */ limitInCamera, cellDevide = 0) {
         const source = gbj.position;
         const sourceSize = gbj[Rigid.name].size;
         let left, top, right, bottom;
@@ -499,10 +499,10 @@ export class GameContext {
             bottom = this.wymax;
         }
         else {
-            left = Math.min(source.x - sourceSize.x / 2, target.x);
-            right = Math.max(source.x + sourceSize.x / 2, target.x);
-            top = Math.min(source.y - sourceSize.y / 2, target.y);
-            bottom = Math.max(source.y + sourceSize.y / 2, target.y);
+            left = Math.min(source.x - sourceSize.x / 2, ...targets.map(t => t.x));
+            right = Math.max(source.x + sourceSize.x / 2, ...targets.map(t => t.x));
+            top = Math.min(source.y - sourceSize.y / 2, ...targets.map(t => t.y));
+            bottom = Math.max(source.y + sourceSize.y / 2, ...targets.map(t => t.y));
         }
         const cWidth = sourceSize.x / (2 * cellDevide + 1);
         const cHeight = sourceSize.y / (2 * cellDevide + 1);
@@ -512,10 +512,13 @@ export class GameContext {
         const height = Math.floor((bottom - top) / cHeight);
         const sIdx = Math.floor((source.x - left) / cWidth);
         const sIdy = Math.floor((source.y - top) / cHeight);
-        const tIdx = Math.floor((target.x - left) / cWidth);
-        const tIdy = Math.floor((target.y - top) / cHeight);
-        const fixX = (target.x - left - tIdx * cWidth);
-        const fixY = (target.y - top - tIdy * cHeight);
+        const tIds = targets.map(target => {
+            const tIdx = Math.floor((target.x - left) / cWidth);
+            const tIdy = Math.floor((target.y - top) / cHeight);
+            const fixX = (target.x - left - tIdx * cWidth);
+            const fixY = (target.y - top - tIdy * cHeight);
+            return { tIdx, tIdy, fixX, fixY }
+        })
         const rigidMatrix = Array.from({ length: width * height }, () => 0);
         for (const r of this.mRigids) {
             if (r === gbj) {
@@ -555,7 +558,7 @@ export class GameContext {
             }
         }
 
-        return { sIdx, sIdy, tIdx, tIdy, fixX, fixY, cWidth, cHeight, width, height, matrix };
+        return { sIdx, sIdy, tIds, cWidth, cHeight, width, height, matrix };
     }
 }
 
