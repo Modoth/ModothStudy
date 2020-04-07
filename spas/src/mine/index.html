@@ -2,31 +2,33 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <style>
     html,
-    body {
+    body,
+    #app {
       height: 100%;
       min-height: 100%;
-    }
-
-    body {
       margin: 0;
-      overflow: hidden;
     }
 
     #app {
+      position: fixed;
+      left: 0px;
+      right: 0px;
+      top: 0px;
+      bottom: 0px;
       overflow: hidden;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      box-shadow: 1px 1px 3px;
-      background: #fff;
-      left: 5px;
-      right: 5px;
-      top: 5px;
-      bottom: 5px;
-      position: fixed;
-      box-sizing: border-box;
+      background-image:
+        radial-gradient(#FFCCCC, rgba(255, 255, 255, 0.2) 40px, transparent 80px),
+        radial-gradient(#CCCCFF, rgba(255, 255, 255, 0.3) 30px, transparent 100px),
+        radial-gradient(#99CCCC, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+      background-size: 300px 300px, 200px 200px, 300px 300px;
+      background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
     }
 
     #app>div {
@@ -52,23 +54,61 @@
     .cellsRow>input {
       -webkit-appearance: none;
       flex: 1;
-      margin: 1px;
+      margin: 2px;
       padding: 0;
       min-width: 0;
       min-height: 0;
       border: 1px solid transparent;
       border-radius: 2px;
       box-sizing: border-box;
-      color: #888;
-      background: #F5F5F580 !important;
       box-shadow: 1px 1px 3px #888;
       overflow: hidden;
+    }
+
+    .cellsRow>input:focus {
+      outline: 0;
+    }
+
+    *[data-char="0"] {
+      background: #CCCCCCC0 !important;
+    }
+
+    *[data-char="1"] {
+      background: #99CC66C0 !important;
+    }
+
+    *[data-char="2"] {
+      background: #CCCCFFC0 !important;
+    }
+
+    *[data-char="3"] {
+      background: #CCCC99C0 !important;
+    }
+
+    *[data-char="4"] {
+      background: #FFCCCCC0 !important;
+    }
+
+    *[data-char="5"] {
+      background: #99CCCCC0 !important;
+    }
+
+    *[data-char="6"] {
+      background: #FFFFCCC0 !important;
+    }
+
+    *[data-char="7"] {
+      background: #E9AE6AC0 !important;
+    }
+
+    *[data-char="8"] {
+      background: #CC9999C0 !important;
     }
 
     .mine.fail {
       background: transparent !important;
       box-shadow: 0 0 0;
-      color: #FF666680;
+      color: #FF6666;
     }
 
     .mine.success {
@@ -86,7 +126,7 @@
     input.flipped {
       background: transparent !important;
       box-shadow: 0 0 0;
-
+      color: #666;
     }
 
     @media (orientation:landscape) {}
@@ -94,7 +134,7 @@
   <script>
     "use strict"
     class App {
-      constructor() {}
+      constructor() { }
       initComponents() {
         ['cellsTable'].forEach(n => {
           this[n] = document.getElementById(n);
@@ -177,8 +217,8 @@
         let cellWidth = 36;
         this.width = Math.floor(window.innerWidth / cellWidth);
         this.height = Math.floor(window.innerHeight / cellWidth);
-        this.cellsTable.style.width = `${this.width * cellWidth }px`;
-        this.cellsTable.style.height = `${this.height * cellWidth }px`;
+        this.cellsTable.style.width = `${this.width * cellWidth}px`;
+        this.cellsTable.style.height = `${this.height * cellWidth}px`;
       }
 
       start() {
@@ -208,6 +248,7 @@
             }
             var btn = document.createElement('input');
             btn.type = 'button';
+            btn.dataset.char = Math.floor(Math.random() * 9)
             if (cell.isMine) {
               btn.classList.add('mine');
             }
@@ -228,61 +269,102 @@
 <body>
   <div id="app">
     <div>
-      <div id="cellsTable" style="width: 648px; height: 468px;">
-        <div class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button"><input type="button" class="mine"><input type="button"><input type="button"
-            class="mine"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"></div>
-        <div
-          class="cellsRow"><input type="button"><input type="button"><input type="button" class="mine"><input type="button"><input type="button"><input
-            type="button" class="mine"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button" class="mine"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button" class="mine"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button" class="mine"></div>
-        <div class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button"><input type="button" class="mine"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button"><input type="button"><input type="button" class="mine"><input type="button"
-            class="mine"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"></div>
-        <div
-          class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button"><input type="button"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button" class="mine"><input type="button"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button"><input type="button"><input type="button"><input type="button" class="mine"><input
-            type="button" class="mine"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button" class="mine"><input
-            type="button"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"
-            class="mine"><input type="button" class="mine"><input type="button" class="mine"><input type="button" class="mine"><input
-            type="button" class="mine"><input type="button"><input type="button"><input type="button"></div>
-        <div class="cellsRow"><input type="button"><input type="button"><input type="button" class="mine"><input type="button"><input type="button"><input
-            type="button" class="mine"><input type="button"><input type="button" class="mine"><input type="button" class="mine"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button" class="mine"><input type="button" class="mine"><input type="button"></div>
-        <div class="cellsRow"><input type="button" class="mine"><input type="button"><input type="button" class="mine"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input type="button"><input
-            type="button"><input type="button"></div>
+      <div id="cellsTable" style="width: 684px; height: 468px;">
+        <div class="cellsRow"><input type="button" data-char="0"><input type="button" data-char="6"><input type="button"
+            data-char="6"><input type="button" data-char="0"><input type="button" data-char="1" class="mine"><input
+            type="button" data-char="2"><input type="button" data-char="2"><input type="button" data-char="0"><input
+            type="button" data-char="8"><input type="button" data-char="8" class="mine"><input type="button"
+            data-char="3"><input type="button" data-char="5"><input type="button" data-char="6"><input type="button"
+            data-char="6"><input type="button" data-char="3"><input type="button" data-char="6"><input type="button"
+            data-char="3"><input type="button" data-char="7"><input type="button" data-char="1"></div>
+        <div class="cellsRow"><input type="button" data-char="4"><input type="button" data-char="0"><input type="button"
+            data-char="5"><input type="button" data-char="4"><input type="button" data-char="1"><input type="button"
+            data-char="5"><input type="button" data-char="3"><input type="button" data-char="5"><input type="button"
+            data-char="4"><input type="button" data-char="1" class="mine"><input type="button" data-char="4"><input
+            type="button" data-char="8"><input type="button" data-char="2"><input type="button" data-char="4"
+            class="mine"><input type="button" data-char="8"><input type="button" data-char="2"><input type="button"
+            data-char="8"><input type="button" data-char="5"><input type="button" data-char="1"></div>
+        <div class="cellsRow"><input type="button" data-char="1"><input type="button" data-char="1"><input type="button"
+            data-char="1"><input type="button" data-char="4" class="mine"><input type="button" data-char="3"><input
+            type="button" data-char="3" class="mine"><input type="button" data-char="0"><input type="button"
+            data-char="8"><input type="button" data-char="0"><input type="button" data-char="4"><input type="button"
+            data-char="7"><input type="button" data-char="6"><input type="button" data-char="2"><input type="button"
+            data-char="4"><input type="button" data-char="5"><input type="button" data-char="5"><input type="button"
+            data-char="5"><input type="button" data-char="1"><input type="button" data-char="4"></div>
+        <div class="cellsRow"><input type="button" data-char="3" class="mine"><input type="button" data-char="6"><input
+            type="button" data-char="3"><input type="button" data-char="8"><input type="button" data-char="1"><input
+            type="button" data-char="5"><input type="button" data-char="1"><input type="button" data-char="4"><input
+            type="button" data-char="7"><input type="button" data-char="1"><input type="button" data-char="4"><input
+            type="button" data-char="7"><input type="button" data-char="3"><input type="button" data-char="1"><input
+            type="button" data-char="0"><input type="button" data-char="0"><input type="button" data-char="8"><input
+            type="button" data-char="3"><input type="button" data-char="1" class="mine"></div>
+        <div class="cellsRow"><input type="button" data-char="4"><input type="button" data-char="0"><input type="button"
+            data-char="8"><input type="button" data-char="7" class="mine"><input type="button" data-char="2"
+            class="mine"><input type="button" data-char="4"><input type="button" data-char="0"><input type="button"
+            data-char="0"><input type="button" data-char="3"><input type="button" data-char="7"><input type="button"
+            data-char="5"><input type="button" data-char="8"><input type="button" data-char="8"><input type="button"
+            data-char="5"><input type="button" data-char="4"><input type="button" data-char="1"><input type="button"
+            data-char="0"><input type="button" data-char="8"><input type="button" data-char="5"></div>
+        <div class="cellsRow"><input type="button" data-char="4" class="mine"><input type="button" data-char="5"><input
+            type="button" data-char="7"><input type="button" data-char="1"><input type="button" data-char="5"><input
+            type="button" data-char="7"><input type="button" data-char="2"><input type="button" data-char="2"><input
+            type="button" data-char="2" class="mine"><input type="button" data-char="7"><input type="button"
+            data-char="1"><input type="button" data-char="7"><input type="button" data-char="8"><input type="button"
+            data-char="7" class="mine"><input type="button" data-char="5" class="mine"><input type="button"
+            data-char="5"><input type="button" data-char="3"><input type="button" data-char="4"><input type="button"
+            data-char="2"></div>
+        <div class="cellsRow"><input type="button" data-char="0"><input type="button" data-char="8"><input type="button"
+            data-char="5"><input type="button" data-char="3"><input type="button" data-char="6"><input type="button"
+            data-char="2"><input type="button" data-char="8"><input type="button" data-char="8"><input type="button"
+            data-char="1"><input type="button" data-char="1"><input type="button" data-char="2"><input type="button"
+            data-char="6"><input type="button" data-char="7"><input type="button" data-char="5"><input type="button"
+            data-char="2" class="mine"><input type="button" data-char="0" class="mine"><input type="button"
+            data-char="4"><input type="button" data-char="7"><input type="button" data-char="7"></div>
+        <div class="cellsRow"><input type="button" data-char="1"><input type="button" data-char="6"><input type="button"
+            data-char="5"><input type="button" data-char="5"><input type="button" data-char="0" class="mine"><input
+            type="button" data-char="6" class="mine"><input type="button" data-char="6"><input type="button"
+            data-char="7"><input type="button" data-char="2"><input type="button" data-char="7"><input type="button"
+            data-char="3"><input type="button" data-char="5"><input type="button" data-char="0" class="mine"><input
+            type="button" data-char="1"><input type="button" data-char="8" class="mine"><input type="button"
+            data-char="4" class="mine"><input type="button" data-char="8"><input type="button" data-char="0"><input
+            type="button" data-char="7"></div>
+        <div class="cellsRow"><input type="button" data-char="7"><input type="button" data-char="7"><input type="button"
+            data-char="2"><input type="button" data-char="5"><input type="button" data-char="8"><input type="button"
+            data-char="7"><input type="button" data-char="3" class="mine"><input type="button" data-char="3"><input
+            type="button" data-char="2" class="mine"><input type="button" data-char="8" class="mine"><input
+            type="button" data-char="2"><input type="button" data-char="1"><input type="button" data-char="5"><input
+            type="button" data-char="6"><input type="button" data-char="0"><input type="button" data-char="8"><input
+            type="button" data-char="8"><input type="button" data-char="6"><input type="button" data-char="8"></div>
+        <div class="cellsRow"><input type="button" data-char="5"><input type="button" data-char="6"><input type="button"
+            data-char="5"><input type="button" data-char="7"><input type="button" data-char="0"><input type="button"
+            data-char="2" class="mine"><input type="button" data-char="7"><input type="button" data-char="0"><input
+            type="button" data-char="6"><input type="button" data-char="4"><input type="button" data-char="1"><input
+            type="button" data-char="4" class="mine"><input type="button" data-char="3"><input type="button"
+            data-char="2"><input type="button" data-char="3"><input type="button" data-char="0" class="mine"><input
+            type="button" data-char="6"><input type="button" data-char="2" class="mine"><input type="button"
+            data-char="8"></div>
+        <div class="cellsRow"><input type="button" data-char="8"><input type="button" data-char="1" class="mine"><input
+            type="button" data-char="4" class="mine"><input type="button" data-char="5"><input type="button"
+            data-char="8"><input type="button" data-char="5"><input type="button" data-char="1"><input type="button"
+            data-char="8"><input type="button" data-char="8"><input type="button" data-char="1"><input type="button"
+            data-char="8"><input type="button" data-char="3"><input type="button" data-char="1"><input type="button"
+            data-char="8"><input type="button" data-char="5"><input type="button" data-char="0" class="mine"><input
+            type="button" data-char="4"><input type="button" data-char="3"><input type="button" data-char="1"></div>
+        <div class="cellsRow"><input type="button" data-char="4"><input type="button" data-char="2"><input type="button"
+            data-char="8"><input type="button" data-char="3" class="mine"><input type="button" data-char="3"><input
+            type="button" data-char="1"><input type="button" data-char="0"><input type="button" data-char="3"><input
+            type="button" data-char="6"><input type="button" data-char="4"><input type="button" data-char="4"
+            class="mine"><input type="button" data-char="0"><input type="button" data-char="0"><input type="button"
+            data-char="7"><input type="button" data-char="1" class="mine"><input type="button" data-char="3"><input
+            type="button" data-char="3"><input type="button" data-char="3"><input type="button" data-char="8"></div>
+        <div class="cellsRow"><input type="button" data-char="5" class="mine"><input type="button" data-char="0"><input
+            type="button" data-char="1"><input type="button" data-char="3"><input type="button" data-char="6"
+            class="mine"><input type="button" data-char="7" class="mine"><input type="button" data-char="0"
+            class="mine"><input type="button" data-char="5"><input type="button" data-char="2" class="mine"><input
+            type="button" data-char="8"><input type="button" data-char="3"><input type="button" data-char="3"><input
+            type="button" data-char="4"><input type="button" data-char="5"><input type="button" data-char="2"><input
+            type="button" data-char="3"><input type="button" data-char="2" class="mine"><input type="button"
+            data-char="6"><input type="button" data-char="7" class="mine"></div>
       </div>
     </div>
   </div>
