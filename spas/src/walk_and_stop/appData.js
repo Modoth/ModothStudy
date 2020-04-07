@@ -46,10 +46,10 @@ export const AppData = {
                         5
                     ],
                     "failedCondition": {
-                        "prop": " 生命"
+                        "prop": "生命"
                     },
                     "initProps": {
-                        " 生命": 1
+                        "生命": 1
                     }
                 },
                 {
@@ -67,7 +67,7 @@ export const AppData = {
                     ],
                     "attack": {
                         "other": {
-                            " 生命": -1
+                            "生命": -1
                         }
                     }
                 }

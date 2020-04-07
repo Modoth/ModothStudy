@@ -138,7 +138,7 @@ export class App {
                 propEle.innerText = prop;
                 propEle.classList.add('object-prop');
                 let valueEle = document.createElement('span');
-                valueEle.innerText = props[prop] || ' ';
+                valueEle.innerText = props[prop] ? `x ${props[prop]}` : ' ';
                 valueEle.classList.add('object-value');
                 div.appendChild(propEle);
                 div.appendChild(valueEle);
@@ -161,43 +161,49 @@ export class App {
                     let defenderIdx = sessionData.objects.findIndex(obj => obj.pos[0] == clickPos[0] && obj.pos[1] == clickPos[1])
                     let defender = sessionData.objects[defenderIdx];
                     if (objects[defenderIdx] && defender) {
-                        isWall = appData.types[defender.type].rigid;
-                        let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
-                        if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
-                            if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
-                                success = true;
-                                displayElement.classList.add("hiden")
-                                game.stop();
-                                return;
-                            }
-                            this.mDoFight(objsProps, attacker, defender);
-                            refreshProps(objsProps.get(attacker));
-                            if (defender.failedCondition
-                                && objsProps.get(defender)[defender.failedCondition.prop] <= (defender.failedCondition.threshold || 0)) {
-                                objects[defenderIdx].enabled = false;
-                                player.positionUpdated = true;
-                                objects[defenderIdx] = undefined;
-                            }
-                            if (attacker.failedCondition
-                                && objsProps.get(attacker)[attacker.failedCondition.prop] <= (attacker.failedCondition.threshold || 0)) {
-                                this.mModal.toast("失败，从新来过").then(() => {
-                                    success = false;
-                                    displayElement.classList.add("hiden")
-                                    game.stop()
-                                })
-                                return;
-                            }
-
-                            if (attacker.successCondition
-                                && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
-                                this.mModal.toast("成功").then(() => {
+                        if (defender != attacker) {
+                            isWall = appData.types[defender.type].rigid;
+                            let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
+                            if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
+                                if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
                                     success = true;
                                     displayElement.classList.add("hiden")
-                                    game.stop()
-                                })
-                                return;
+                                    game.stop();
+                                    return;
+                                }
+                                this.mDoFight(objsProps, attacker, defender);
+                                refreshProps(objsProps.get(attacker));
+                                if (defender.failedCondition
+                                    && objsProps.get(defender)[defender.failedCondition.prop] <= (defender.failedCondition.threshold || 0)) {
+                                    objects[defenderIdx].enabled = false;
+                                    player.positionUpdated = true;
+                                    objects[defenderIdx] = undefined;
+                                }
+                                if (attacker.failedCondition
+                                    && objsProps.get(attacker)[attacker.failedCondition.prop] <= (attacker.failedCondition.threshold || 0)) {
+                                    this.mModal.toast("失败，从新来过").then(() => {
+                                        success = false;
+                                        displayElement.classList.add("hiden")
+                                        game.stop()
+                                    })
+                                    return;
+                                }
+
+                                if (attacker.successCondition
+                                    && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
+                                    this.mModal.toast("成功").then(() => {
+                                        success = true;
+                                        displayElement.classList.add("hiden")
+                                        game.stop()
+                                    })
+                                    return;
+                                }
+                                return
                             }
-                            return
+                        }
+                        if (defender.cant) {
+                            this.mModal.toast(defender.cant);
+                            return;
                         }
                     }
                     let avaliablePos = isWall ?
