@@ -6,19 +6,19 @@ export const AppData = {
         },
         {
             "rigid": 0,
-            "color": "transparent"
+            "color": "#e2a621"
         },
         {
             "rigid": 1,
-            "color": "#99CC33"
+            "color": "#99CC33",
         },
         {
             "color": "#99CC33"
         }
     ],
-    "background": "#3399CC",
+    "background": "transparent",
     "canvasWidth": 300,
-    "fps": 60,
+    "fps": 30,
     "allowRandom": 1,
     "sessions": [
         {
@@ -51,7 +51,7 @@ export const AppData = {
             ],
             "start": 0,
             "end": 1,
-            "viewSize": 10
+            "ppu": 30
         }
     ]
 }

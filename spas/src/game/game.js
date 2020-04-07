@@ -46,6 +46,48 @@ export class Component {
     }
 }
 
+export class AnimationController extends Component {
+    constructor(animations) {
+        super();
+        this.mAnimations = animations;
+        this.mAnimationStart;
+        this.animation = this.mAnimations[0];
+        this.frame = 0;
+        this.isPlaying = false;
+    }
+    stop() {
+        this.isPlaying = false;
+    }
+    play(name) {
+        let animation = this.mAnimations.find(a => a.name == name);
+        if (animation == this.animation) {
+            this.isPlaying = true;
+            return;
+        }
+        if (animation) {
+            this.animation = animation;
+            this.frame = 0;
+            this.mAnimationStart = undefined;
+            this.isPlaying = true;
+        } else {
+            this.isPlaying = false;
+        }
+    }
+    onframe(/**@type GameContext */ctx) {
+        if (!this.isPlaying || !this.animation) {
+            return;
+        }
+        if (!this.mAnimationStart) {
+            this.frame = 0;
+            this.mAnimationStart = ctx.current;
+            return;
+        }
+        let animationLength = this.animation.frames.length;
+        this.frame = Math.floor(((ctx.current - this.mAnimationStart) / 1000 / (this.animation.time || 1))
+            * animationLength) % animationLength;
+    }
+}
+
 export class Rigid extends Component {
     constructor(width = 1, height = 1) {
         super();
@@ -54,9 +96,9 @@ export class Rigid extends Component {
 }
 
 export class Camera extends Component {
-    constructor(/**@type number */viewSize, /**@type boolean */enable) {
+    constructor(/**@type number */ppu, /**@type boolean */enable) {
         super();
-        this.viewSize = viewSize * 1;
+        this.ppu = ppu * 1;
         this.enable = enable;
     }
 }
@@ -92,6 +134,82 @@ export class ColorTranslator {
         let a = parseInt(color.slice(idx, idx + colorLength), 16) * scale || 255;
         this.mColorsDict[color] = { r, g, b, a };
         return this.mColorsDict[color];
+    }
+}
+
+export class ImageLoader {
+    load(url) {
+        return new Promise((resolve, reject) => {
+            const img = document.createElement('img');
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.width = img.naturalWidth;
+                ctx.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+                resolve(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            }
+            img.onerror = () => reject();
+            img.src = url;
+        })
+    }
+}
+
+export class ImageBodyProvider {
+    constructor(width, height,/**@type ImageData */ imageData, animations) {
+        this.width = width;
+        this.height = height;
+        this.mImageData = imageData;
+        this.mAnimations = animations;
+        this.mTheshod = 50;
+        this.mFullRegion = { left: 0, top: 0, width: this.mImageData.width, height: this.mImageData.height };
+        this.mNextResion;
+    }
+
+    bodyUpdated() {
+        if (!this.mAnimations) {
+            this.mNextResion = this.mFullRegion;
+            return false;
+        }
+        const region = this.getFrameRegion();
+        this.mBodyUpdated = region == this.mNextResion;
+        this.mNextResion = region;
+        return this.mBodyUpdated;
+    }
+
+    getFrameRegion() {
+        if (!this.mAnimations) {
+            return this.mFullRegion;
+        }
+        const gbject = this.getGbject();
+        const controller = gbject[AnimationController.name];
+        if (!controller || !controller.animation || !controller.animation.frames) {
+            return this.mFullRegion;;
+        }
+        return controller.animation.frames[controller.frame];
+    }
+
+    provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight) {
+        let bitmaps = imgData.data;
+        let toBitmaps = this.mImageData.data;
+        let toHeight = Array.from({ length: imgHeight }, (_, j) => Math.floor((y + j * height / imgHeight) * this.mNextResion.height / this.height) + this.mNextResion.top);
+        let toWidth = Array.from({ length: imgWidth }, (_, i) => Math.floor((x + i * width / imgWidth) * this.mNextResion.width / this.width) + this.mNextResion.left);
+        for (let j = 0; j < imgHeight; j++) {
+            for (let i = 0; i < imgWidth; i++) {
+                let idx = ((j + dy) * imgData.width + i + dx) * 4;
+                let toIdx = (toHeight[j] * this.mImageData.width + toWidth[i]) * 4;
+                if (toBitmaps[toIdx + 3] < this.mTheshod) {
+                    continue;
+                }
+                bitmaps[idx++] = toBitmaps[toIdx++];
+                bitmaps[idx++] = toBitmaps[toIdx++];
+                bitmaps[idx++] = toBitmaps[toIdx++];
+                bitmaps[idx++] = toBitmaps[toIdx++];
+            }
+        }
+        this.mBodyUpdated = false;
     }
 }
 
@@ -185,6 +303,7 @@ export class Body extends Component {
         this.size = new Vector2(provider.width, provider.height);
         this.updateImageData = provider.provide.bind(provider);
         this.bodyUpdated = provider.bodyUpdated.bind(provider);
+        provider.getGbject = () => this.gbject;
     }
 }
 
@@ -533,7 +652,7 @@ export class Game {
         this.mContext.currentCamera = camera;
         const canvasOpt = this.mRoot.clientWidth / this.mRoot.clientHeight;
         const nextCanvasWidth = Math.floor(Math.min(this.mRoot.clientWidth, this.mMaxCanvasWidth));
-        if(!nextCanvasWidth){
+        if (!nextCanvasWidth) {
             return
         }
         const nextCanvasHeight = Math.floor(nextCanvasWidth / canvasOpt);
@@ -545,18 +664,9 @@ export class Game {
         }
         this.mContext.canvasScale = this.mCanvas.width / this.mRoot.clientWidth;
         const ctx = this.mCanvas.getContext('2d');
-        const viewSize = this.mContext.currentCamera[Camera.name].viewSize;
-        let wwidth, wheight
-        if (this.mCanvas.width > this.mCanvas.height) {
-            wheight = viewSize;
-            this.mContext.ppu = this.mCanvas.height / wheight;
-            wwidth = this.mCanvas.width / this.mContext.ppu;
-        }
-        else {
-            wwidth = viewSize;
-            this.mContext.ppu = this.mCanvas.width / wwidth;
-            wheight = this.mCanvas.height / this.mContext.ppu;
-        }
+        this.mContext.ppu = this.mContext.currentCamera[Camera.name].ppu;
+        const wwidth = this.mCanvas.width / this.mContext.ppu;
+        const wheight = this.mCanvas.height / this.mContext.ppu;
         this.mContext.wxmax = this.mContext.currentCamera.position.x + wwidth / 2;
         this.mContext.wxmin = this.mContext.currentCamera.position.x - wwidth / 2;
         this.mContext.wymax = this.mContext.currentCamera.position.y + wheight / 2;
@@ -598,7 +708,9 @@ export class Game {
             // ctx.clearRect(0, 0, this.mCanvas.width, this.mCanvas.height);
             ctx.putImageData(this.mImgDataCache, 0, 0);
             if (rendereds && rendereds.length) {
-                rendereds.forEach(r => r(ctx));
+                for (const r of rendereds) {
+                    await r(ctx)
+                }
             }
         }
     }
@@ -635,6 +747,6 @@ export class Game {
         if (width <= 0 || height <= 0) {
             return;
         }
-        body[Body.name].updateImageData(this.mImgDataCache, (dxmin - ex) + esx / 2, (dymin - ey) + esy / 2, dwidth, dheight, dx, dy, width, height, addRendered);
+        await body[Body.name].updateImageData(this.mImgDataCache, (dxmin - ex) + esx / 2, (dymin - ey) + esy / 2, dwidth, dheight, dx, dy, width, height, addRendered);
     }
 }

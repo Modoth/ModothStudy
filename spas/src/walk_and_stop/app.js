@@ -1,5 +1,5 @@
 import { Modal } from '../modal/index.js'
-import { Game, Camera, Gbject, Rigid, Body, Session, Walker, Controller, ColorBodyProvider, MapBodyProvider, TextBodyProvider, ColorTranslator, GameContext } from '../game/game.js'
+import { Game, Camera, Gbject, Rigid, Body, Session, Walker, Controller, ColorBodyProvider, MapBodyProvider, TextBodyProvider, ColorTranslator, GameContext, ImageLoader, ImageBodyProvider, AnimationController, Vector2 } from '../game/game.js'
 import { MapGenerator } from './map_generator.js';
 export class App {
     constructor(/**@type HTMLElement */ root, appData) {
@@ -7,6 +7,19 @@ export class App {
         this.mAppData = appData;
         this.mModal = new Modal();
         this.mColorTranslator = new ColorTranslator();
+    }
+
+    mGetBodyProvider(cache, type, size) {
+        let provider;
+        let imgData = cache.imgDatas.get(type);
+        if (imgData) {
+            provider = new ImageBodyProvider(size, size, imgData, type.animations);
+        } else if (type.text) {
+            provider = new TextBodyProvider(size, size, type.text, type.color);
+        } else {
+            provider = new ColorBodyProvider(size, size, cache.rgbaColors.get(type))
+        }
+        return new Body(provider);
     }
 
     async mRunSession(appData, sessionData, cache) {
@@ -25,12 +38,14 @@ export class App {
                 }), mapScale)));
         const objects = sessionData.objects.map(obj => {
             const type = appData.types[obj.type];
-            return new Gbject('', obj.pos[1] * mapScale, obj.pos[0] * mapScale,
-                new Body(obj.text ?
-                    new TextBodyProvider(obj.scale, obj.scale, type.text, type.color) :
-                    new ColorBodyProvider(obj.scale, obj.scale, cache.rgbaColors.get(type))),
-                ...(type.rigid ? [new Rigid(obj.scale, obj.scale)] : [])
+            let imgData = cache.imgDatas.get(type);
+            let gbj = new Gbject('', obj.pos[1] * mapScale, obj.pos[0] * mapScale,
+                this.mGetBodyProvider(cache, type, obj.scale),
+                ...(type.rigid ? [new Rigid(obj.scale, obj.scale)] : []),
+                ...(imgData && type.animations ? [new AnimationController(type.animations)] : [])
             )
+            gbj[AnimationController.name] && gbj[AnimationController.name].play("stop");
+            return gbj;
         })
 
         const player = objects[sessionData.start];
@@ -40,14 +55,14 @@ export class App {
         const captureObject = (type) => {
             let obj = objectsPool.get(type).pop();
             if (!obj) {
+                let imgData = cache.imgDatas.get(type);
                 obj = new Gbject('', 0, 0,
-                    new Body(
-                        type.text ?
-                            new TextBodyProvider(mapScale, mapScale, type.text, type.color) :
-                            new ColorBodyProvider(mapScale, mapScale, cache.rgbaColors.get(type))
-                    ),
-                    new Rigid(mapScale, mapScale));
+                    this.mGetBodyProvider(cache, type, mapScale),
+                    new Rigid(mapScale, mapScale),
+                    ...(imgData && type.animations ? [new AnimationController(type.animations)] : [])
+                );
                 obj.__obj_type__ = type;
+                obj[AnimationController.name] && obj[AnimationController.name].play("stop");
                 session.gbjects.push(obj);
             }
             else {
@@ -84,10 +99,11 @@ export class App {
         }
         distanceElement.innerHTML = '';
         displayElement.classList.remove("hiden")
-
+        let lastPos;
+        let lastAnimation;
         player.addComponents(
-            new Walker(sessionData.objects[sessionData.start].speed || sessionData.viewSize / 2, true),
-            new Camera(sessionData.viewSize, 1),
+            new Walker(sessionData.objects[sessionData.start].speed || sessionData.ppu / 3, true),
+            new Camera(sessionData.ppu, 1),
             new Controller({
                 onclick: (loc) => player[Walker.name].walkTo(loc),
                 onframe: async (/**@type GameContext */ ctx) => {
@@ -98,6 +114,30 @@ export class App {
                         displayElement.classList.add("hiden")
                         game.stop();
                         return;
+                    }
+                    let animationController = player[AnimationController.name];
+                    if (animationController) {
+                        if (lastPos) {
+                            const animationJudge = 0.00001 * player[Rigid.name].size.x;
+                            let animation;
+                            if (player.position.x - lastPos.x > animationJudge) {
+                                animation = 'right';
+                            } else if (lastPos.x - player.position.x > animationJudge) {
+                                animation = 'left'
+                            } else if (player.position.y - lastPos.y > animationJudge) {
+                                animation = 'down'
+                            } else if (lastPos.y - player.position.y > animationJudge) {
+                                animation = 'up'
+                            }
+                            else {
+                                animation = 'stop';
+                            }
+                            if (animation && animation != lastAnimation) {
+                                lastAnimation = animation;
+                                animationController.play(lastAnimation);
+                            }
+                        }
+                        lastPos = new Vector2(player.position.x, player.position.y);
                     }
                     let now = Date.now();
                     if (now - lastRefreshLocTime > refreshLocRegion && lastDist != Math.floor(dist)) {
@@ -136,7 +176,6 @@ export class App {
                                     wall.position.y = j * mapScale;
                                     nextWallVisiableTable.set(idx, wall);
                                 }
-
                             }
                         }
                     }
@@ -159,8 +198,23 @@ export class App {
                     background:${this.mAppData.background}
                 }`;
         }
-        const cache = { rgbaColors: new Map() };
-        this.mAppData.types.forEach(t => cache.rgbaColors.set(t, this.mColorTranslator.translate(t.color)));
+        const cache = { rgbaColors: new Map(), imgDatas: new Map() };
+        let imgLoader;
+        let imgDatas = new Map();
+        if (this.mAppData.imgs && this.mAppData.imgs.length) {
+            imgLoader = imgLoader || new ImageLoader();
+            for (let i = 0; i < this.mAppData.imgs.length; i++) {
+                imgDatas.set(i, await imgLoader.load(this.mAppData.imgs[i]))
+            }
+        }
+        for (const t of this.mAppData.types) {
+            if (t.color) {
+                cache.rgbaColors.set(t, this.mColorTranslator.translate(t.color))
+            }
+            if (t.img !== undefined) {
+                cache.imgDatas.set(t, imgDatas.get(t.img));
+            }
+        };
         for (let session of this.mAppData.sessions || []) {
             session.scale = session.scale >>> 0 || 1;
             session.objects.forEach(obj => obj.scale = obj.scale >>> 0 || 1)
@@ -202,7 +256,7 @@ export class App {
                 ],
                 start: 0,
                 end: 1,
-                viewSize: 15,
+                ppu: 30,
                 scale: 1
             };
             return sessionData;

@@ -15,9 +15,6 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: #FFFFFF; 
-    background-image: repeating-radial-gradient( circle at 0.5em 0.05em, transparent, transparent 0.2em, #EDE8D5 0.21em, #EDE8D5 0.3em, transparent 0.31em), repeating-radial-gradient( circle at 0.5em 0.95em, transparent, transparent 0.2em, #EDE8D5 0.21em, #EDE8D5 0.3em, transparent 0.31em); 
-    background-size: 1em 1em;
 }
 
 .main-canvas{
