@@ -96,7 +96,7 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
 
   parseContent() {
     let content = this.content || '';
-    const dataUrl = 'data:text/html,' + encodeURIComponent(this.pythonService ?
+    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(this.pythonService ?
       this.pythonService.getContent(content) : content);
     if (this.pythonService) {
       this.pythonService.getHost = this.getPythonServiceHost;
