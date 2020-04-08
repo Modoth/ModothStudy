@@ -18,10 +18,12 @@
 
     #app {
       position: fixed;
-      left: 5px;
-      right: 5px;
-      top: 5px;
-      bottom: 5px;
+      left: 6px;
+      right: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: calc(100% - 12px);
+      height: calc(100% - 12px);
       overflow: hidden;
       display: flex;
       box-sizing: border-box;
@@ -403,7 +405,7 @@
       drawBoard() {
         var borad = document.getElementById('board');
         borad.innerHTML = '';
-        var boardCellFlex = `1 1 ${Math.ceil(100/this.game.rank)}%`;
+        var boardCellFlex = `1 1 ${Math.ceil(100 / this.game.rank)}%`;
         for (let j = 0; j < this.game.rank - 1; j++) {
           for (let i = 0; i < this.game.rank - 1; i++) {
             var cell = document.createElement('div');
@@ -414,8 +416,8 @@
         var pieces = document.getElementById('pieces');
         pieces.innerHTML = '';
         this.pieceElems = [];
-        var piecesCellFlex = `1 1 ${Math.ceil(100/(this.game.rank + 1))}%`;
-        var piecesCellHeight = `${Math.ceil(100/this.game.rank )}%`;
+        var piecesCellFlex = `1 1 ${Math.ceil(100 / (this.game.rank + 1))}%`;
+        var piecesCellHeight = `${Math.ceil(100 / this.game.rank)}%`;
         for (let j = 0; j < this.game.rank; j++) {
           var piecesCellLine = [];
           this.pieceElems.push(piecesCellLine);

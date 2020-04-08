@@ -32,9 +32,9 @@ body {
     top: 0;
     margin: 5px;
     color: aliceblue;
-    mix-blend-mode: exclusion;
     user-select: none;
-    font-family: cursive;
+    /* font-family: cursive; */
+    background: #0002;
 }
 
 #props{

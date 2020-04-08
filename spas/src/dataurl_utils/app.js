@@ -1,5 +1,5 @@
-import { toDataUrl } from "../commons/todataurl.js";
-import { Modal } from "../modal/index.js";
+import { toDataUrl } from '../commons/todataurl.js';
+import { Modal } from '../modal/index.js';
 
 export class App {
   constructor(window) {
@@ -34,6 +34,7 @@ export class App {
     if (document.execCommand('copy')) {
       new Modal().toast('复制成功')
     }
+    selection.removeAllRanges();
   }
 
   async mLoadFile(file) {
@@ -49,7 +50,7 @@ export class App {
         this.mPreviewImage.src = dataUrl;
         break;
     }
-    this.mDataUrl.value = dataUrl;
+    this.mDataUrl.innerText = dataUrl;
     this.mIsLoadingFile = false;
   }
 }

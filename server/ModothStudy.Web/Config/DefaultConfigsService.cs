@@ -118,6 +118,7 @@ namespace ModothStudy.Web.Generated
             CONFIG_MENUS = "";
             CONFIG_EDITOR_STYLES = "";
             CONFIG_EDITOR_STYLE_TAG = "样式";
+            CONFIG_SANDBOX_APP_TAG = "沙盒";
             CONFIG_DOC_TYPE_TAG = "类型";
             CONFIG_SOLUTION_TYPE_TAG = "题型";
             CONFIG_DAILY_TAG = "首页推荐";

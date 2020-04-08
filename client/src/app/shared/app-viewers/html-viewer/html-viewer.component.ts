@@ -24,6 +24,8 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
 
   showBorder = true;
 
+  sandBox = false;
+
   contentUrl: any;
 
   @Input() fullscreen = false;
@@ -57,6 +59,16 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
   ngOnInit() {
   }
 
+  onPlayClick($event) {
+    if (this.sandBox) {
+      this.openContentUrl();
+      return;
+    }
+    this.play = true;
+    this.pause = false;
+    $event.stopPropagation();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if ('options' in changes && this.options) {
       if (!changes['options'].firstChange) {
@@ -67,6 +79,9 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
       }
       if (this.options.pause) {
         this.pause = this.options.pause.value;
+      }
+      if (this.options.sandBox) {
+        this.sandBox = this.options.sandBox.value;
       }
       if (this.options.showMenus) {
         this.showMenus = this.options.showMenus.value;

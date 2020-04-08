@@ -228,14 +228,15 @@ namespace ModothStudy.Service.EntityServices
             {
                 return path;
             }
-            var sb = new StringBuilder();
-            sb.Append(names[0]);
-            sb.Append(names[1]);
+            var newNames = new List<string>{
+                names[0],
+                names[1]
+            };
             for (var i = 2; i < names.Length; i++)
             {
-                sb.Append(GetIndexedName(names[i]));
+                 newNames.Add(GetIndexedName(names[i]));
             }
-            return String.Join(PATH_SEP, names);
+            return String.Join(PATH_SEP, newNames);
         }
 
         public async Task<Node> AddFolder(Guid? parentId, string name)
@@ -827,8 +828,8 @@ namespace ModothStudy.Service.EntityServices
         public async Task CreateOrUpdateBlogContent(string path, string content)
         {
             var user = await _operatorService.CheckOperator();
-            path = GetIndexedPath(path);
-            var node = await _nodesRepository.Retrieve().Where(n => n.Path == path)
+            var indexedPath = GetIndexedPath(path);
+            var node = await _nodesRepository.Retrieve().Where(n => n.Path == indexedPath)
             .Include(n => n.User).FirstOrDefaultAsync();
             if (node != null)
             {

@@ -258,7 +258,7 @@ export class ImageBodyProvider {
             const startY = getDrawY(0);
             const imgWidth = getDrawX(x + width) - startX;
             const imgHeight = getDrawY(y + height) - startY;
-            ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
+            ctx.drawImage(img, img.width - imgWidth, img.height - imgHeight, imgWidth, imgHeight, startX, startY, imgWidth, imgHeight);
         });
     }
 }
@@ -349,7 +349,6 @@ export class MapBodyProvider {
                 let mapJ = Math.floor((y + j / ppu) / this.mScale);
                 let mapItem = this.mData[this.dataWidth * mapJ + mapI];
                 if (mapItem == null) {
-                    console.log({ x, y, width, height });
                     continue;
                 }
                 bitmaps[idx++] = mapItem.r;
@@ -439,7 +438,8 @@ export class Walker extends Component {
             }
         }
         const start = allSet[sIdx + sIdy * width];
-        const goals = new Set(tIds.map(({ tIdx, tIdy }) => allSet[tIdx + tIdy * width]));
+        const goals = new Set(tIds.map(({ tIdx, tIdy }) => allSet[tIdx + tIdy * width])
+            .filter(g => g));
         const openSet = new Set([start]);
         const closedSet = new Set();
         const traces = new Map();

@@ -112,6 +112,7 @@ namespace ModothStudy.Web.Generated
         public string CONFIG_EDITOR_STYLES {get;set;}
         public string CONFIG_EDITOR_STYLE_TAG {get;set;}
         public string CONFIG_DAILY_TAG {get;set;}
+        public string CONFIG_SANDBOX_APP_TAG {get;set;}
         public string CONFIG_LOGO {get;set;}
         public string CONFIG_BG {get;set;}
         public string CONFIG_DEFAULT_AVATAR {get;set;}

@@ -9,10 +9,12 @@ function getConfigTags(configsService: ConfigsService) {
         configsService.getConfig(Configs.AppConfigsEnum.SOLUTIONTYPETAG.toString()),
         configsService.getConfig(Configs.AppConfigsEnum.WXSHARETAG.toString()),
         configsService.getConfig(Configs.AppConfigsEnum.AUTOPLAYTAG.toString()),
+        configsService.getConfig(Configs.AppConfigsEnum.SANDBOXAPPTAG.toString())
     );
 }
 
-function updateNode(node: Node, [docTypeTag, solutionTypeTag, wechatShareTag, autoPlayTag]: [string, string, string, string]) {
+function updateNode(node: Node, [docTypeTag, solutionTypeTag, wechatShareTag, autoPlayTag, sandboxAppTag]
+    : [string, string, string, string, string]) {
     node.tagDict = node.tags ? new Map(node.tags.map(t => [t.name, t] as any)) : new Map();
     var realTagDict = node.tagDict;
     if (node.reference) {
@@ -27,6 +29,8 @@ function updateNode(node: Node, [docTypeTag, solutionTypeTag, wechatShareTag, au
     node.wxShared = !!(wechatShare && wechatShare.value);
     const autoPlay = realTagDict.get(autoPlayTag) || node.tagDict.get(autoPlayTag);
     node.autoPlay = !!autoPlay;
+    const sandBoxApp = realTagDict.get(sandboxAppTag) || node.tagDict.get(sandboxAppTag);
+    node.sandBox = !!sandBoxApp;
 }
 
 export function ConvertToNodeModel(nodes: NodeItem[], configsService: ConfigsService): Observable<Node[]> {
@@ -60,5 +64,6 @@ export interface Node extends NodeItem {
     solutionType: string;
     wxShared: boolean;
     autoPlay: boolean;
+    sandBox: boolean;
     tagDict: Map<string, NodeTag>;
 }
