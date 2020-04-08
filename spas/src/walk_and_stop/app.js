@@ -175,7 +175,8 @@ export class App {
             new Controller({
                 onclick: async (loc) => {
                     let clickPos = [Math.floor(loc.y / mapScale + 0.5), Math.floor(loc.x / mapScale + 0.5)]
-                    let isWall = appData.types[sessionData.cells[clickPos[0]][clickPos[1]]].rigid;
+                    let isWall = clickPos[0] > 0 && clickPos[0] < mapHeight && clickPos[1] >= 0 && clickPos[1] < mapWidth
+                        && appData.types[sessionData.cells[clickPos[0]][clickPos[1]]].rigid;
                     let defenderIdx = objects.findIndex(obj => Math.floor(obj.position.y / mapScale + 0.5) == clickPos[0] && Math.floor(obj.position.x / mapScale + 0.5) == clickPos[1])
                     let defender = sessionData.objects[defenderIdx];
                     if (objects[defenderIdx] && defender) {
@@ -184,7 +185,7 @@ export class App {
                             let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
                             if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
                                 if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
-                                    await gamePauseToast(getCant(attacker, attacker.successCant) || '成功');
+                                    attacker.successCant && await gamePauseToast(getCant(attacker, attacker.successCant));
                                     success = true;
                                     displayElement.classList.add("hiden")
                                     game.stop()
@@ -219,7 +220,7 @@ export class App {
 
                                     if (attacker.successCondition
                                         && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
-                                        await gamePauseToast(getCant(attacker, attacker.successCant) || '成功');
+                                        attacker.successCant && await gamePauseToast(getCant(attacker, attacker.successCant));
                                         success = true;
                                         displayElement.classList.add("hiden")
                                         game.stop()

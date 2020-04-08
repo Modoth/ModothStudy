@@ -158,6 +158,11 @@ export class ImageLoader {
     }
 }
 
+const ImageBodyProviderCache = {
+    ppu: 0,
+    data: new Map(),
+}
+
 export class ImageBodyProvider {
     constructor(width, height, imgRegion,/**@type ImageData */ imageData, animations) {
         this.width = width;
@@ -197,30 +202,60 @@ export class ImageBodyProvider {
         return controller.animation.frames[controller.frame];
     }
 
-    provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight) {
-        let region = Object.assign({}, this.mImgRegion);
-        if (this.mNextFrame) {
-            region.top += this.mNextFrame[0] * region.height;
-            region.left += this.mNextFrame[1] * region.width;
+    mGetImage(imgData) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = imgData.width;
+        canvas.height = imgData.height;
+        ctx.putImageData(imgData, 0, 0);
+        const img = new Image();
+        img.src = canvas.toDataURL();
+        return img;
+    }
+
+    async mGetFrameImage(frame, ppu) {
+        const key = frame || this.mImageData;
+        if (ImageBodyProviderCache.ppu != ppu) {
+            ImageBodyProviderCache.ppu = ppu;
+            ImageBodyProviderCache.data = new Map();
         }
-        let bitmaps = imgData.data;
-        let toBitmaps = this.mImageData.data;
-        let toHeight = Array.from({ length: imgHeight }, (_, j) => Math.floor((y + j * height / imgHeight) * region.height / this.height) + region.top);
-        let toWidth = Array.from({ length: imgWidth }, (_, i) => Math.floor((x + i * width / imgWidth) * region.width / this.width) + region.left);
-        for (let j = 0; j < imgHeight; j++) {
-            for (let i = 0; i < imgWidth; i++) {
-                let idx = ((j + dy) * imgData.width + i + dx) * 4;
-                let toIdx = (toHeight[j] * this.mImageData.width + toWidth[i]) * 4;
-                if (toBitmaps[toIdx + 3] < this.mTheshod) {
-                    continue;
-                }
-                bitmaps[idx++] = toBitmaps[toIdx++];
-                bitmaps[idx++] = toBitmaps[toIdx++];
-                bitmaps[idx++] = toBitmaps[toIdx++];
-                bitmaps[idx++] = toBitmaps[toIdx++];
+        if (!ImageBodyProviderCache.data.has(key)) {
+            let region = Object.assign({}, this.mImgRegion);
+            if (frame) {
+                region.top += frame[0] * region.height;
+                region.left += frame[1] * region.width;
             }
+            let imgData = new ImageData(Math.floor(this.width * ppu), Math.floor(this.height * ppu));
+            let bitmaps = imgData.data;
+            let toBitmaps = this.mImageData.data;
+            let toHeight = Array.from({ length: imgData.height }, (_, j) => Math.floor(j * region.height / imgData.height) + region.top);
+            let toWidth = Array.from({ length: imgData.width }, (_, i) => Math.floor(i * region.width / imgData.width) + region.left);
+            for (let j = 0; j < imgData.height; j++) {
+                for (let i = 0; i < imgData.width; i++) {
+                    let idx = (j * imgData.width + i) * 4;
+                    let toIdx = (toHeight[j] * this.mImageData.width + toWidth[i]) * 4;
+                    if (toBitmaps[toIdx + 3] < this.mTheshod) {
+                        bitmaps[idx++] = 0;
+                        bitmaps[idx++] = 0;
+                        bitmaps[idx++] = 0;
+                        bitmaps[idx++] = 0;
+                    }
+                    bitmaps[idx++] = toBitmaps[toIdx++];
+                    bitmaps[idx++] = toBitmaps[toIdx++];
+                    bitmaps[idx++] = toBitmaps[toIdx++];
+                    bitmaps[idx++] = toBitmaps[toIdx++];
+                }
+            }
+            ImageBodyProviderCache.data.set(key, this.mGetImage(imgData))
         }
-        this.mBodyUpdated = false;
+        return ImageBodyProviderCache.data.get(key);
+    }
+
+    async provide(_, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }, addRendered, ppu) {
+        const img = await this.mGetFrameImage(this.mNextFrame, ppu);
+        addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
+            ctx.drawImage(img, dx - x * imgWidth / width, dy - y * imgHeight / height);
+        });
     }
 }
 
@@ -238,7 +273,7 @@ export class ColorBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight) {
+    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }) {
         let bitmaps = imgData.data;
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
@@ -264,7 +299,7 @@ export class TextBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight, addRendered) {
+    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }, addRendered) {
         addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
             let fontCount = Math.floor(imgWidth * this.width / width / this.mText.length);
             ctx.font = `${fontCount}px serif`;
@@ -289,7 +324,7 @@ export class MapBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight) {
+    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }) {
         let bitmaps = imgData.data;
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
@@ -766,11 +801,11 @@ export class Game {
 
         let dx = Math.floor((dxmin - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2);
         let dy = Math.floor((dymin - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2);
-        let width = Math.floor((dxmax - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2) - dx;
-        let height = Math.floor((dymax - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2) - dy;
-        if (width <= 0 || height <= 0) {
+        let imgWidth = Math.floor((dxmax - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2) - dx;
+        let imgHeight = Math.floor((dymax - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2) - dy;
+        if (imgWidth <= 0 || imgHeight <= 0) {
             return;
         }
-        await body[Body.name].updateImageData(this.mImgDataCache, (dxmin - ex) + esx / 2, (dymin - ey) + esy / 2, dwidth, dheight, dx, dy, width, height, addRendered);
+        await body[Body.name].updateImageData(this.mImgDataCache, { x: (dxmin - ex) + esx / 2, y: (dymin - ey) + esy / 2, width: dwidth, height: dheight }, { dx, dy, imgWidth, imgHeight }, addRendered, ppu);
     }
 }
