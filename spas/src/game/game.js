@@ -572,6 +572,10 @@ export class GameContext {
     }
 }
 
+export const sleep = (/**@type number */timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 export class Game {
     constructor(/**@type HTMLElement */ root, { canvasWidth, fps }) {
         this.mRoot = root;
@@ -614,10 +618,6 @@ export class Game {
         });
     }
 
-    async mSleep(/**@type number */timeout) {
-        return new Promise(resolve => setTimeout(resolve, timeout));
-    }
-
     pause() {
         this.mContext.state = GameStatus.Pause;
     }
@@ -638,7 +638,7 @@ export class Game {
             this.mContext.current = Date.now();
             const remain = this.mFrameLength - (this.mContext.current - this.mContext.last);
             if (remain > 0) {
-                await this.mSleep(remain);
+                await sleep(remain);
             }
             try {
                 this.mContext.current = Date.now();
