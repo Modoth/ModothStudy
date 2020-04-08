@@ -13,7 +13,7 @@ export class App {
         let provider;
         let imgData = cache.imgDatas.get(type);
         if (imgData) {
-            provider = new ImageBodyProvider(size, size, imgData, type.animations);
+            provider = new ImageBodyProvider(size, size, type.img, imgData, type.animations);
         } else if (type.text) {
             provider = new TextBodyProvider(size, size, type.text, type.color);
         } else {
@@ -156,6 +156,15 @@ export class App {
             await this.mModal.toast(msg, timeout);
             game.resume();
         }
+        let getCant = (obj, cant) => {
+            if (!cant) {
+                return null;
+            }
+            if (!obj.name) {
+                return cant;
+            }
+            return `${obj.name}: ${cant}`
+        }
         player.addComponents(
             new Walker(sessionData.objects[sessionData.start].speed || sessionData.ppu / 3, true),
             new Camera(sessionData.ppu, 1),
@@ -167,19 +176,19 @@ export class App {
                     let defenderIdx = objects.findIndex(obj => Math.floor(obj.position.y / mapScale + 0.5) == clickPos[0] && Math.floor(obj.position.x / mapScale + 0.5) == clickPos[1])
                     let defender = sessionData.objects[defenderIdx];
                     if (objects[defenderIdx] && defender) {
-                        if (defender != attacker) {
+                        if (defender != attacker && (defender.attack || attacker.attack)) {
                             isWall = appData.types[defender.type].rigid;
                             let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
                             if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
                                 if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
-                                    await gamePauseToast(attacker.successCant || '成功');
+                                    await gamePauseToast(getCant(attacker, attacker.successCant) || '成功');
                                     success = true;
                                     displayElement.classList.add("hiden")
                                     game.stop()
                                     return;
                                 }
                                 if (defender.attackCant) {
-                                    await gamePauseToast(defender.attackCant);
+                                    await gamePauseToast(getCant(defender, defender.attackCant));
                                 }
                                 this.mDoFight(objsProps, attacker, defender);
                                 refreshProps(objsProps.get(attacker));
@@ -189,12 +198,15 @@ export class App {
                                     player.positionUpdated = true;
                                     objects[defenderIdx] = undefined;
                                     if (defender.failedCant) {
-                                        await gamePauseToast(defender.failedCant);
+                                        await gamePauseToast(getCant(defender, defender.failedCant));
                                     }
                                 }
                                 if (attacker.failedCondition
                                     && objsProps.get(attacker)[attacker.failedCondition.prop] <= (attacker.failedCondition.threshold || 0)) {
-                                    await gamePauseToast(attacker.failedCant || '失败，从新来过');
+                                    if (defender.successCant) {
+                                        await gamePauseToast(getCant(defender, defender.successCant))
+                                    }
+                                    await gamePauseToast(getCant(attacker, attacker.failedCant) || '失败，从新来过');
                                     success = false;
                                     displayElement.classList.add("hiden")
                                     game.stop()
@@ -203,7 +215,7 @@ export class App {
 
                                 if (attacker.successCondition
                                     && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
-                                    await gamePauseToast(attacker.successCant || '成功');
+                                    await gamePauseToast(getCant(attacker, attacker.successCant) || '成功');
                                     success = true;
                                     displayElement.classList.add("hiden")
                                     game.stop()
@@ -213,7 +225,7 @@ export class App {
                             }
                         }
                         if (defender.cant) {
-                            this.mModal.toast(defender.cant);
+                            this.mModal.toast(getCant(defender, defender.cant));
                             return;
                         }
                     }
@@ -322,8 +334,8 @@ export class App {
             if (t.color) {
                 cache.rgbaColors.set(t, this.mColorTranslator.translate(t.color))
             }
-            if (t.img !== undefined) {
-                cache.imgDatas.set(t, imgDatas.get(t.img));
+            if (t.img) {
+                cache.imgDatas.set(t, imgDatas.get(t.img.index));
             }
         };
         for (let session of this.mAppData.sessions || []) {

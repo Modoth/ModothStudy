@@ -159,44 +159,54 @@ export class ImageLoader {
 }
 
 export class ImageBodyProvider {
-    constructor(width, height,/**@type ImageData */ imageData, animations) {
+    constructor(width, height, imgRegion,/**@type ImageData */ imageData, animations) {
         this.width = width;
         this.height = height;
         this.mImageData = imageData;
         this.mAnimations = animations;
         this.mTheshod = 50;
-        this.mFullRegion = { left: 0, top: 0, width: this.mImageData.width, height: this.mImageData.height };
-        this.mNextResion;
+        this.mImgRegion = {
+            left: imgRegion.left || 0,
+            top: imgRegion.top || 0,
+            width: imgRegion.width || this.mImageData.width,
+            height: imgRegion.height || this.mImageData.height
+        };
+        this.mNextFrame;
     }
 
     bodyUpdated() {
         if (!this.mAnimations) {
-            this.mNextResion = this.mFullRegion;
+            this.mNextFrame = null;
             return false;
         }
-        const region = this.getFrameRegion();
-        this.mBodyUpdated = region == this.mNextResion;
-        this.mNextResion = region;
+        const frame = this.getFrame();
+        this.mBodyUpdated = frame != this.mNextFrame;
+        this.mNextFrame = frame;
         return this.mBodyUpdated;
     }
 
-    getFrameRegion() {
+    getFrame() {
         if (!this.mAnimations) {
-            return this.mFullRegion;
+            return null;
         }
         const gbject = this.getGbject();
         const controller = gbject[AnimationController.name];
         if (!controller || !controller.animation || !controller.animation.frames) {
-            return this.mFullRegion;;
+            return null;
         }
         return controller.animation.frames[controller.frame];
     }
 
     provide(imgData, x, y, width, height, dx, dy, imgWidth, imgHeight) {
+        let region = Object.assign({}, this.mImgRegion);
+        if (this.mNextFrame) {
+            region.top += this.mNextFrame[0] * region.height;
+            region.left += this.mNextFrame[1] * region.width;
+        }
         let bitmaps = imgData.data;
         let toBitmaps = this.mImageData.data;
-        let toHeight = Array.from({ length: imgHeight }, (_, j) => Math.floor((y + j * height / imgHeight) * this.mNextResion.height / this.height) + this.mNextResion.top);
-        let toWidth = Array.from({ length: imgWidth }, (_, i) => Math.floor((x + i * width / imgWidth) * this.mNextResion.width / this.width) + this.mNextResion.left);
+        let toHeight = Array.from({ length: imgHeight }, (_, j) => Math.floor((y + j * height / imgHeight) * region.height / this.height) + region.top);
+        let toWidth = Array.from({ length: imgWidth }, (_, i) => Math.floor((x + i * width / imgWidth) * region.width / this.width) + region.left);
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
                 let idx = ((j + dy) * imgData.width + i + dx) * 4;
@@ -216,7 +226,6 @@ export class ImageBodyProvider {
 
 export class ColorBodyProvider {
     constructor(width, height, { r, g, b, a }) {
-
         this.width = width;
         this.height = height;
         this.mR = r;
