@@ -151,14 +151,20 @@ export class App {
         let objsProps = new Map(sessionData.objects.map(obj => [obj, initProps(obj)]))
         let attacker = sessionData.objects[sessionData.start];
         refreshProps(objsProps.get(attacker));
+        let gamePauseToast = async (msg, timeout) => {
+            game.pause();
+            await this.mModal.toast(msg, timeout);
+            game.resume();
+        }
         player.addComponents(
             new Walker(sessionData.objects[sessionData.start].speed || sessionData.ppu / 3, true),
             new Camera(sessionData.ppu, 1),
             new Controller({
-                onclick: (loc) => {
+                onclick: async (loc) => {
                     let clickPos = [Math.floor(loc.y / mapScale + 0.5), Math.floor(loc.x / mapScale + 0.5)]
                     let isWall = appData.types[sessionData.cells[clickPos[0]][clickPos[1]]].rigid;
-                    let defenderIdx = sessionData.objects.findIndex(obj => obj.pos[0] == clickPos[0] && obj.pos[1] == clickPos[1])
+                    // let defenderIdx = sessionData.objects.findIndex(obj => obj.pos[0] == clickPos[0] && obj.pos[1] == clickPos[1])
+                    let defenderIdx = objects.findIndex(obj => Math.floor(obj.position.y / mapScale + 0.5) == clickPos[0] && Math.floor(obj.position.x / mapScale + 0.5) == clickPos[1])
                     let defender = sessionData.objects[defenderIdx];
                     if (objects[defenderIdx] && defender) {
                         if (defender != attacker) {
@@ -166,10 +172,14 @@ export class App {
                             let attackerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
                             if (Math.abs(attackerPos[0] - clickPos[0]) + Math.abs(attackerPos[1] - clickPos[1]) < 1.5) {
                                 if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
+                                    await gamePauseToast(attacker.successCant || '成功');
                                     success = true;
                                     displayElement.classList.add("hiden")
-                                    game.stop();
+                                    game.stop()
                                     return;
+                                }
+                                if (defender.attackCant) {
+                                    await gamePauseToast(defender.attackCant);
                                 }
                                 this.mDoFight(objsProps, attacker, defender);
                                 refreshProps(objsProps.get(attacker));
@@ -178,24 +188,25 @@ export class App {
                                     objects[defenderIdx].enabled = false;
                                     player.positionUpdated = true;
                                     objects[defenderIdx] = undefined;
+                                    if (defender.failedCant) {
+                                        await gamePauseToast(defender.failedCant);
+                                    }
                                 }
                                 if (attacker.failedCondition
                                     && objsProps.get(attacker)[attacker.failedCondition.prop] <= (attacker.failedCondition.threshold || 0)) {
-                                    this.mModal.toast("失败，从新来过").then(() => {
-                                        success = false;
-                                        displayElement.classList.add("hiden")
-                                        game.stop()
-                                    })
+                                    await gamePauseToast(attacker.failedCant || '失败，从新来过');
+                                    success = false;
+                                    displayElement.classList.add("hiden")
+                                    game.stop()
                                     return;
                                 }
 
                                 if (attacker.successCondition
                                     && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
-                                    this.mModal.toast("成功").then(() => {
-                                        success = true;
-                                        displayElement.classList.add("hiden")
-                                        game.stop()
-                                    })
+                                    await gamePauseToast(attacker.successCant || '成功');
+                                    success = true;
+                                    displayElement.classList.add("hiden")
+                                    game.stop()
                                     return;
                                 }
                                 return

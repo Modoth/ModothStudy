@@ -50,7 +50,8 @@ export const AppData = {
                     },
                     "initProps": {
                         "生命": 1
-                    }
+                    },
+                    "cant": "我必须尽快找到出口"
                 },
                 {
                     "type": 3,
@@ -69,7 +70,9 @@ export const AppData = {
                         "other": {
                             "生命": -1
                         }
-                    }
+                    },
+                    "cant": "小心危险！",
+                    "attackCant":"啊呀呀！！！"
                 }
             ],
             "start": 0,

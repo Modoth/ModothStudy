@@ -1,7 +1,8 @@
 const GameStatus = {
     Stop: 0,
     Run: 1,
-    Pause: 2
+    Pause: 2,
+    Resume: 3
 }
 
 export class Vector2 {
@@ -608,6 +609,14 @@ export class Game {
         return new Promise(resolve => setTimeout(resolve, timeout));
     }
 
+    pause() {
+        this.mContext.state = GameStatus.Pause;
+    }
+
+    resume() {
+        this.mContext.state = GameStatus.Resume;
+    }
+
     stop() {
         this.mContext.state = GameStatus.Stop;
     }
@@ -624,6 +633,9 @@ export class Game {
             }
             try {
                 this.mContext.current = Date.now();
+                if (this.mContext.state != GameStatus.Run) {
+                    continue;
+                }
                 await this.mUpdateGbjects();
                 await this.mUpdateRigids();
                 await this.mRender();
