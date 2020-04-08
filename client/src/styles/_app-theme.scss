@@ -29,8 +29,8 @@
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
 
-  .non-shared-title{
-    color:mat-color($foreground, secondary-text) !important;
+  .non-shared-title {
+    color: mat-color($foreground, secondary-text) !important;
   }
 
   body {
@@ -46,7 +46,6 @@
   }
 
   markdown {
-
     code,
     pre,
     code[class*="language-"],
@@ -61,7 +60,7 @@
   }
 
   .app-content {
-    &>*:last-child {
+    & > *:last-child {
       flex: 1;
     }
   }
@@ -105,8 +104,8 @@
   @include query-theme($theme);
   @include tools-theme($theme);
 
-  .fullscreen-node-item{
-    .menus{
+  .fullscreen-node-item {
+    .menus {
       padding: 8px 3px;
       margin: 0 0 1px !important;
       background-color: mat-color($background, app-bar);
@@ -116,15 +115,32 @@
 }
 
 @include mat-core();
-$theme-configs: ( //
-  indigo-pink : (primary: mat-palette($mat-indigo), accent: mat-palette($mat-pink, A200, A100, A400), warn: mat-palette($mat-red)),
-  deeppurple-amber: (primary: mat-palette($mat-deep-purple), accent: mat-palette($mat-amber, A200, A100, A400), warn: mat-palette($mat-red)),
-  pink-bluegrey : (primary:mat-palette($mat-pink), accent: mat-palette($mat-blue-gray, A200, A100, A400), warn: mat-palette($mat-indigo)),
-  purple-green : (primary: mat-palette($mat-purple), accent: mat-palette($mat-green, A200, A100, A400), warn:mat-palette($mat-red)),
+$theme-configs: (
+  //
+    indigo-pink:
+    (
+      primary: mat-palette($mat-indigo),
+      accent: mat-palette($mat-pink, A200, A100, A400),
+      warn: mat-palette($mat-red),
+    ),
+  deeppurple-amber: (
+    primary: mat-palette($mat-deep-purple),
+    accent: mat-palette($mat-amber, A200, A100, A400),
+    warn: mat-palette($mat-red),
+  ),
+  pink-bluegrey: (
+    primary: mat-palette($mat-pink),
+    accent: mat-palette($mat-blue-gray, A200, A100, A400),
+    warn: mat-palette($mat-indigo),
+  ),
+  purple-green: (
+    primary: mat-palette($mat-purple),
+    accent: mat-palette($mat-green, A200, A100, A400),
+    warn: mat-palette($mat-red),
+  )
 );
 
-@each $name,
-$config in $theme-configs {
+@each $name, $config in $theme-configs {
   $primary: map-get($config, primary);
   $accent: map-get($config, accent);
   $warn: map-get($config, warn);

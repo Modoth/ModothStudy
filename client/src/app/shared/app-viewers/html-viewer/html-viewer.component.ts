@@ -18,6 +18,8 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
 
   play = false;
 
+  pause = false;
+
   showMenus = false;
 
   showBorder = true;
@@ -62,6 +64,9 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
       }
       if (this.options.play) {
         this.play = this.options.play.value;
+      }
+      if (this.options.pause) {
+        this.pause = this.options.pause.value;
       }
       if (this.options.showMenus) {
         this.showMenus = this.options.showMenus.value;

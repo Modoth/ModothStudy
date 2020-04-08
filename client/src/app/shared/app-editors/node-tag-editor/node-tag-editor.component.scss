@@ -12,20 +12,20 @@
     font-size: 1em;
   }
 
-  .tag-value{
+  .tag-value {
     overflow: hidden;
     max-width: 10em;
     white-space: nowrap;
   }
 
   .tag-name {
-    margin: 0 0 0 2px
+    margin: 0 0 0 2px;
   }
 
   .editor {
     padding: 20px 10px 4em 10px;
 
-    &>* {
+    & > * {
       margin: 20px 0;
     }
   }

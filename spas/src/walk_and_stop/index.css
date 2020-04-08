@@ -32,17 +32,20 @@ body {
     top: 0;
     margin: 5px;
     color: aliceblue;
-    background: #00000080;
-    padding: 2px 5px;
-    border-radius: 8px;
+    mix-blend-mode: exclusion;
     user-select: none;
+    font-family: cursive;
 }
 
 #props{
     left: 0;
 }
 
-.object-prop,.object-value{
+.object-prop
+{
+    padding:2px 0;
+}
+.object-value{
     padding: 2px 5px;
 }
 

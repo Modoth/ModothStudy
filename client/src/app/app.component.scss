@@ -2,16 +2,16 @@
   display: flex;
   flex-direction: column;
 
-  &>app-editor {
+  & > app-editor {
     position: absolute;
     left: 0;
     top: -56px;
     z-index: 999;
   }
-  footer{
+  footer {
     color: #c0c0c0;
   }
-  
+
   .icp {
     text-align: center;
     font-size: small;
@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: column;
 
-  &>app-tools {
+  & > app-tools {
     flex: 1;
   }
 }

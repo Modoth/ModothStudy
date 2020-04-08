@@ -1,12 +1,12 @@
 :host {
   display: flex;
 
-  &>.media {
+  & > .media {
     flex: 1;
     margin-top: 10px;
   }
 
-  &>markdown {
+  & > markdown {
     flex: 1;
   }
 
@@ -16,7 +16,8 @@
     height: 100%;
   }
 
-  .media.summary,.summary-content{
+  .media.summary,
+  .summary-content {
     margin: 5px;
   }
 }

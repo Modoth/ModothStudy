@@ -13,11 +13,10 @@
 
 .toast-panel {
     flex-direction: column-reverse;
-    pointer-events:none
+    pointer-events: none;
 }
 
-
-.popup-panel{
+.popup-panel {
     padding: 0;
     background: #00000080;
 }
@@ -26,19 +25,19 @@
     background-color: #00000080;
 }
 
-.toast-panel>div {
+.toast-panel > div {
     background-color: #00000080;
     margin: 20px auto;
     padding: 2px 5px;
     border-radius: 0.25em;
 }
 
-.toast-panel>div>span {
+.toast-panel > div > span {
     font-size: 1.25em;
     color: white;
 }
 
-.modal-panel>div {
+.modal-panel > div {
     background-color: white;
     border-radius: 8px;
     width: 80%;
@@ -49,12 +48,12 @@
     flex-direction: column;
 }
 
-.modal-panel>div>h1 {
+.modal-panel > div > h1 {
     font-size: 1.25em;
     margin-block-start: 0.33em;
 }
 
-.modal-panel>div>input[type='input'] {
+.modal-panel > div > input[type="input"] {
     background: #fff;
     /* flex: 1; */
     height: 3em;
@@ -63,7 +62,7 @@
     margin: 5px 10px;
     border: #c0c0c0 solid 1px;
     border-radius: 8px;
-    outline: 0!important;
+    outline: 0 !important;
     color: -internal-light-dark-color(black, white);
     background-color: -internal-light-dark-color(white, black);
 }
@@ -74,7 +73,7 @@
     flex-direction: row-reverse;
 }
 
-.btn-groups>input[type='button'] {
+.btn-groups > input[type="button"] {
     font-size: 1.05em;
     border-radius: 8px;
     margin: 8px;
@@ -83,32 +82,33 @@
 }
 
 .close {
-    --box-size:36px;
-    --size:32px;
-    --half-size:20px;
+    --box-size: 36px;
+    --size: 32px;
+    --half-size: 20px;
     position: absolute;
-    width:  var(--box-size);
-    height:  var(--box-size);
+    width: var(--box-size);
+    height: var(--box-size);
     position: fixed;
     top: 10px;
     left: 10px;
     padding: 2px;
     background: #00000080;
     border-radius: var(--size);
-  }
+}
 
-  .close:before, .close:after {
+.close:before,
+.close:after {
     position: absolute;
     left: var(--half-size);
-    content: ' ';
+    content: " ";
     height: var(--size);
     width: 2px;
     top: 4px;
-    background:white;
-  }
-  .close:before {
+    background: white;
+}
+.close:before {
     transform: rotate(45deg);
-  }
-  .close:after {
+}
+.close:after {
     transform: rotate(-45deg);
-  }
+}

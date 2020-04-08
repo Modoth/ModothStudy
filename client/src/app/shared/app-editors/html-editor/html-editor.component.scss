@@ -1,13 +1,13 @@
 :host {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  
-    ngx-monaco-editor {
-      margin: 0;
-      height: 100%;
-    }
-    input {
-      padding: 5px 10px;
-    }
-  }     
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  ngx-monaco-editor {
+    margin: 0;
+    height: 100%;
+  }
+  input {
+    padding: 5px 10px;
+  }
+}

@@ -76,7 +76,7 @@ export class JsonViewerComponent implements OnInit {
       this.markdownize();
       this.appContent = null;
       if (this.getApp) {
-        this.appOptions = { showBorder: { value: false }, play: this.options.play }
+        this.appOptions = { showBorder: { value: false }, play: this.options.play, pause: this.options.pause }
         this.getApp().subscribe(content => {
           this.appContent = content;
           if (this.appContent) {

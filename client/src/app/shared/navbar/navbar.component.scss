@@ -3,7 +3,7 @@
   flex-wrap: nowrap;
   padding: 0px 5px 0px 0;
 
-  &>.mat-button {
+  & > .mat-button {
     min-width: 0;
     padding: 0;
     align-self: stretch;
@@ -41,7 +41,7 @@
     padding: 2px 10px;
     font-size: 1.05rem;
 
-    &>:last-child {
+    & > :last-child {
       margin-left: auto;
     }
   }

@@ -4,7 +4,6 @@
   $primary: map-get($theme, primary);
   $warn: map-get($theme, warn);
 
-
   $bg: mat-color($background, app-bar);
   $fg: mat-color($primary);
 
@@ -13,22 +12,21 @@
       background: mat-color($background, app-bar);
     }
 
-    .keyborad-key>div {
-
+    .keyborad-key > div {
       background: transparent;
       color: mat-color($foreground, color);
-      box-shadow: 0 1px 1px 1px rgba(0, 0, 0, .14);
+      box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.14);
 
       &:active {
         box-shadow: 0 1px 3px 1px mat-color($primary);
       }
 
-      &>.upperKey {
-        color: mat-color($foreground, hint-text)
+      & > .upperKey {
+        color: mat-color($foreground, hint-text);
       }
 
-      &>.key {
-        color: mat-color($foreground, hint-text)
+      & > .key {
+        color: mat-color($foreground, hint-text);
       }
     }
 
@@ -37,15 +35,14 @@
     .ArrowUp,
     .ArrowDown,
     .Enter {
-
-      &>div {
+      & > div {
         background-color: mat-color($primary, 300);
 
-        &>.upperKey {
+        & > .upperKey {
           color: mat-color($background, background);
         }
 
-        &>.key {
+        & > .key {
           color: mat-color($background, background);
         }
       }
@@ -53,21 +50,20 @@
 
     .Esc,
     .Backspace {
-
-      &>div {
+      & > div {
         background-color: mat-color($warn, 300);
 
-        &>.upperKey {
+        & > .upperKey {
           color: mat-color($background, background);
         }
 
-        &>.key {
+        & > .key {
           color: mat-color($background, background);
         }
       }
     }
 
-    .keyborad-key>div {
+    .keyborad-key > div {
       .popup.upperKey {
         background-color: mat-color($primary, 300);
         color: mat-color($background, background);

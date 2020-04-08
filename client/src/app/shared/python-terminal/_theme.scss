@@ -15,8 +15,8 @@
       .stdin {
         color: mat-color($foreground, hint-text);
 
-        &>input,
-        &>input:disabled {
+        & > input,
+        & > input:disabled {
           color: mat-color($foreground, hint-text);
           opacity: unset;
         }

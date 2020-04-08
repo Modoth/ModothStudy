@@ -1,6 +1,5 @@
 markdown {
-
-  p>img,
+  p > img,
   video {
     max-width: 100%;
     width: 100%;
@@ -10,7 +9,8 @@ markdown {
 
   p {
     text-align: justify;
-    font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, WenQuanYi Micro Hei, sans-serif;
+    font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, WenQuanYi Micro Hei,
+      sans-serif;
     line-height: 1.7;
   }
 
@@ -52,11 +52,9 @@ markdown {
 }
 
 @media (min-width: 720px) {
-
   markdown {
-
-    p>img,
-    p>video {
+    p > img,
+    p > video {
       max-width: 360px;
       display: block;
       margin: 0 auto;
@@ -66,9 +64,8 @@ markdown {
 
 @media print {
   markdown {
-
-    p>img,
-    p>video {
+    p > img,
+    p > video {
       max-width: 360px;
       display: block;
       margin: 0 auto;

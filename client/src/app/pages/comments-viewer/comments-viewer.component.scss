@@ -8,15 +8,14 @@
   flex-direction: column;
   z-index: 4;
 
-  &>.comments-viewer {
+  & > .comments-viewer {
     padding: 5px 0;
     overflow-y: auto;
     max-height: 40vh;
     display: flex;
     flex-direction: column;
 
-
-    &>.close {
+    & > .close {
       align-self: flex-end;
     }
   }
@@ -62,11 +61,11 @@
     display: flex;
     margin: 5px 0;
 
-    &>mat-icon {
+    & > mat-icon {
       padding: 10px;
     }
 
-    &>textarea {
+    & > textarea {
       flex: 1;
       font-size: 1rem;
       padding: 10px;
@@ -76,7 +75,7 @@
       border-width: 1px;
     }
 
-    &>textarea:focus {
+    & > textarea:focus {
       outline: none;
     }
   }

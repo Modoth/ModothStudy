@@ -27,7 +27,7 @@
       </div>
       <div *ngIf="node.content != null && node.content != ''" class="body">
         <app-article-viewer [type]="node.docType" [content]="node.content"
-          [options]="{getApp:{value:getNodeApp(node)},play: {value: node.autoPlay}, summary:{value:true}, showBorder:{value:false}}">
+          [options]="{getApp:{value:getNodeApp(node)},play: {value: node.autoPlay}, pause: {value: node.autoPlay}, summary:{value:true}, showBorder:{value:false}}">
         </app-article-viewer>
       </div>
       <div class="tags" *ngIf="node != null && node.tags != null && node.tags.length > 0">

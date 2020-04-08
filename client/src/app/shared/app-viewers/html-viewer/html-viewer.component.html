@@ -16,14 +16,20 @@
       keyboard_arrow_up
     </mat-icon> -->
   </div>
-  <div class="mask-container" *ngIf="canPlay && !play">
-    <iframe [src]="nonScriptContentUrl" sandbox></iframe>
-    <div class="mask" (click)="play=true;$event.stopPropagation();">
+  <div class="mask-container" *ngIf="!canPlay || play">
+    <iframe #iframeRef [src]="contentUrl" sandbox="allow-scripts"></iframe>
+    <div class="mask" *ngIf="pause" (click)="pause=false;$event.stopPropagation();">
       <mat-icon>play_arrow
       </mat-icon>
     </div>
   </div>
-  <iframe #iframeRef *ngIf='!canPlay || play' [src]="contentUrl" sandbox="allow-scripts"></iframe>
+  <div class="mask-container" *ngIf="canPlay && !play">
+    <iframe [src]="nonScriptContentUrl" sandbox></iframe>
+    <div class="mask" (click)="play=true;pause=false;$event.stopPropagation();">
+      <mat-icon>play_arrow
+      </mat-icon>
+    </div>
+  </div>
   <!-- <div *ngIf="showTerminal" class="python-terminal">
     <app-python-terminal [pythonService]="pythonService"></app-python-terminal>
   </div> -->

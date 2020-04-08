@@ -16,7 +16,7 @@
   }
 }
 
-@media (orientation:landscape) {
+@media (orientation: landscape) {
   :host {
     flex-direction: row;
 
@@ -30,7 +30,7 @@
       border-width: 0 0 0 1px;
       border-style: ridge;
       display: flex;
-    flex-direction: column;
+      flex-direction: column;
     }
   }
 }

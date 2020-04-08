@@ -45,7 +45,7 @@
           </app-node-tag-view>
         </div>
         <app-article-viewer [type]="node.node.docType" [content]="node.node.content"
-          [options]="{getApp:{value:getNodeApp(node)}, play: {value: node.node.autoPlay}, showMenus:{value:true},showBorder:{value:true}, pythonService:node.pythonService}">
+          [options]="{getApp:{value:getNodeApp(node)}, play: {value: node.node.autoPlay},pause: {value: node.node.autoPlay}, showMenus:{value:true},showBorder:{value:true}, pythonService:node.pythonService}">
         </app-article-viewer>
       </div>
       <div class="node-content my-solution" *ngIf="!node.ownNode &&  node.hasSolution && showEditor">

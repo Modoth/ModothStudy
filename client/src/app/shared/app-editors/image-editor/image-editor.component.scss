@@ -17,14 +17,14 @@
     display: flex;
     margin-bottom: 2em;
 
-    &>* {
+    & > * {
       font-size: 2em;
       padding: 10px;
       flex: 1;
     }
   }
 
-  &>.editor-container {
+  & > .editor-container {
     width: 100%;
     flex: 1;
     display: flex;

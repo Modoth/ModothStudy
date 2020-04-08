@@ -7,13 +7,12 @@
   $fg: mat-color($primary);
 
   app-node-tag-view {
-
     .tag-value {
-      color: mat-color($primary, 'darker');
+      color: mat-color($primary, "darker");
     }
 
     .tag-name {
-      color: mat-color($foreground, 'hint-text');
+      color: mat-color($foreground, "hint-text");
     }
   }
 }

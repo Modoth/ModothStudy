@@ -7,7 +7,7 @@
   flex: 1;
   user-select: none;
 
-  &>div {
+  & > div {
     border-radius: 4px;
     margin: 2px;
     box-sizing: border-box;
@@ -17,11 +17,11 @@
     justify-content: center;
     flex-direction: column;
 
-    &>div {
+    & > div {
       text-align: center;
     }
 
-    &>.popup {
+    & > .popup {
       position: relative;
       top: -2.4em;
       padding: 10px 0;

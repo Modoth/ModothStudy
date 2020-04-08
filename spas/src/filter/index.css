@@ -12,10 +12,11 @@ body,
     overflow-y: auto;
     box-sizing: border-box;
     color: darkblue;
-    background: repeating-linear-gradient(90deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px, repeating-linear-gradient(180deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px;
+    background: repeating-linear-gradient(90deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px,
+        repeating-linear-gradient(180deg, #f0f0f0 0, #f0f0f0 5%, transparent 0, transparent 50%) 0 / 15px 15px;
 }
 
-#searchBar{
+#searchBar {
     position: fixed;
     display: flex;
     background: #ffffff80;
@@ -25,10 +26,10 @@ body,
 #txbFilter {
     margin: 10px 5px 0px 5px;
     padding: 5px;
-    border: #C0C0C0 solid 1px;
+    border: #c0c0c0 solid 1px;
     border-radius: 8px;
     flex: 1;
-    outline: 0!important;
+    outline: 0 !important;
     background: transparent;
     font-size: 1.25rem;
 }
@@ -41,27 +42,27 @@ body,
     margin-top: 48px;
 }
 
-#table>div {
+#table > div {
     flex: 1;
     display: inline-flex;
 }
 
-#table>div>* {
+#table > div > * {
     margin: 5px;
     padding: 10px;
-    border: #C0C0C0 solid 1px;
+    border: #c0c0c0 solid 1px;
     overflow: hidden;
     border-radius: 0.5em;
     height: 1.5em;
     width: 1.5em;
     text-align: center;
-    font-family: 'keys-font';
+    font-family: "keys-font";
 }
-#table>div>*::selection {
+#table > div > *::selection {
     background: transparent;
 }
 
-.trans-text{
+.trans-text {
     color: transparent !important;
 }
 

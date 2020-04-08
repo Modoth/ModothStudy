@@ -6,7 +6,6 @@
   $foreground: map-get($theme, foreground);
 
   app-comments-viewer {
-
     background-color: mat-color($background, disabled-button);
 
     .comment-title {
@@ -31,11 +30,11 @@
       background: mat-color($background, background);
     }
 
-    .comment-form>textarea {
+    .comment-form > textarea {
       border-color: mat-color($primary, 50);
     }
 
-    .comment-form>textarea:focus {
+    .comment-form > textarea:focus {
       border-color: mat-color($primary);
     }
 
@@ -50,6 +49,5 @@
         color: mat-color($foreground, text);
       }
     }
-
   }
 }
