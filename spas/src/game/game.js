@@ -225,8 +225,7 @@ export class ImageBodyProvider {
                 region.top += frame[0] * region.height;
                 region.left += frame[1] * region.width;
             }
-            const fix = 2;
-            let imgData = new ImageData(Math.ceil(this.width * ppu) + fix, Math.ceil(this.height * ppu) + fix);
+            let imgData = new ImageData(Math.floor(this.width * ppu), Math.floor(this.height * ppu));
             let bitmaps = imgData.data;
             let toBitmaps = this.mImageData.data;
             let toHeight = Array.from({ length: imgData.height }, (_, j) => Math.floor(j * region.height / imgData.height) + region.top);
@@ -259,9 +258,7 @@ export class ImageBodyProvider {
             const startY = getDrawY(0);
             const imgWidth = getDrawX(x + width) - startX;
             const imgHeight = getDrawY(y + height) - startY;
-            const fixX = img.width - imgWidth;
-            const fixY = img.height - imgHeight;
-            ctx.drawImage(img, startX - fixX, startY - fixY);
+            ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
         });
     }
 }
