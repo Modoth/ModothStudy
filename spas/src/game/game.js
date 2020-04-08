@@ -225,7 +225,8 @@ export class ImageBodyProvider {
                 region.top += frame[0] * region.height;
                 region.left += frame[1] * region.width;
             }
-            let imgData = new ImageData(Math.floor(this.width * ppu), Math.floor(this.height * ppu));
+            const fix = 2;
+            let imgData = new ImageData(Math.ceil(this.width * ppu) + fix, Math.ceil(this.height * ppu) + fix);
             let bitmaps = imgData.data;
             let toBitmaps = this.mImageData.data;
             let toHeight = Array.from({ length: imgData.height }, (_, j) => Math.floor(j * region.height / imgData.height) + region.top);
@@ -251,10 +252,16 @@ export class ImageBodyProvider {
         return ImageBodyProviderCache.data.get(key);
     }
 
-    async provide(_, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }, addRendered, ppu) {
+    async provide(_, { x, y, width, height }, { getDrawX, getDrawY }, addRendered, ppu) {
         const img = await this.mGetFrameImage(this.mNextFrame, ppu);
         addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
-            ctx.drawImage(img, dx - x * imgWidth / width, dy - y * imgHeight / height);
+            const startX = getDrawX(0);
+            const startY = getDrawY(0);
+            const imgWidth = getDrawX(x + width) - startX;
+            const imgHeight = getDrawY(y + height) - startY;
+            const fixX = img.width - imgWidth;
+            const fixY = img.height - imgHeight;
+            ctx.drawImage(img, startX - fixX, startY - fixY);
         });
     }
 }
@@ -273,7 +280,11 @@ export class ColorBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }) {
+    provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }) {
+        let dx = getDrawX(x);
+        let dy = getDrawY(y);
+        let imgWidth = getDrawX(x + width) - dx;
+        let imgHeight = getDrawY(y + height) - dy;
         let bitmaps = imgData.data;
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
@@ -299,7 +310,11 @@ export class TextBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }, addRendered) {
+    provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }, addRendered) {
+        let dx = getDrawX(x);
+        let dy = getDrawY(y);
+        let imgWidth = getDrawX(x + width) - dx;
+        let imgHeight = getDrawY(y + height) - dy;
         addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
             let fontCount = Math.floor(imgWidth * this.width / width / this.mText.length);
             ctx.font = `${fontCount}px serif`;
@@ -324,14 +339,22 @@ export class MapBodyProvider {
     bodyUpdated() {
         return this.mBodyUpdated;
     }
-    provide(imgData, { x, y, width, height }, { dx, dy, imgWidth, imgHeight }) {
+    provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }, _, ppu) {
+        let dx = getDrawX(x);
+        let dy = getDrawY(y);
+        let imgWidth = getDrawX(x + width) - dx;
+        let imgHeight = getDrawY(y + height) - dy;
         let bitmaps = imgData.data;
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
                 let idx = ((j + dy) * imgData.width + i + dx) * 4;
-                let mapI = Math.floor((x + width * i / imgWidth) / this.mScale);
-                let mapJ = Math.floor((y + height * j / imgHeight) / this.mScale);
+                let mapI = Math.floor((x + i / ppu) / this.mScale);
+                let mapJ = Math.floor((y + j / ppu) / this.mScale);
                 let mapItem = this.mData[this.dataWidth * mapJ + mapI];
+                if (mapItem == null) {
+                    console.log({ x, y, width, height });
+                    continue;
+                }
                 bitmaps[idx++] = mapItem.r;
                 bitmaps[idx++] = mapItem.g;
                 bitmaps[idx++] = mapItem.b;
@@ -798,14 +821,16 @@ export class Game {
         if (dheight < 0) {
             return;
         }
-
-        let dx = Math.floor((dxmin - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2);
-        let dy = Math.floor((dymin - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2);
-        let imgWidth = Math.floor((dxmax - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2) - dx;
-        let imgHeight = Math.floor((dymax - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2) - dy;
+        const local = { x: (dxmin - ex) + esx / 2, y: (dymin - ey) + esy / 2, width: dwidth, height: dheight };
+        const getDrawX = (x) => Math.floor((x - esx / 2 + ex - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2)
+        const getDrawY = (y) => Math.floor((y - esy / 2 + ey - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2)
+        let dx = getDrawX(local.x);
+        let dy = getDrawY(local.y);
+        let imgWidth = getDrawX(local.x + local.width) - dx;
+        let imgHeight = getDrawY(local.y + local.height) - dy;
         if (imgWidth <= 0 || imgHeight <= 0) {
             return;
         }
-        await body[Body.name].updateImageData(this.mImgDataCache, { x: (dxmin - ex) + esx / 2, y: (dymin - ey) + esy / 2, width: dwidth, height: dheight }, { dx, dy, imgWidth, imgHeight }, addRendered, ppu);
+        await body[Body.name].updateImageData(this.mImgDataCache, local, { getDrawX, getDrawY }, addRendered, ppu);
     }
 }
