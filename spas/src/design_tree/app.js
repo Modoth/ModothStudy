@@ -1,5 +1,6 @@
 import { Tree, Node, NodeSource } from './node.js'
 import { Modal } from '../modal/index.js'
+import { sleep } from '../commons/sleep.js'
 
 export class Basket {
   constructor(/**@type Tree*/ tree) {
@@ -377,12 +378,12 @@ export class App {
             tryResolve(b)
           )
         })
+      uiTask = this.mClearUnusedElement()
       if (centerEle) {
         this.mRootElement.scrollTop = centerEle.offsetTop - 3
       }
-      uiTask = this.mClearUnusedElement().then(() => {
+      uiTask.then(() => {
         uiTask = null
-        this.mRootElement.scrollTop = centerEle.offsetTop - 3
       })
     })
   }
