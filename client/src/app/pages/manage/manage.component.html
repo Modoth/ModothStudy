@@ -1,8 +1,15 @@
 <ng-container *ngIf="loginUser != null">
   <nav mat-tab-nav-bar class="tab-header">
-    <a mat-tab-link class="tab-item" *ngFor="let link of links" (click)="activeLink = link"
-      [routerLink]="linksUrl[link]" routerLinkActive="activeLink">
-      {{ linksName[link] | lang | async }} </a>
+    <a
+      mat-tab-link
+      class="tab-item"
+      *ngFor="let link of links"
+      (click)="activeLink = link"
+      [routerLink]="linksUrl[link]"
+      routerLinkActive="activeLink"
+    >
+      {{ linksName[link] | lang | async }}
+    </a>
   </nav>
   <router-outlet></router-outlet>
 </ng-container>

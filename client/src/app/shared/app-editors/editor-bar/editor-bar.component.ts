@@ -1,9 +1,9 @@
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { Component, Input, EventEmitter, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-editor-bar',
-  templateUrl: './editor-bar.component.html',
-  styleUrls: ['./editor-bar.component.scss']
+  selector: "app-editor-bar",
+  templateUrl: "./editor-bar.component.html",
+  styleUrls: ["./editor-bar.component.scss"],
 })
 export class EditorBarComponent {
   @Input() isFullScreen: boolean = false;
@@ -20,12 +20,12 @@ export class EditorBarComponent {
   get livePreview() {
     return this._livePreview;
   }
-  @Output() livePreviewChanged: EventEmitter<any> = new EventEmitter()
-  @Input() status: string = "primary" //'warn'
+  @Output() livePreviewChanged: EventEmitter<any> = new EventEmitter();
+  @Input() status: string = "primary"; //'warn'
 
   @Input() options: any = {
     symbolInputs: [],
-    symbolInsert: new EventEmitter()
+    symbolInsert: new EventEmitter(),
   };
 
   @Output() saved: EventEmitter<string> = new EventEmitter();
@@ -34,11 +34,9 @@ export class EditorBarComponent {
 
   @Output() formatted: EventEmitter<any> = new EventEmitter();
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
   // ngOnChanges(_: SimpleChanges) {
   //   if (_.defalutLivePreview && _.defalutLivePreview.currentValue !== _.defalutLivePreview.previousValue) {
   //     this.livePreview = _.defalutLivePreview.currentValue

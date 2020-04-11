@@ -1,21 +1,41 @@
 <div class="headers" [class.fullscreenHeader]="isFullScreen">
   <div class="operators" [class.hidden]="isFullScreen">
-    <mat-icon mat-fab [color]="status" (click)="saved.emit();closed.emit()"> check
+    <mat-icon mat-fab [color]="status" (click)="saved.emit(); closed.emit()">
+      check
     </mat-icon>
     <mat-icon mat-fab [color]="status" (click)="saved.emit()">save</mat-icon>
     <ng-container *ngIf="operators">
-      <mat-icon *ngFor="let op of operators" mat-fab color="primary" (click)="op.exec()"> {{op.icon}}
+      <mat-icon
+        *ngFor="let op of operators"
+        mat-fab
+        color="primary"
+        (click)="op.exec()"
+      >
+        {{ op.icon }}
       </mat-icon>
     </ng-container>
     <!-- <mat-icon mat-fab color="primary" (click)="formatted.emit()">format_align_left</mat-icon> -->
-    <mat-slide-toggle *ngIf="showLive" color="primary" [(ngModel)]="livePreview">
-      {{'LivePreview' | lang | async }}
+    <mat-slide-toggle
+      *ngIf="showLive"
+      color="primary"
+      [(ngModel)]="livePreview"
+    >
+      {{ "LivePreview" | lang | async }}
     </mat-slide-toggle>
-    <a mat-button *ngFor="let ipt of options.symbolInputs" color="primary"
-      (click)="options.symbolInsert.emit(ipt)">{{ipt}}</a>
+    <a
+      mat-button
+      *ngFor="let ipt of options.symbolInputs"
+      color="primary"
+      (click)="options.symbolInsert.emit(ipt)"
+      >{{ ipt }}</a
+    >
     <span class="divider"></span>
     <mat-icon mat-fab color="warn" (click)="closed.emit()">close</mat-icon>
   </div>
   <ng-content></ng-content>
 </div>
-<input [class.hidden]="isFullScreen" type="text" class="prevent-editor-focused">
+<input
+  [class.hidden]="isFullScreen"
+  type="text"
+  class="prevent-editor-focused"
+/>

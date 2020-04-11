@@ -1,11 +1,11 @@
-:host{
-    display: flex;
-    flex-direction: column;
-    margin: 10px 10px 5rem 10px;
+:host {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 10px 5rem 10px;
 
-    .my-solution {
-        padding: 10px;
-        border-radius: 6px;
-        min-height: 1em;
-    }
+  .my-solution {
+    padding: 10px;
+    border-radius: 6px;
+    min-height: 1em;
+  }
 }

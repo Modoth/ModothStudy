@@ -1,9 +1,19 @@
-<app-table [dataSource]="tags" [columns]="['name', 'type', 'values', 'delete']"
-  [colTemplateRef]="{type: type, delete: delete}" [colOptions]="{values: {click: openChangeValuesDialog}}"
-  isRoutePaging="true" [pagination]="{pageSize: 10, total: totalCount, pageChanged: reloadTags,
-  routeLink: '/manage/tags/:filter/:pageId' }" class="tag-table">
+<app-table
+  [dataSource]="tags"
+  [columns]="['name', 'type', 'values', 'delete']"
+  [colTemplateRef]="{ type: type, delete: delete }"
+  [colOptions]="{ values: { click: openChangeValuesDialog } }"
+  isRoutePaging="true"
+  [pagination]="{
+    pageSize: 10,
+    total: totalCount,
+    pageChanged: reloadTags,
+    routeLink: '/manage/tags/:filter/:pageId'
+  }"
+  class="tag-table"
+>
   <ng-template #type let-tag="cell">
-    <span>{{ tag.type |lang | async }}</span>
+    <span>{{ tag.type | lang | async }}</span>
   </ng-template>
   <ng-template #delete let-tag="cell">
     <mat-icon (click)="deleteTag(tag)" color="warn">delete</mat-icon>
@@ -13,18 +23,46 @@
   <button mat-mini-fab (click)="createPopup.show()" color="primary">
     <mat-icon>add</mat-icon>
   </button>
-  <app-searcher [defaultFilter]="filter" (search)="search($event)"></app-searcher>
+  <app-searcher
+    [defaultFilter]="filter"
+    (search)="search($event)"
+  ></app-searcher>
 </nav>
-<app-popup #textPopup [btnSaveStr]="okStr" (saved)="saveText(textForm.getData())">
-  <app-form-builder #textForm [data]="{values: editTagData.values}" [fields]="[{key: 'values'}]">
+<app-popup
+  #textPopup
+  [btnSaveStr]="okStr"
+  (saved)="saveText(textForm.getData())"
+>
+  <app-form-builder
+    #textForm
+    [data]="{ values: editTagData.values }"
+    [fields]="[{ key: 'values' }]"
+  >
   </app-form-builder>
 </app-popup>
 
-<app-popup #createPopup [customizeBtnGroupRef]="btnTypes" (canceled)="createForm.clearData()">
-  <app-form-builder #createForm [fields]="[{key: 'name', label: 'Name'},{key: 'values', label: 'Values'}]">
+<app-popup
+  #createPopup
+  [customizeBtnGroupRef]="btnTypes"
+  (canceled)="createForm.clearData()"
+>
+  <app-form-builder
+    #createForm
+    [fields]="[
+      { key: 'name', label: 'Name' },
+      { key: 'values', label: 'Values' }
+    ]"
+  >
   </app-form-builder>
   <ng-template #btnTypes>
-    <button mat-button *ngFor="let type of tagTypes" color="primary" cdkFocusInitial
-      (click)="createTag(type, createForm.getData());createPopup.close();">{{ type | lang | async }}</button>
+    <button
+      mat-button
+      *ngFor="let type of tagTypes"
+      color="primary"
+      cdkFocusInitial
+      (click)="createTag(type, createForm.getData()); createPopup.close()"
+    >
+      {{ type | lang | async }}
+    </button>
   </ng-template>
 </app-popup>

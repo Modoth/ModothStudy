@@ -19,6 +19,11 @@ namespace ModothStudy.Service.CommonServices
             public Menu[]? Children { get; set; }
         }
 
+        private class MenuConfig
+        {
+            public Menu[]? Menus { get; set; }
+        }
+
         private class WxMenu
         {
             [JsonProperty("button")]
@@ -64,7 +69,11 @@ namespace ModothStudy.Service.CommonServices
                 // }
                 if (!string.IsNullOrWhiteSpace(menu))
                 {
-                    var menuItems = JsonConvert.DeserializeObject<Menu[]>(menu);
+                    var menuItems = JsonConvert.DeserializeObject<MenuConfig>(menu).Menus;
+                    if (menuItems == null)
+                    {
+                        menuItems = new Menu[0];
+                    }
                     foreach (var p in menuItems)
                     {
                         if (remain_menu_1-- <= 0)

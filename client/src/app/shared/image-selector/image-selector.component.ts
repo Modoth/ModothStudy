@@ -1,25 +1,22 @@
-import { Component, OnInit, Output,EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 
 @Component({
-  selector: 'app-image-selector',
-  templateUrl: './image-selector.component.html',
-  styleUrls: ['./image-selector.component.scss']
+  selector: "app-image-selector",
+  templateUrl: "./image-selector.component.html",
+  styleUrls: ["./image-selector.component.scss"],
 })
 export class ImageSelectorComponent implements OnInit {
+  @Output() completed: EventEmitter<any> = new EventEmitter();
 
-  @Output() completed: EventEmitter<any> = new EventEmitter()
+  public editingImage: File;
 
-  public editingImage: File
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
   public editedImage = (blob: Blob) => {
     this.editingImage = null;
-    if(blob){
-      this.completed.emit(blob)
+    if (blob) {
+      this.completed.emit(blob);
     }
-  }
-
+  };
 }

@@ -1,11 +1,28 @@
 <div class="divider"></div>
 <div class="node-item search">
-  <input [placeholder]="'Search'|lang|async" [(ngModel)]="filter" (keyup.enter)="search()">
+  <input
+    [placeholder]="'Search' | lang | async"
+    [(ngModel)]="filter"
+    (keyup.enter)="search()"
+  />
   <mat-icon color="primary" (click)="search()">search</mat-icon>
 </div>
-<div *ngIf="node != null && node.content != null && node.content != ''" class="node-item">
-  <app-article-viewer *ngIf="node" [type]="node.docType" [content]="node.content"
-    [options]="{getApp:{value:getNodeApp(node)},loopPlay: {value:true} ,play:{value:true}, summary:{value:true}, showBorder:{value:false}}">
+<div
+  *ngIf="node != null && node.content != null && node.content != ''"
+  class="node-item"
+>
+  <app-article-viewer
+    *ngIf="node"
+    [type]="node.docType"
+    [content]="node.content"
+    [options]="{
+      getApp: { value: getNodeApp(node) },
+      loopPlay: { value: true },
+      play: { value: true },
+      summary: { value: true },
+      showBorder: { value: false }
+    }"
+  >
   </app-article-viewer>
 </div>
 <div class="divider"></div>

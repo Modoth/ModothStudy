@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ArticleViewerComponent } from './article-viewer.component';
+import { ArticleViewerComponent } from "./article-viewer.component";
 
-describe('ArticleViewerComponent', () => {
+describe("ArticleViewerComponent", () => {
   let component: ArticleViewerComponent;
   let fixture: ComponentFixture<ArticleViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ArticleViewerComponent ]
-    })
-    .compileComponents();
+      declarations: [ArticleViewerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ArticleViewerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -1,20 +1,34 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ElementRef, AfterViewChecked, EventEmitter, Output } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { IPythonService, IframePythonService } from '../../python-service/python-service';
-import { Observable } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked,
+  EventEmitter,
+  Output,
+} from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import {
+  IPythonService,
+  IframePythonService,
+} from "../../python-service/python-service";
+import { Observable } from "rxjs";
 
 @Component({
-  selector: 'app-html-viewer',
-  templateUrl: './html-viewer.component.html',
-  styleUrls: ['./html-viewer.component.scss']
+  selector: "app-html-viewer",
+  templateUrl: "./html-viewer.component.html",
+  styleUrls: ["./html-viewer.component.scss"],
 })
-export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked {
-
+export class HtmlViewerComponent
+  implements OnInit, OnChanges, AfterViewChecked {
   @Input() content: string;
 
   @Input() options: any;
 
-  @ViewChild('iframeRef') iframeRef: ElementRef<HTMLIFrameElement>;
+  @ViewChild("iframeRef") iframeRef: ElementRef<HTMLIFrameElement>;
 
   play = false;
 
@@ -56,8 +70,7 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
     this.window = window;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onPlayClick($event) {
     if (this.sandBox) {
@@ -70,8 +83,8 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('options' in changes && this.options) {
-      if (!changes['options'].firstChange) {
+    if ("options" in changes && this.options) {
+      if (!changes["options"].firstChange) {
         return;
       }
       if (this.options.play) {
@@ -96,9 +109,9 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
         this.getApp = this.options.getApp.value;
       }
     }
-    if ('content' in changes) {
+    if ("content" in changes) {
       if (this.getApp && !this.content) {
-        this.getApp().subscribe(content => {
+        this.getApp().subscribe((content) => {
           if (!content) {
             return;
           }
@@ -111,13 +124,16 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
   }
 
   openContentUrl() {
-    window.open(this.popContentUrl, '_blank');
+    window.open(this.popContentUrl, "_blank");
   }
 
   parseContent() {
-    let content = this.content || '';
-    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(this.pythonService ?
-      this.pythonService.getContent(content) : content);
+    let content = this.content || "";
+    const dataUrl =
+      "data:text/html;charset=utf-8," +
+      encodeURIComponent(
+        this.pythonService ? this.pythonService.getContent(content) : content
+      );
     if (this.pythonService) {
       this.pythonService.getHost = this.getPythonServiceHost;
     }
@@ -125,23 +141,31 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
     this.popContentUrlChange.emit(this.popContentUrl);
     this.contentUrl = this.sanitizer.bypassSecurityTrustResourceUrl(dataUrl);
     let noScriptContent = this.removeScript(content);
-    this.canPlay = content.length > 0 && noScriptContent.length < content.length;
-    this.nonScriptContentUrl = this.sanitizer.bypassSecurityTrustResourceUrl('data:text/html,' +
-      encodeURIComponent(noScriptContent));
-    this.mdSource = '```html\n' + this.content + '\n```';
+    this.canPlay =
+      content.length > 0 && noScriptContent.length < content.length;
+    this.nonScriptContentUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      "data:text/html," + encodeURIComponent(noScriptContent)
+    );
+    this.mdSource = "```html\n" + this.content + "\n```";
   }
 
   getPythonServiceHost = async (): Promise<HTMLIFrameElement> => {
     if (this.iframeRef && this.iframeRef.nativeElement) {
       return this.iframeRef.nativeElement;
     }
-    const promise = new Promise<HTMLIFrameElement>(resolve => this.resolveWhenIframeLoaded = resolve);
-    setTimeout(() => this.play = true, 0);
+    const promise = new Promise<HTMLIFrameElement>(
+      (resolve) => (this.resolveWhenIframeLoaded = resolve)
+    );
+    setTimeout(() => (this.play = true), 0);
     return promise;
-  }
+  };
 
   ngAfterViewChecked() {
-    if (this.iframeRef && this.iframeRef.nativeElement && this.resolveWhenIframeLoaded) {
+    if (
+      this.iframeRef &&
+      this.iframeRef.nativeElement &&
+      this.resolveWhenIframeLoaded
+    ) {
       const resolve = this.resolveWhenIframeLoaded;
       this.resolveWhenIframeLoaded = null;
       resolve(this.iframeRef.nativeElement);
@@ -149,6 +173,6 @@ export class HtmlViewerComponent implements OnInit, OnChanges, AfterViewChecked 
   }
 
   removeScript(html) {
-    return html && html.replace(/<script(.|[\r\n])*?<\/script\s?>/img, '');
+    return html && html.replace(/<script(.|[\r\n])*?<\/script\s?>/gim, "");
   }
 }

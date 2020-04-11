@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input } from "@angular/core";
 
 // export class ArticleViewerPipe {
 
@@ -29,21 +29,18 @@ import { Component, OnInit, Input } from '@angular/core';
 // }
 
 @Component({
-  selector: 'app-article-viewer',
-  templateUrl: './article-viewer.component.html',
-  styleUrls: ['./article-viewer.component.scss']
+  selector: "app-article-viewer",
+  templateUrl: "./article-viewer.component.html",
+  styleUrls: ["./article-viewer.component.scss"],
 })
 export class ArticleViewerComponent implements OnInit {
-
   @Input() type: string;
 
   @Input() options: any;
 
   @Input() content: string;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

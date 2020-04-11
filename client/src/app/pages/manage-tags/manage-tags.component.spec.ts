@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ManageTagsComponent } from './manage-tags.component';
+import { ManageTagsComponent } from "./manage-tags.component";
 
-describe('ManageTagsComponent', () => {
+describe("ManageTagsComponent", () => {
   let component: ManageTagsComponent;
   let fixture: ComponentFixture<ManageTagsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ManageTagsComponent ]
-    })
-    .compileComponents();
+      declarations: [ManageTagsComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ManageTagsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

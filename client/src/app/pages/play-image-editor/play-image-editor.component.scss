@@ -8,20 +8,17 @@
     margin: 10px;
     // align-self: center;
   }
-  
+
   ::ng-deep img {
     width: 90%;
     top: 50%;
     left: 50%;
     position: absolute;
     transform: translateY(-50%) translateX(-50%);
-  
   }
-  
+
   ::ng-deep .image-editor {
     flex: 1;
     margin-bottom: 20px;
   }
 }
-
-

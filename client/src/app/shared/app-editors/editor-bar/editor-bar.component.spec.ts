@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { EditorBarComponent } from './editor-bar.component';
+import { EditorBarComponent } from "./editor-bar.component";
 
-describe('EditorBarComponent', () => {
+describe("EditorBarComponent", () => {
   let component: EditorBarComponent;
   let fixture: ComponentFixture<EditorBarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditorBarComponent ]
-    })
-    .compileComponents();
+      declarations: [EditorBarComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('EditorBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

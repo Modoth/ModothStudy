@@ -1,12 +1,22 @@
 <div (click)="selected.emit(node)">
-  <div class=" title" [class.non-shared-title]="!node.shared">
-    <ng-container *ngIf="isTopLevel && node.user;else headerNodeName">
-      <ng-container *ngIf="loginUser && loginUser.id === node.user.id;else headerUsrName">
-        <img class="user-avatar" [src]="loginUser.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)">
-        <span class="header-name">{{ (node.path === '!' ? 'MySolution' : 'Mine') | lang | async }}</span>
+  <div class="title" [class.non-shared-title]="!node.shared">
+    <ng-container *ngIf="isTopLevel && node.user; else headerNodeName">
+      <ng-container
+        *ngIf="loginUser && loginUser.id === node.user.id; else headerUsrName"
+      >
+        <img
+          class="user-avatar"
+          [src]="loginUser.avatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
+        />
+        <span class="header-name">{{
+          (node.path === "!" ? "MySolution" : "Mine") | lang | async
+        }}</span>
       </ng-container>
       <ng-template #headerUsrName>
-        <img class="user-avatar" [src]="node.user.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)">
+        <img
+          class="user-avatar"
+          [src]="node.user.avatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
+        />
         <span class="header-name"> {{ node.user.nickName }}</span>
       </ng-template>
     </ng-container>
@@ -14,26 +24,35 @@
       <mat-icon *ngIf="node.reference">
         directions
       </mat-icon>
-      <ng-container *ngIf="node.path === '/!solutions' solutionsNodeName ">
+      <ng-container *ngIf="node.path === '/!solutions'; solutionsNodeName">
         <mat-icon>
           favorite
         </mat-icon>
-        <span> {{ 'Solution' | lang | async }}</span>
+        <span> {{ "Solution" | lang | async }}</span>
       </ng-container>
-      <ng-container *ngIf="node.path !== '/!solutions' solutionsNodeName ">
+      <ng-container *ngIf="node.path !== '/!solutions'; solutionsNodeName">
         <mat-icon>
-          {{icon}}
+          {{ icon }}
         </mat-icon>
         <span> {{ node.name }}</span>
       </ng-container>
     </ng-template>
     <span class="divider"></span>
-    <mat-icon *ngIf="isOwnNode" class="delete" (click)="deleted.emit($event); $event.stopPropagation();" color="accent">
+    <mat-icon
+      *ngIf="isOwnNode"
+      class="delete"
+      (click)="deleted.emit($event); $event.stopPropagation()"
+      color="accent"
+    >
       delete
     </mat-icon>
   </div>
-  <div class="tags" *ngIf="!summary && node != null && node.tags != null && node.tags.length > 0">
-    <app-node-tag-view [tags]="node.tags">
-    </app-node-tag-view>
+  <div
+    class="tags"
+    *ngIf="
+      !summary && node != null && node.tags != null && node.tags.length > 0
+    "
+  >
+    <app-node-tag-view [tags]="node.tags"> </app-node-tag-view>
   </div>
 </div>

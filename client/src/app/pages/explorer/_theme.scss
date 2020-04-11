@@ -6,7 +6,7 @@
   $foreground: map-get($theme, foreground);
 
   app-explorer {
-    .search>input::placeholder {
+    .search > input::placeholder {
       color: mat-color($primary, "lighter");
     }
   }

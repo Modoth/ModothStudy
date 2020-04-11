@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { PlayPythonComponent } from './play-python.component';
+import { PlayPythonComponent } from "./play-python.component";
 
-describe('PlayPythonComponent', () => {
+describe("PlayPythonComponent", () => {
   let component: PlayPythonComponent;
   let fixture: ComponentFixture<PlayPythonComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PlayPythonComponent ]
-    })
-    .compileComponents();
+      declarations: [PlayPythonComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('PlayPythonComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

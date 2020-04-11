@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { TerminalImeComponent } from './terminal-ime.component';
+import { TerminalImeComponent } from "./terminal-ime.component";
 
-describe('TerminalImeComponent', () => {
+describe("TerminalImeComponent", () => {
   let component: TerminalImeComponent;
   let fixture: ComponentFixture<TerminalImeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TerminalImeComponent ]
-    })
-    .compileComponents();
+      declarations: [TerminalImeComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('TerminalImeComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -15,10 +15,10 @@
     font-weight: bold;
     display: flex;
     border-width: 1px 0 0 0;
-    border-style: solid;  
+    border-style: solid;
   }
 
-  .node:first-of-type>.node-title {
+  .node:first-of-type > .node-title {
     border-width: 0;
   }
 
@@ -50,7 +50,7 @@
       font-size: 0.5rem;
     }
 
-    &>mat-icon {
+    & > mat-icon {
       margin: 0 5px;
     }
 
@@ -97,7 +97,7 @@
   z-index: 3;
   font-size: 1.125em;
 
-  &>.mat-button {
+  & > .mat-button {
     min-width: unset;
     padding: 2.5px 10px;
   }

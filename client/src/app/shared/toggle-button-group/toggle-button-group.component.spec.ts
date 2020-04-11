@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ToggleButtonGroupComponent } from './toggle-button-group.component';
+import { ToggleButtonGroupComponent } from "./toggle-button-group.component";
 
-describe('ToggleButtonComponent', () => {
+describe("ToggleButtonComponent", () => {
   let component: ToggleButtonGroupComponent;
   let fixture: ComponentFixture<ToggleButtonGroupComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToggleButtonGroupComponent ]
-    })
-    .compileComponents();
+      declarations: [ToggleButtonGroupComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ToggleButtonComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

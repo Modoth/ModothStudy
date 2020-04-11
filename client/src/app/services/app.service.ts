@@ -1,10 +1,17 @@
-import { Injectable, Inject, Optional } from '@angular/core';
-import { Observable, BehaviorSubject, throwError, timer } from 'rxjs';
-import { distinctUntilChanged, tap, map } from 'rxjs/operators'
-import { LoginService, LoginUser, ApiResultLoginUser, Query, ApiResult, BASE_PATH } from '../apis';
-import { Router, NavigationEnd } from '@angular/router';
-import { Location } from '@angular/common';
-import { Configs } from '../apis';
+import { Injectable, Inject, Optional } from "@angular/core";
+import { Observable, BehaviorSubject, throwError, timer } from "rxjs";
+import { distinctUntilChanged, tap, map } from "rxjs/operators";
+import {
+  LoginService,
+  LoginUser,
+  ApiResultLoginUser,
+  Query,
+  ApiResult,
+  BASE_PATH,
+} from "../apis";
+import { Router, NavigationEnd } from "@angular/router";
+import { Location } from "@angular/common";
+import { Configs } from "../apis";
 
 export class MenuConfig {
   public defaultLink: string;
@@ -12,8 +19,8 @@ export class MenuConfig {
     public name: string,
     public topQuery: string,
     public query: Query,
-    public children: MenuConfig[]) {
-  }
+    public children: MenuConfig[]
+  ) {}
 }
 
 export class ExplorerHistoryItem {
@@ -23,18 +30,20 @@ export class ExplorerHistoryItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AppService {
-  constructor(public loginService: LoginService,
+  constructor(
+    public loginService: LoginService,
     @Optional() @Inject(BASE_PATH) basePath: string,
     private router: Router,
-    private location: Location) {
+    private location: Location
+  ) {
     this.m_CanLogin = !this.isCorsApi(basePath, window.location.origin);
-    router.events.subscribe(event => {
+    router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.historyNo++;
-      };
+      }
     });
   }
 
@@ -44,10 +53,10 @@ export class AppService {
     }
     apiBasePath = apiBasePath.trim().toLocaleUpperCase();
     origin = origin.toLocaleUpperCase();
-    if (apiBasePath == '') {
+    if (apiBasePath == "") {
       return false;
     }
-    if (apiBasePath == origin || apiBasePath.startsWith(origin + '/')) {
+    if (apiBasePath == origin || apiBasePath.startsWith(origin + "/")) {
       return false;
     }
     return true;
@@ -57,39 +66,41 @@ export class AppService {
     if (this.historyNo > 1) {
       this.location.back();
     } else {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl("/");
     }
-  }
+  };
 
   private historyNo = 0;
   private m_CanLogin = false;
   public get canLogin() {
     return this.m_CanLogin;
   }
-  public readonly ExplorerHistoryKey = 'ExplorerHistory';
-  public readonly ThemeKey = 'ThemeHistory';
-  public explorerHistorySubject: BehaviorSubject<ExplorerHistoryItem[]>
+  public readonly ExplorerHistoryKey = "ExplorerHistory";
+  public readonly ThemeKey = "ThemeHistory";
+  public explorerHistorySubject: BehaviorSubject<ExplorerHistoryItem[]>;
   public readonly MaxExplorerHistoryCount = 30;
   public currentThemeIdx = -1;
   public readonly themes = [
-    'theme-purple-green',
-    'theme-pink-bluegrey',
-    'theme-deeppurple-amber',
-    'theme-indigo-pink',
+    "theme-purple-green",
+    "theme-pink-bluegrey",
+    "theme-deeppurple-amber",
+    "theme-indigo-pink",
   ];
 
   public init() {
-    this.explorerHistorySubject = new BehaviorSubject<ExplorerHistoryItem[]>(this.loadExploryHistory());
+    this.explorerHistorySubject = new BehaviorSubject<ExplorerHistoryItem[]>(
+      this.loadExploryHistory()
+    );
     const theme = localStorage.getItem(this.ThemeKey);
     if (theme) {
       this.currentThemeIdx = this.themes.indexOf(theme);
     }
-    this.updateTheme()
+    this.updateTheme();
   }
 
   public loadExploryHistory() {
     const hisStr = localStorage.getItem(this.ExplorerHistoryKey);
-    if (hisStr == null || hisStr === '') {
+    if (hisStr == null || hisStr === "") {
       return [];
     }
     try {
@@ -98,7 +109,7 @@ export class AppService {
         return history;
       }
       return [];
-    } catch{
+    } catch {
       return [];
     }
   }
@@ -124,12 +135,12 @@ export class AppService {
   }
 
   public clearExplorerHistory() {
-    localStorage.setItem(this.ExplorerHistoryKey, '');
+    localStorage.setItem(this.ExplorerHistoryKey, "");
     this.explorerHistorySubject.next([]);
   }
 
   public putExplorerHistoryItem(item: ExplorerHistoryItem) {
-    let his = this.explorerHistorySubject.value.filter(i => i.id !== item.id);
+    let his = this.explorerHistorySubject.value.filter((i) => i.id !== item.id);
     his.unshift(item);
     if (his.length > this.MaxExplorerHistoryCount) {
       his.pop();
@@ -147,13 +158,16 @@ export class AppService {
       return this.nullUser();
     }
     return this.loginService.on().pipe(
-      tap(data => {
-        if (!data.result && data.error != Configs.ServiceMessagesEnum.NotLogin.toString()) {
+      tap((data) => {
+        if (
+          !data.result &&
+          data.error != Configs.ServiceMessagesEnum.NotLogin.toString()
+        ) {
           throw data.error;
         }
-        this.updateUserWhenDiff(data.data)
+        this.updateUserWhenDiff(data.data);
       })
-    )
+    );
   }
 
   nullUser(): Observable<any> {
@@ -162,7 +176,7 @@ export class AppService {
         this.updateUserWhenDiff(null);
         return null;
       })
-    )
+    );
   }
 
   public updateUserWhenDiff(user) {
@@ -175,13 +189,13 @@ export class AppService {
       return this.nullUser();
     }
     return this.loginService.pwdOn({ name, password }).pipe(
-      tap(data => {
+      tap((data) => {
         if (!data.result) {
           throw data.error;
         }
-        this.updateUserWhenDiff(data.data)
+        this.updateUserWhenDiff(data.data);
       })
-    )
+    );
   }
 
   logout(): Observable<ApiResult> {
@@ -190,16 +204,15 @@ export class AppService {
         if (!data.result) {
           throw data.error;
         }
-        this.updateUserWhenDiff(null)
+        this.updateUserWhenDiff(null);
         this.clearExplorerHistory();
       })
-    )
+    );
   }
 
-
-
   public updateTheme() {
-    this.currentThemeIdx = (this.currentThemeIdx + this.themes.length) % this.themes.length;
+    this.currentThemeIdx =
+      (this.currentThemeIdx + this.themes.length) % this.themes.length;
     if (this.themes[this.currentThemeIdx]) {
       let theme = this.themes[this.currentThemeIdx];
       document.documentElement.classList.add(theme);

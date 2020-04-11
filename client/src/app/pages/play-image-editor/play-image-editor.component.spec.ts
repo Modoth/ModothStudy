@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { PlayImageEditorComponent } from './play-image-editor.component';
+import { PlayImageEditorComponent } from "./play-image-editor.component";
 
-describe('PlayImageEditorComponent', () => {
+describe("PlayImageEditorComponent", () => {
   let component: PlayImageEditorComponent;
   let fixture: ComponentFixture<PlayImageEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PlayImageEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [PlayImageEditorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('PlayImageEditorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

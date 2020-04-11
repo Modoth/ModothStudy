@@ -1,15 +1,22 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { IPythonService, IframePythonService } from '../../python-service/python-service';
-import { Observable } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core";
+import {
+  IPythonService,
+  IframePythonService,
+} from "../../python-service/python-service";
+import { Observable } from "rxjs";
 
 @Component({
-  selector: 'app-python-viewer',
-  templateUrl: './python-viewer.component.html',
-  styleUrls: ['./python-viewer.component.scss']
+  selector: "app-python-viewer",
+  templateUrl: "./python-viewer.component.html",
+  styleUrls: ["./python-viewer.component.scss"],
 })
 export class PythonViewerComponent implements OnInit, OnChanges {
-
-
   @Input() options: any;
 
   @Input() content: string;
@@ -20,7 +27,7 @@ export class PythonViewerComponent implements OnInit, OnChanges {
 
   appContent: string;
 
-  menus: { icon: string, onClick: () => any }[];
+  menus: { icon: string; onClick: () => any }[];
 
   summary = false;
 
@@ -36,22 +43,20 @@ export class PythonViewerComponent implements OnInit, OnChanges {
 
   showBorder = false;
 
-  appOptions: any = {}
+  appOptions: any = {};
 
-  getApp: () => Observable<string>
+  getApp: () => Observable<string>;
 
   pythonService: IPythonService;
 
   public maxLine = 3;
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('options' in changes && this.options) {
+    if ("options" in changes && this.options) {
       if (this.options.summary) {
         this.summary = this.options.summary.value;
       }
@@ -78,42 +83,47 @@ export class PythonViewerComponent implements OnInit, OnChanges {
         this.loopPlay = this.options.loopPlay.value;
       }
     }
-    if ('content' in changes) {
+    if ("content" in changes) {
       this.markdownize();
       this.appContent = null;
       if (this.getApp) {
         if (!this.pythonService) {
           this.pythonService = new IframePythonService();
         }
-        this.appOptions = { pythonService: { value: this.pythonService }, showBorder: { value: false } }
-        this.getApp().subscribe(content => {
+        this.appOptions = {
+          pythonService: { value: this.pythonService },
+          showBorder: { value: false },
+        };
+        this.getApp().subscribe((content) => {
           this.appContent = content;
           if (this.loopPlay) {
             this.isRunning = true;
           }
-        }
-        );
+        });
       }
     }
   }
 
   markdownize() {
     this.markdownContent = null;
-    const content = this.content && this.summary ? this.getSummary(this.content) : (this.content || '');
-    this.markdownContent = '```python\n' + content + '\n```';
+    const content =
+      this.content && this.summary
+        ? this.getSummary(this.content)
+        : this.content || "";
+    this.markdownContent = "```python\n" + content + "\n```";
   }
   getSummary(content: string) {
     let lineRemain = this.maxLine;
     const lines = [];
     let needCloseString = false;
     const stringTag = "'''";
-    for (let line of content.split('\n')) {
+    for (let line of content.split("\n")) {
       lines.push(line);
       line = line.trim();
       if (line.startsWith(stringTag)) {
         needCloseString = !needCloseString;
       }
-      if (line !== '') {
+      if (line !== "") {
         lineRemain--;
         if (lineRemain === 0) {
           break;
@@ -121,10 +131,9 @@ export class PythonViewerComponent implements OnInit, OnChanges {
       }
     }
     if (needCloseString) {
-      lines.push("      ...")
-      lines.push(stringTag)
+      lines.push("      ...");
+      lines.push(stringTag);
     }
-    return lines.join('\n');
+    return lines.join("\n");
   }
 }
-

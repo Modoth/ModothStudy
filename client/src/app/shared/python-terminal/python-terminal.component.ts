@@ -1,6 +1,15 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewChecked, EventEmitter } from '@angular/core';
-import { IframePythonService } from 'src/app/shared/python-service/python-service';
-import { DomSanitizer } from '@angular/platform-browser';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  Output,
+  AfterViewChecked,
+  EventEmitter,
+} from "@angular/core";
+import { IframePythonService } from "src/app/shared/python-service/python-service";
+import { DomSanitizer } from "@angular/platform-browser";
 
 class HistoryNavigator {
   public currentIdx = 0;
@@ -20,7 +29,7 @@ class HistoryNavigator {
     } else if (this.currentIdx > this.exps.length) {
       this.currentIdx = this.exps.length;
     }
-    return this.exps[this.currentIdx] || '';
+    return this.exps[this.currentIdx] || "";
   }
 }
 
@@ -30,7 +39,12 @@ class PlayToPyTranslator {
   }
 
   hasChinese(str) {
-    return str && str.match(/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/);
+    return (
+      str &&
+      str.match(
+        /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/
+      )
+    );
   }
 
   translate(playSrc: string): string[] {
@@ -38,20 +52,20 @@ class PlayToPyTranslator {
       return [playSrc];
     }
     const pySrc = [];
-    const indent = '  ';
+    const indent = "  ";
     let funcSrc = null;
     let currentFuncIdx = 0;
     let currentFuncName = null;
     let hasChinese = this.hasChinese(playSrc);
-    for (let line of playSrc.split('\n')) {
+    for (let line of playSrc.split("\n")) {
       line = line.trim();
-      if (line === '') {
+      if (line === "") {
         continue;
       }
       if (line.startsWith(`'''`)) {
         if (funcSrc) {
-          funcSrc.push('\n');
-          pySrc.push(funcSrc.join('\n'));
+          funcSrc.push("\n");
+          pySrc.push(funcSrc.join("\n"));
           pySrc.push(`${currentFuncName}()`);
           funcSrc = null;
           currentFuncIdx++;
@@ -59,7 +73,7 @@ class PlayToPyTranslator {
           funcSrc = [];
           let sessionName = line.slice(`'''`.length).trim();
 
-          if (sessionName !== '') {
+          if (sessionName !== "") {
             sessionName = sessionName;
           } else if (hasChinese) {
             sessionName = `第${currentFuncIdx}场`;
@@ -68,63 +82,102 @@ class PlayToPyTranslator {
           }
           currentFuncName = sessionName;
           funcSrc.push(`async def ${currentFuncName}():`);
-          const newCmdStr = hasChinese ? `开始场景('${sessionName}')` : `startSession('${sessionName}')`;
+          const newCmdStr = hasChinese
+            ? `开始场景('${sessionName}')`
+            : `startSession('${sessionName}')`;
           funcSrc.push(`${indent}${newCmdStr}`);
         }
         continue;
       }
-      if (line.startsWith('【人物】')) {
-        line = line.slice('【人物】'.length);
+      if (line.startsWith("【人物】")) {
+        line = line.slice("【人物】".length);
         const reg = /(\S*)\s*（\s*(\S*)\s*饰）/g;
         while (true) {
           const match = reg.exec(line);
           if (!match) {
             break;
           }
-          funcSrc.push(indent + `${match[1]} = 创建角色('${this.toPyArgumentStr(match[2])}','${this.toPyArgumentStr(match[1])}')`);
+          funcSrc.push(
+            indent +
+              `${match[1]} = 创建角色('${this.toPyArgumentStr(
+                match[2]
+              )}','${this.toPyArgumentStr(match[1])}')`
+          );
         }
         continue;
       }
-      if (line.startsWith('[chars]')) {
-        line = line.slice('[chars]'.length);
+      if (line.startsWith("[chars]")) {
+        line = line.slice("[chars]".length);
         const reg = /(\S*)\s*\(\s*(\S*)\s*play\)/g;
         while (true) {
           const match = reg.exec(line);
           if (!match) {
             break;
           }
-          funcSrc.push(indent + `${match[1]} = createRole('${this.toPyArgumentStr(match[2])}','${this.toPyArgumentStr(match[1])}')`);
+          funcSrc.push(
+            indent +
+              `${match[1]} = createRole('${this.toPyArgumentStr(
+                match[2]
+              )}','${this.toPyArgumentStr(match[1])}')`
+          );
         }
         continue;
       }
       const setMatch = line.match(/^【\s*(.*?)\s*】\s*(.*)$/);
       if (setMatch) {
-        funcSrc.push(indent + `设置${setMatch[1]}('${this.toPyArgumentStr(setMatch[2])}')`);
+        funcSrc.push(
+          indent + `设置${setMatch[1]}('${this.toPyArgumentStr(setMatch[2])}')`
+        );
         continue;
       }
       const setMatchEn = line.match(/^\[\s*(.*?)\s*\]\s*(.*)$/);
       if (setMatchEn) {
-        funcSrc.push(indent + `set${setMatchEn[1]}('${this.toPyArgumentStr(setMatchEn[2])}')`);
+        funcSrc.push(
+          indent +
+            `set${setMatchEn[1]}('${this.toPyArgumentStr(setMatchEn[2])}')`
+        );
         continue;
       }
-      const sayMatchWithMotion = line.match(/^(.*?)\s*（\s*(.*?)\s*）\s*：\s*(.*)$/);
+      const sayMatchWithMotion = line.match(
+        /^(.*?)\s*（\s*(.*?)\s*）\s*：\s*(.*)$/
+      );
       if (sayMatchWithMotion) {
-        funcSrc.push(indent + `await ${sayMatchWithMotion[1]}.说('${this.toPyArgumentStr(sayMatchWithMotion[3])}', '${this.toPyArgumentStr(sayMatchWithMotion[2])}')`);
+        funcSrc.push(
+          indent +
+            `await ${sayMatchWithMotion[1]}.说('${this.toPyArgumentStr(
+              sayMatchWithMotion[3]
+            )}', '${this.toPyArgumentStr(sayMatchWithMotion[2])}')`
+        );
         continue;
       }
-      const sayMatchWithMotionEn = line.match(/^(.*?)\s*\(\s*(.*?)\s*\)\s*:\s*(.*)$/);
+      const sayMatchWithMotionEn = line.match(
+        /^(.*?)\s*\(\s*(.*?)\s*\)\s*:\s*(.*)$/
+      );
       if (sayMatchWithMotionEn) {
-        funcSrc.push(indent + `await ${sayMatchWithMotionEn[1]}.say('${this.toPyArgumentStr(sayMatchWithMotionEn[3])}', '${this.toPyArgumentStr(sayMatchWithMotionEn[2])}')`);
+        funcSrc.push(
+          indent +
+            `await ${sayMatchWithMotionEn[1]}.say('${this.toPyArgumentStr(
+              sayMatchWithMotionEn[3]
+            )}', '${this.toPyArgumentStr(sayMatchWithMotionEn[2])}')`
+        );
         continue;
       }
       const sayMatch = line.match(/^(.*?)\s*：\s*(.*)$/);
       if (sayMatch) {
-        funcSrc.push(indent + `await ${sayMatch[1]}.说('${this.toPyArgumentStr(sayMatch[2])}')`);
+        funcSrc.push(
+          indent +
+            `await ${sayMatch[1]}.说('${this.toPyArgumentStr(sayMatch[2])}')`
+        );
         continue;
       }
       const sayMatchEn = line.match(/^(.*?)\s*:\s*(.*)$/);
       if (sayMatchEn) {
-        funcSrc.push(indent + `await ${sayMatchEn[1]}.say('${this.toPyArgumentStr(sayMatchEn[2])}')`);
+        funcSrc.push(
+          indent +
+            `await ${sayMatchEn[1]}.say('${this.toPyArgumentStr(
+              sayMatchEn[2]
+            )}')`
+        );
         continue;
       }
     }
@@ -133,19 +186,18 @@ class PlayToPyTranslator {
 }
 
 @Component({
-  selector: 'app-python-terminal',
-  templateUrl: './python-terminal.component.html',
-  styleUrls: ['./python-terminal.component.scss']
+  selector: "app-python-terminal",
+  templateUrl: "./python-terminal.component.html",
+  styleUrls: ["./python-terminal.component.scss"],
 })
 export class PythonTerminalComponent implements OnInit, AfterViewChecked {
-
   @Input() initCommends: string;
 
   @Input() loop = false;
 
   @Input() loopInterval = 5000;
 
-  outputs: { type: string, value: string }[] = [];
+  outputs: { type: string; value: string }[] = [];
 
   maxOutputsLength = 500;
 
@@ -159,9 +211,9 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
     this.inputRef.nativeElement.value = value;
   }
 
-  tabIndent = '    ';
+  tabIndent = "    ";
 
-  inputs: { indent: number, line: string, uncomplete: boolean }[] = [];
+  inputs: { indent: number; line: string; uncomplete: boolean }[] = [];
 
   nextIndent = 0;
 
@@ -169,22 +221,23 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
 
   nextMaxIndent = 0;
 
-  inputPrefix = '>>> ';
+  inputPrefix = ">>> ";
 
   imeTarget: any;
 
-  multilinePrefix = '... ';
+  multilinePrefix = "... ";
 
-  evalPrefix = '... ';
+  evalPrefix = "... ";
 
-  useTerminalIme = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
+  useTerminalIme = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    window.navigator.userAgent
+  );
 
-  @ViewChild('outputsRef') outputsRef: ElementRef<HTMLElement>;
+  @ViewChild("outputsRef") outputsRef: ElementRef<HTMLElement>;
 
-  @ViewChild('inputRef') inputRef: ElementRef<HTMLInputElement>;
+  @ViewChild("inputRef") inputRef: ElementRef<HTMLInputElement>;
 
-  @ViewChild('iframeRef') iframeRef: ElementRef<HTMLIFrameElement>;
-
+  @ViewChild("iframeRef") iframeRef: ElementRef<HTMLIFrameElement>;
 
   @Input() pythonService: IframePythonService;
 
@@ -199,23 +252,33 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
   public resolveWhenIframeLoaded;
 
   public replCmds = {
-    '.clear': () => {
+    ".clear": () => {
       this.outputs = [];
     },
   };
 
-  constructor(public hostRef: ElementRef<HTMLElement>, public sanitizer: DomSanitizer) {
-  }
+  constructor(
+    public hostRef: ElementRef<HTMLElement>,
+    public sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
     if (!this.pythonService) {
       this.pythonService = new IframePythonService();
-      const src = this.pythonService.getContent('<html><script>window.onAppLoaded && window.onAppLoaded()</script></html>');
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl('data:text/html,' + encodeURIComponent(src));
+      const src = this.pythonService.getContent(
+        "<html><script>window.onAppLoaded && window.onAppLoaded()</script></html>"
+      );
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(
+        "data:text/html," + encodeURIComponent(src)
+      );
       this.pythonService.getHost = this.getPythonServiceHost;
     }
-    this.pythonService.stdout.subscribe(result => this.addToOutputs(result, 'stdout'));
-    this.pythonService.stderr.subscribe(error => this.addToOutputs(error, 'stderr'));
+    this.pythonService.stdout.subscribe((result) =>
+      this.addToOutputs(result, "stdout")
+    );
+    this.pythonService.stderr.subscribe((error) =>
+      this.addToOutputs(error, "stderr")
+    );
     this.pythonService.reset().then(async () => {
       if (this.initCommends) {
         const translator = new PlayToPyTranslator();
@@ -224,19 +287,25 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
           for (const command of cmds) {
             await this.evalExp(command, true);
           }
-          await new Promise(resolve => setTimeout(resolve, this.loopInterval));
-        }
-        while (this.loop);
+          await new Promise((resolve) =>
+            setTimeout(resolve, this.loopInterval)
+          );
+        } while (this.loop);
       }
       await this.pythonServiceChanged.emit(this.pythonService);
     });
     this.outputsRef.nativeElement.onclick = () => {
-      if (!this.useTerminalIme || this.imeTarget === this.inputRef.nativeElement) {
+      if (
+        !this.useTerminalIme ||
+        this.imeTarget === this.inputRef.nativeElement
+      ) {
         return;
       }
       this.focusChanged.emit(true);
       setTimeout(() => {
-        this.outputsRef.nativeElement.scrollTo({ top: this.outputsRef.nativeElement.scrollHeight });
+        this.outputsRef.nativeElement.scrollTo({
+          top: this.outputsRef.nativeElement.scrollHeight,
+        });
       }, 200);
       this.imeTarget = this.inputRef.nativeElement;
     };
@@ -254,26 +323,34 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
     if (this.iframeRef && this.iframeRef.nativeElement) {
       return this.iframeRef.nativeElement;
     }
-    const promise = new Promise<HTMLIFrameElement>(resolve => this.resolveWhenIframeLoaded = resolve);
+    const promise = new Promise<HTMLIFrameElement>(
+      (resolve) => (this.resolveWhenIframeLoaded = resolve)
+    );
     return promise;
-  }
+  };
 
   ngAfterViewChecked() {
-    if (this.iframeRef && this.iframeRef.nativeElement && this.resolveWhenIframeLoaded) {
+    if (
+      this.iframeRef &&
+      this.iframeRef.nativeElement &&
+      this.resolveWhenIframeLoaded
+    ) {
       const resolve = this.resolveWhenIframeLoaded;
       this.resolveWhenIframeLoaded = null;
       resolve(this.iframeRef.nativeElement);
     }
   }
 
-  public addToOutputs(value: string, type = 'stdin') {
+  public addToOutputs(value: string, type = "stdin") {
     this.outputs.push({ value, type });
     if (this.outputs.length >= this.maxOutputsLength) {
       this.outputs.shift();
     }
     if (this.outputsRef.nativeElement.scrollTo) {
       setTimeout(() => {
-        this.outputsRef.nativeElement.scrollTo({ top: this.outputsRef.nativeElement.scrollHeight });
+        this.outputsRef.nativeElement.scrollTo({
+          top: this.outputsRef.nativeElement.scrollHeight,
+        });
       }, 0);
     }
   }
@@ -283,28 +360,28 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
       return;
     }
     switch (event.key) {
-      case 'ArrowUp':
+      case "ArrowUp":
         event.stopPropagation();
         this.input = this.history.load(-1);
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         event.stopPropagation();
         this.input = this.history.load(1);
         break;
-      case 'Enter':
+      case "Enter":
         event.stopPropagation();
         this.eval();
         break;
-      case 'Backspace':
-        if (this.input === '') {
+      case "Backspace":
+        if (this.input === "") {
           event.stopPropagation();
           this.nextIndent = Math.max(this.nextMinIndent, this.nextIndent - 1);
         }
         break;
-      case ' ':
-        if (this.input === ' ') {
+      case " ":
+        if (this.input === " ") {
           event.stopPropagation();
-          this.input = '';
+          this.input = "";
           this.nextIndent = Math.min(this.nextIndent + 1, this.nextMaxIndent);
         }
         break;
@@ -319,13 +396,13 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
       return;
     }
     if (echoExp) {
-      this.addToOutputs(this.inputPrefix + exp, 'stdin');
+      this.addToOutputs(this.inputPrefix + exp, "stdin");
     }
     try {
       const result = await this.pythonService.exec(exp);
-      this.addToOutputs(result, 'stdout');
+      this.addToOutputs(result, "stdout");
     } catch (error) {
-      this.addToOutputs(error, 'stderr');
+      this.addToOutputs(error, "stderr");
     }
     this.isEvaling = false;
   }
@@ -336,28 +413,32 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
     this.nextIndent = 0;
     this.nextMinIndent = 0;
     this.nextMaxIndent = 0;
-    return inputs.map(this.stringifyInputLine).join('\n');
+    return inputs.map(this.stringifyInputLine).join("\n");
   }
 
   public stringifyInputLine = (line) => {
     return this.tabIndent.repeat(line.indent) + line.line;
-  }
+  };
 
   public formatInputLine = (line) => {
-    return (this.inputs.length > 0 ? (this.multilinePrefix + this.tabIndent.repeat(line.indent)) : this.inputPrefix) + line.line;
-  }
+    return (
+      (this.inputs.length > 0
+        ? this.multilinePrefix + this.tabIndent.repeat(line.indent)
+        : this.inputPrefix) + line.line
+    );
+  };
 
   public async eval() {
     if (!this.pythonService || this.isEvaling) {
       return;
     }
     const line = this.input.trim();
-    if (line === '' && this.inputs.length === 0) {
+    if (line === "" && this.inputs.length === 0) {
       return;
     }
-    this.input = '';
+    this.input = "";
     const indent = this.nextIndent;
-    const uncomplete = line.endsWith(':');
+    const uncomplete = line.endsWith(":");
     if (uncomplete) {
       this.nextIndent += 1;
       this.nextMinIndent = this.nextIndent;

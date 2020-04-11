@@ -1,13 +1,19 @@
-<ng-container *ngIf="summary;else detail">
+<ng-container *ngIf="summary; else detail">
   <div *ngIf="summaryImg != null" class="media summary">
     <img [src]="summaryImg" />
   </div>
   <div *ngIf="summaryVideo != null" class="media summary">
-    <video [src]="summaryVideo" controls>
-    </video>
+    <video [src]="summaryVideo" controls></video>
   </div>
-  <markdown class="summary-content" *ngIf="summaryContent != null && summaryContent !== ''" [data]="summaryContent"></markdown>
+  <markdown
+    class="summary-content"
+    *ngIf="summaryContent != null && summaryContent !== ''"
+    [data]="summaryContent"
+  ></markdown>
 </ng-container>
 <ng-template #detail>
-  <markdown *ngIf="content != null && content !== ''" [data]="content"></markdown>
+  <markdown
+    *ngIf="content != null && content !== ''"
+    [data]="content"
+  ></markdown>
 </ng-template>

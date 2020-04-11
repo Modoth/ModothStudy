@@ -1,5 +1,5 @@
 :host {
-  .user-avatar{
+  .user-avatar {
     width: 24px;
     height: 24px;
     border-radius: 3px;
@@ -12,35 +12,35 @@
     margin-left: 10px;
   }
 
-    .title {
-        margin: 5px;
-        display: flex;
-        align-items: center;
-      
-        &>* {
-          font-size: 1rem;
-          vertical-align: middle;
-          display: inline-block;
-        }
-      
-        &>mat-icon {
-          font-size: 1.5rem;
-          margin: 0 5px 2px 0;
-          height: unset;
-      
-          &:last-child {
-            margin: 0;
-          }
-      
-          &.delete{
-            opacity: 0.75;
-          }
-        }
+  .title {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+
+    & > * {
+      font-size: 1rem;
+      vertical-align: middle;
+      display: inline-block;
     }
 
-    .tags{
-      margin-left: 3px;
-      margin-top: -10px;
-      margin-bottom: -8px;
+    & > mat-icon {
+      font-size: 1.5rem;
+      margin: 0 5px 2px 0;
+      height: unset;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      &.delete {
+        opacity: 0.75;
+      }
     }
+  }
+
+  .tags {
+    margin-left: 3px;
+    margin-top: -10px;
+    margin-bottom: -8px;
+  }
 }

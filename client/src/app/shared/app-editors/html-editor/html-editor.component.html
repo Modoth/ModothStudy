@@ -1,12 +1,32 @@
-<app-editor-bar [operators]="operators" (saved)="saveContent()" (closed)="close()" [livePreview]="livePreview"
-  (livePreviewChanged)="livePreviewChanged($event)" [status]="hasChanged ? 'warn' : 'primary'">
-  <input name="select" type="file" accept="image/*"
-    (change)=" insertingImage = $event.target.files[0];$event.target.value = null" />
-  <div class='image-editor' *ngIf="insertingImage">
-    <app-image-editor [maxImageSize]="maxImageSize" (onError)="errored($event)" [image]="insertingImage"
-      (closed)="insertingImage=null;insertImage($event)">
+<app-editor-bar
+  [operators]="operators"
+  (saved)="saveContent()"
+  (closed)="close()"
+  [livePreview]="livePreview"
+  (livePreviewChanged)="livePreviewChanged($event)"
+  [status]="hasChanged ? 'warn' : 'primary'"
+>
+  <input
+    name="select"
+    type="file"
+    accept="image/*"
+    (change)="
+      insertingImage = $event.target.files[0]; $event.target.value = null
+    "
+  />
+  <div class="image-editor" *ngIf="insertingImage">
+    <app-image-editor
+      [maxImageSize]="maxImageSize"
+      (onError)="errored($event)"
+      [image]="insertingImage"
+      (closed)="insertingImage = null; insertImage($event)"
+    >
     </app-image-editor>
   </div>
 </app-editor-bar>
-<ngx-monaco-editor [options]="editorOptions" [(ngModel)]="changedContent" (onInit)="initEditor($event)">
+<ngx-monaco-editor
+  [options]="editorOptions"
+  [(ngModel)]="changedContent"
+  (onInit)="initEditor($event)"
+>
 </ngx-monaco-editor>

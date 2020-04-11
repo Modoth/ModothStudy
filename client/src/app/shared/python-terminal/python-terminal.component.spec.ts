@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { PythonTerminalComponent } from './python-terminal.component';
+import { PythonTerminalComponent } from "./python-terminal.component";
 
-describe('PythonTerminalComponent', () => {
+describe("PythonTerminalComponent", () => {
   let component: PythonTerminalComponent;
   let fixture: ComponentFixture<PythonTerminalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PythonTerminalComponent ]
-    })
-    .compileComponents();
+      declarations: [PythonTerminalComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('PythonTerminalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

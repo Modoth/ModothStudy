@@ -2,19 +2,19 @@
   margin: 5px;
   display: flex;
 
-    &>* {
-      font-size: 1rem;
-      vertical-align: middle;
-      display: inline-block;
-      align-self: center;
-      margin: 0 5px 0 0;
-    }
+  & > * {
+    font-size: 1rem;
+    vertical-align: middle;
+    display: inline-block;
+    align-self: center;
+    margin: 0 5px 0 0;
+  }
 
-    &>mat-icon {
-      font-size: 1.5rem;
+  & > mat-icon {
+    font-size: 1.5rem;
 
-      &:last-child {
-        margin: 0;
-      }
+    &:last-child {
+      margin: 0;
     }
   }
+}

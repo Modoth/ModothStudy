@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject, Input, OnChanges } from '@angular/core';
-import { IframePythonService } from '../../python-service/python-service';
-import { Observable } from 'rxjs';
+import { Component, OnInit, Inject, Input, OnChanges } from "@angular/core";
+import { IframePythonService } from "../../python-service/python-service";
+import { Observable } from "rxjs";
 
 export interface ArticleEditorModel {
   maxImageSize: number;
@@ -23,9 +23,9 @@ export interface ArticleEditorModel {
 }
 
 @Component({
-  selector: 'app-article-editor',
-  templateUrl: './article-editor.component.html',
-  styleUrls: ['./article-editor.component.scss']
+  selector: "app-article-editor",
+  templateUrl: "./article-editor.component.html",
+  styleUrls: ["./article-editor.component.scss"],
 })
 export class ArticleEditorComponent implements OnInit, OnChanges {
   @Input() maxImageSize: number;
@@ -54,7 +54,11 @@ export class ArticleEditorComponent implements OnInit, OnChanges {
   public changedContent: string;
 
   constructor() {
-    if (this.solutionToType === 'html' && this.type === 'python' && this.solutionToContent) {
+    if (
+      this.solutionToType === "html" &&
+      this.type === "python" &&
+      this.solutionToContent
+    ) {
       this.pythonService = { value: new IframePythonService() };
     }
   }
@@ -64,6 +68,5 @@ export class ArticleEditorComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

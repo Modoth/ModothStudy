@@ -1,57 +1,140 @@
-<app-node-header [isOwnNode]="isOwnNode" [parentNode]="parentNode" [currentNode]="currentNode"></app-node-header>
+<app-node-header
+  [isOwnNode]="isOwnNode"
+  [parentNode]="parentNode"
+  [currentNode]="currentNode"
+></app-node-header>
 <div class="nodes">
   <div
-    [class]="!nodeId && !filter && node.user && loginUser && loginUser.id === node.user.id ? 'node-item mine': 'node-item'"
-    *ngFor="let node of subNodes">
-    <app-node-item (selected)="selectedNode($event)" [node]="node" [loginUser]="loginUser" [isOwnNode]="isOwnNode"
-      [isTopLevel]="!nodeId && !filter " (deleted)="deletePopup.show(); deleteData = node; "></app-node-item>
+    [class]="
+      !nodeId &&
+      !filter &&
+      node.user &&
+      loginUser &&
+      loginUser.id === node.user.id
+        ? 'node-item mine'
+        : 'node-item'
+    "
+    *ngFor="let node of subNodes"
+  >
+    <app-node-item
+      (selected)="selectedNode($event)"
+      [node]="node"
+      [loginUser]="loginUser"
+      [isOwnNode]="isOwnNode"
+      [isTopLevel]="!nodeId && !filter"
+      (deleted)="deletePopup.show(); deleteData = node"
+    ></app-node-item>
   </div>
-  <app-paginator [pageSize]="10" (pageChanged)="reloadSubNodesOnPage($event)" [totalCount]="totalCount"
-    [routeLink]="'/library/list/:nodeId/:filter/:pageId'"></app-paginator>
+  <app-paginator
+    [pageSize]="10"
+    (pageChanged)="reloadSubNodesOnPage($event)"
+    [totalCount]="totalCount"
+    [routeLink]="'/library/list/:nodeId/:filter/:pageId'"
+  ></app-paginator>
 </div>
 <nav class="ops">
-  <app-searcher [defaultFilter]="filter" (search)="search($event)"></app-searcher>
-  <button *ngIf=" isOwnNode && hasPostPermission" mat-mini-fab (click)="createPopup.show()" color="primary">
+  <app-searcher
+    [defaultFilter]="filter"
+    (search)="search($event)"
+  ></app-searcher>
+  <button
+    *ngIf="isOwnNode && hasPostPermission"
+    mat-mini-fab
+    (click)="createPopup.show()"
+    color="primary"
+  >
     <mat-icon>add</mat-icon>
   </button>
 </nav>
 
-<div *ngIf=" isOwnNode && isEditTag " class="library-tag">
-  <app-node-tag-editor [nodeTags]="currentNode.tags" (tagRemoved)="removeTag($event)" (tagAdded)="addTag($event)"
-    (closed)="isEditTag = false">
+<div *ngIf="isOwnNode && isEditTag" class="library-tag">
+  <app-node-tag-editor
+    [nodeTags]="currentNode.tags"
+    (tagRemoved)="removeTag($event)"
+    (tagAdded)="addTag($event)"
+    (closed)="isEditTag = false"
+  >
   </app-node-tag-editor>
 </div>
 <app-toggle-button-group *ngIf="currentNode != null">
-  <button mat-mini-fab color="accent" [routerLink]="'/library/view/'+currentNode.id">
+  <button
+    mat-mini-fab
+    color="accent"
+    [routerLink]="'/library/view/' + currentNode.id"
+  >
     <mat-icon>chrome_reader_mode</mat-icon>
   </button>
   <ng-container *ngIf="isOwnNode">
-    <button mat-mini-fab [color]="currentNode.shared? 'primary': 'basic'" (click)="updateShared(!currentNode.shared)">
+    <button
+      mat-mini-fab
+      [color]="currentNode.shared ? 'primary' : 'basic'"
+      (click)="updateShared(!currentNode.shared)"
+    >
       <mat-icon>share</mat-icon>
     </button>
-    <button mat-mini-fab *ngIf="canShareWx && (currentNode.shared || currentNode.wxShared)"
-      [color]="currentNode.wxShared? 'primary': 'basic'" (click)="updateWxShared(!currentNode.wxShared)">
+    <button
+      mat-mini-fab
+      *ngIf="canShareWx && (currentNode.shared || currentNode.wxShared)"
+      [color]="currentNode.wxShared ? 'primary' : 'basic'"
+      (click)="updateWxShared(!currentNode.wxShared)"
+    >
       <mat-icon>微</mat-icon>
     </button>
-    <button mat-mini-fab
-      [color]="currentNode != null && currentNode.tags != null && currentNode.tags.length > 0 ? 'primary': 'basic'"
-      (click)="isEditTag = true">
+    <button
+      mat-mini-fab
+      [color]="
+        currentNode != null &&
+        currentNode.tags != null &&
+        currentNode.tags.length > 0
+          ? 'primary'
+          : 'basic'
+      "
+      (click)="isEditTag = true"
+    >
       <mat-icon>loyalty</mat-icon>
     </button>
   </ng-container>
 </app-toggle-button-group>
-<app-popup #deletePopup [btnSaveStr]="deleteStr" [title]="title" (saved)="delete(deleteForm.getData())">
-  <app-form-builder #deleteForm [fields]="[{key: 'name'}]"></app-form-builder>
+<app-popup
+  #deletePopup
+  [btnSaveStr]="deleteStr"
+  [title]="title"
+  (saved)="delete(deleteForm.getData())"
+>
+  <app-form-builder #deleteForm [fields]="[{ key: 'name' }]"></app-form-builder>
 </app-popup>
-<app-popup #createPopup [customizeBtnGroupRef]="btnTypes" (canceled)="createForm.clearData()">
-  <app-form-builder #createForm [fields]="[{key: 'newNodeName'}]"></app-form-builder>
+<app-popup
+  #createPopup
+  [customizeBtnGroupRef]="btnTypes"
+  (canceled)="createForm.clearData()"
+>
+  <app-form-builder
+    #createForm
+    [fields]="[{ key: 'newNodeName' }]"
+  ></app-form-builder>
   <ng-template #btnTypes>
-    <button mat-button *ngFor="let type of nodeTypes" color="primary" cdkFocusInitial
-      (click)="create(type, createForm.getData());createPopup.close();">{{ type | lang | async }}</button>
+    <button
+      mat-button
+      *ngFor="let type of nodeTypes"
+      color="primary"
+      cdkFocusInitial
+      (click)="create(type, createForm.getData()); createPopup.close()"
+    >
+      {{ type | lang | async }}
+    </button>
   </ng-template>
 </app-popup>
-<app-popup #selectRefPopup (opened)="selectNode.reload(currentNode)" [showCancel]="false" [showSave]="canAddRef"
-  (saved)="addRef()">
-  <app-select-node #selectNode [nodeFilter]="selectRefFilter" (selectedChange)="selectedRefChanged($event)">
+<app-popup
+  #selectRefPopup
+  (opened)="selectNode.reload(currentNode)"
+  [showCancel]="false"
+  [showSave]="canAddRef"
+  (saved)="addRef()"
+>
+  <app-select-node
+    #selectNode
+    [nodeFilter]="selectRefFilter"
+    (selectedChange)="selectedRefChanged($event)"
+  >
   </app-select-node>
 </app-popup>

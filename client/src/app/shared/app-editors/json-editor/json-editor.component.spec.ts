@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { JsonEditorComponent } from './json-editor.component';
+import { JsonEditorComponent } from "./json-editor.component";
 
-describe('JsonEditorComponent', () => {
+describe("JsonEditorComponent", () => {
   let component: JsonEditorComponent;
   let fixture: ComponentFixture<JsonEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ JsonEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [JsonEditorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('JsonEditorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -1,29 +1,61 @@
-<div [class]="showBorder?'node-item':''" [class.fullscreen-node-item]="fullscreen">
-  <div *ngIf='showMenus' class="menus">
-    <mat-icon color="primary" (click)="fullscreen=!fullscreen">
-      {{fullscreen ? 'close' : 'zoom_out_map'}}
+<div
+  [class]="showBorder ? 'node-item' : ''"
+  [class.fullscreen-node-item]="fullscreen"
+>
+  <div *ngIf="showMenus" class="menus">
+    <mat-icon color="primary" (click)="fullscreen = !fullscreen">
+      {{ fullscreen ? "close" : "zoom_out_map" }}
     </mat-icon>
-    <mat-icon *ngIf="isRunning" (click)="isRunning = false;popupTerminal=false;">
+    <mat-icon
+      *ngIf="isRunning"
+      (click)="isRunning = false; popupTerminal = false"
+    >
       stop
     </mat-icon>
-    <mat-icon *ngIf="isRunning && appContent" (click)="showTerminal=!showTerminal">
-      {{showTerminal ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
+    <mat-icon
+      *ngIf="isRunning && appContent"
+      (click)="showTerminal = !showTerminal"
+    >
+      {{ showTerminal ? "keyboard_arrow_up" : "keyboard_arrow_down" }}
     </mat-icon>
-    <mat-icon color="primary" *ngIf="showRun && !isRunning" (click)="isRunning = true;">
+    <mat-icon
+      color="primary"
+      *ngIf="showRun && !isRunning"
+      (click)="isRunning = true"
+    >
       play_arrow
     </mat-icon>
     <div class="divider"></div>
     <ng-container *ngIf="menus && menus.length > 0">
-      <mat-icon *ngFor="let menu of menus" color="primary" (click)="menu.onClick()">
-        {{menu.icon}}
+      <mat-icon
+        *ngFor="let menu of menus"
+        color="primary"
+        (click)="menu.onClick()"
+      >
+        {{ menu.icon }}
       </mat-icon>
     </ng-container>
   </div>
-  <app-html-viewer  [fullscreen]="fullscreen" *ngIf="appContent" [class.hidden]="!isRunning" [content]="appContent" [options]="appOptions">
+  <app-html-viewer
+    [fullscreen]="fullscreen"
+    *ngIf="appContent"
+    [class.hidden]="!isRunning"
+    [content]="appContent"
+    [options]="appOptions"
+  >
   </app-html-viewer>
-  <markdown [class.hidden]="isRunning && !showTerminal" [data]="markdownContent"></markdown>
-  <app-python-terminal *ngIf="isRunning" [loop]="loopPlay" [class.hidden]="appContent && !showTerminal"
-    [class.fixedBottom]="popupTerminal" (focusChanged)="popupTerminal=$event" [initCommends]="content"
-    [pythonService]="pythonService">
+  <markdown
+    [class.hidden]="isRunning && !showTerminal"
+    [data]="markdownContent"
+  ></markdown>
+  <app-python-terminal
+    *ngIf="isRunning"
+    [loop]="loopPlay"
+    [class.hidden]="appContent && !showTerminal"
+    [class.fixedBottom]="popupTerminal"
+    (focusChanged)="popupTerminal = $event"
+    [initCommends]="content"
+    [pythonService]="pythonService"
+  >
   </app-python-terminal>
 </div>

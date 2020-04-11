@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject } from "rxjs";
 
 export interface IPythonService {
   reset: () => Promise<any>;
@@ -8,7 +8,6 @@ export interface IPythonService {
 }
 
 export class IframePythonService implements IPythonService {
-
   stdout = new Subject<string>();
 
   stderr = new Subject<string>();
@@ -19,7 +18,7 @@ export class IframePythonService implements IPythonService {
 
   public expTokens = new Set<string>();
 
-  public expPromises = new Map<string, { resolve: any, reject: any }>();
+  public expPromises = new Map<string, { resolve: any; reject: any }>();
 
   public cmdIdx = 0;
 
@@ -31,9 +30,9 @@ export class IframePythonService implements IPythonService {
 
   public resolveInit: any;
 
-  public expCheckInited = 'expCheckInited';
+  public expCheckInited = "expCheckInited";
 
-  public expReload = '.expReload';
+  public expReload = ".expReload";
 
   getContent(content: string) {
     this.token = Math.random().toString().slice(2, 10);
@@ -163,10 +162,10 @@ window.onAppLoaded = () => {
   reset = async (): Promise<any> => {
     if (this.inited) {
       await this.exec(this.expReload);
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       this.inited = false;
     }
-  }
+  };
   exec = async (exp: string): Promise<string> => {
     await this.init();
     this.cmdIdx++;
@@ -175,9 +174,9 @@ window.onAppLoaded = () => {
     const promise = new Promise<string>((resolve, reject) => {
       this.expPromises.set(expToken, { resolve, reject });
     });
-    this.host.contentWindow.postMessage({ expToken, exp }, '*');
+    this.host.contentWindow.postMessage({ expToken, exp }, "*");
     return await promise;
-  }
+  };
 
   public async init(): Promise<any> {
     if (this.inited) {
@@ -189,33 +188,42 @@ window.onAppLoaded = () => {
     }
     if (!this.host) {
       this.host = await this.getHost();
-      window.addEventListener('message', (event) => {
-        if (event.origin !== 'null' || event.data == null ||
-          event.data.expToken == null) {
-          return;
-        }
-        if (event.data.expToken === this.token) {
-          if (event.data.inited) {
-            if (this.resolveInit) {
-              const resolveInit = this.resolveInit;
-              this.resolveInit = null;
-              resolveInit();
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (
+            event.origin !== "null" ||
+            event.data == null ||
+            event.data.expToken == null
+          ) {
+            return;
+          }
+          if (event.data.expToken === this.token) {
+            if (event.data.inited) {
+              if (this.resolveInit) {
+                const resolveInit = this.resolveInit;
+                this.resolveInit = null;
+                resolveInit();
+              }
+            } else if (event.data.error) {
+              this.stderr.next(event.data.error);
+            } else {
+              this.stdout.next(event.data.result);
             }
-          } else if (event.data.error) {
-            this.stderr.next(event.data.error);
-          } else {
-            this.stdout.next(event.data.result);
+          } else if (this.expPromises.has(event.data.expToken)) {
+            const { resolve, reject } = this.expPromises.get(
+              event.data.expToken
+            );
+            this.expPromises.delete(event.data.expToken);
+            if (event.data.error) {
+              reject(event.data.error);
+            } else {
+              resolve(event.data.result);
+            }
           }
-        } else if (this.expPromises.has(event.data.expToken)) {
-          const { resolve, reject } = this.expPromises.get(event.data.expToken);
-          this.expPromises.delete(event.data.expToken);
-          if (event.data.error) {
-            reject(event.data.error);
-          } else {
-            resolve(event.data.result);
-          }
-        }
-      }, false);
+        },
+        false
+      );
     }
     this.initPromise = new Promise<any>((resolve) => {
       this.resolveInit = resolve;
@@ -224,7 +232,10 @@ window.onAppLoaded = () => {
       this.initPromise = null;
     });
 
-    this.host.contentWindow.postMessage({ expToken: this.token, exp: this.expCheckInited }, '*');
+    this.host.contentWindow.postMessage(
+      { expToken: this.token, exp: this.expCheckInited },
+      "*"
+    );
     await this.initPromise;
   }
 }

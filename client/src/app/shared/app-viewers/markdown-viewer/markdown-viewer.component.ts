@@ -1,13 +1,18 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { MdReloadService } from 'src/app/services/md-reload.service';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core";
+import { MdReloadService } from "src/app/services/md-reload.service";
 
 @Component({
-  selector: 'app-markdown-viewer',
-  templateUrl: './markdown-viewer.component.html',
-  styleUrls: ['./markdown-viewer.component.scss']
+  selector: "app-markdown-viewer",
+  templateUrl: "./markdown-viewer.component.html",
+  styleUrls: ["./markdown-viewer.component.scss"],
 })
 export class MarkdownViewerComponent implements OnInit, OnChanges {
-
   @Input() options: any;
 
   @Input() content: string;
@@ -30,17 +35,15 @@ export class MarkdownViewerComponent implements OnInit, OnChanges {
 
   public maxCharLength = 128;
 
-  constructor(public mdReload: MdReloadService) {
-  }
+  constructor(public mdReload: MdReloadService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('options' in changes && this.options && this.options.summary) {
+    if ("options" in changes && this.options && this.options.summary) {
       this.summary = this.options.summary.value;
     }
-    if ('content' in changes) {
+    if ("content" in changes) {
       this.summarizeContent();
       this.mdReload.reload();
     }
@@ -57,7 +60,7 @@ export class MarkdownViewerComponent implements OnInit, OnChanges {
     }
     let remainCharLength = this.maxCharLength;
     let remainLine = this.maxLength;
-    const lines = this.content.split('\n');
+    const lines = this.content.split("\n");
     let codeBlockBoundary = 0;
     for (const line of lines) {
       const trimLine = line.trim();
@@ -80,28 +83,28 @@ export class MarkdownViewerComponent implements OnInit, OnChanges {
       } else {
         summaryLines.push(line);
       }
-      if (trimLine.startsWith('```')) {
+      if (trimLine.startsWith("```")) {
         codeBlockBoundary++;
       }
-      if (trimLine !== '' && !trimLine.startsWith('```')) {
+      if (trimLine !== "" && !trimLine.startsWith("```")) {
         remainCharLength -= trimLine.length;
         remainLine--;
       }
       if (remainLine <= 0 || remainCharLength <= 0) {
         let lastLine = summaryLines[summaryLines.length - 1];
-        while (lastLine != null && lastLine.trim() === '') {
+        while (lastLine != null && lastLine.trim() === "") {
           summaryLines.pop();
           lastLine = summaryLines[summaryLines.length - 1];
         }
         if (codeBlockBoundary % 2) {
-          summaryLines.push('\n```');
+          summaryLines.push("\n```");
         }
         this.hasMore = true;
         break;
       }
     }
-    this.summaryContent = summaryLines.join('\n');
-    if (this.summaryContent.trim() === '') {
+    this.summaryContent = summaryLines.join("\n");
+    if (this.summaryContent.trim() === "") {
       this.summaryContent = null;
     }
   }

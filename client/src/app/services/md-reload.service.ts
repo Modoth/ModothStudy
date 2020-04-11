@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class MdReloadService {
-
   public MathJax: any;
 
   constructor() {
@@ -15,6 +14,6 @@ export class MdReloadService {
   public reload() {
     setTimeout(() => {
       this.MathJax && this.MathJax.Hub.Queue(["Typeset", this.MathJax.Hub]);
-    }, 0)
+    }, 0);
   }
 }

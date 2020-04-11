@@ -1,19 +1,34 @@
-<app-table [dataSource]="users" [columns]="['name', 'roleId', 'state']"
-[colTemplateRef]="{roleId: roleId, state: state}"
-[colHeaders]="{roleId: 'Role'}" isRoutePaging="true"
-[pagination]="{pageSize: 10, total: totalCount, pageChanged: reloadUsers,
-  routeLink: '/manage/users/:filter/:pageId' }" class="user-table">
-  <ng-template #roleId let-user="cell" >
-    <mat-select value={{user.roleId}} (selectionChange)="updateRole(user, $event.value)">
+<app-table
+  [dataSource]="users"
+  [columns]="['name', 'roleId', 'state']"
+  [colTemplateRef]="{ roleId: roleId, state: state }"
+  [colHeaders]="{ roleId: 'Role' }"
+  isRoutePaging="true"
+  [pagination]="{
+    pageSize: 10,
+    total: totalCount,
+    pageChanged: reloadUsers,
+    routeLink: '/manage/users/:filter/:pageId'
+  }"
+  class="user-table"
+>
+  <ng-template #roleId let-user="cell">
+    <mat-select
+      value="{{ user.roleId }}"
+      (selectionChange)="updateRole(user, $event.value)"
+    >
       <mat-option *ngFor="let role of roles" [value]="role.id">
-        {{role.name}}
+        {{ role.name }}
       </mat-option>
     </mat-select>
   </ng-template>
-  <ng-template #state let-user="cell" >
-    <mat-select value={{user.state}} (selectionChange)="updateState(user, $event.value)">
+  <ng-template #state let-user="cell">
+    <mat-select
+      value="{{ user.state }}"
+      (selectionChange)="updateState(user, $event.value)"
+    >
       <mat-option *ngFor="let state of states" [value]="state">
-        {{state | lang | async }}
+        {{ state | lang | async }}
       </mat-option>
     </mat-select>
   </ng-template>
@@ -23,8 +38,19 @@
   <button mat-mini-fab (click)="createUserPopup.show()" color="primary">
     <mat-icon>add</mat-icon>
   </button>
-  <app-searcher [defaultFilter]="filter" (search)="search($event)"></app-searcher>
+  <app-searcher
+    [defaultFilter]="filter"
+    (search)="search($event)"
+  ></app-searcher>
 </nav>
-<app-popup #createUserPopup [btnSaveStr]="popupOkStr" (canceled)="createUserForm.clearData()" (saved)="createUserDialog(createUserForm.getData())">
-    <app-form-builder #createUserForm [fields]="createFieldsConfig"></app-form-builder>
+<app-popup
+  #createUserPopup
+  [btnSaveStr]="popupOkStr"
+  (canceled)="createUserForm.clearData()"
+  (saved)="createUserDialog(createUserForm.getData())"
+>
+  <app-form-builder
+    #createUserForm
+    [fields]="createFieldsConfig"
+  ></app-form-builder>
 </app-popup>

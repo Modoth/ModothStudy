@@ -1,6 +1,6 @@
-<div class="divider" (click)="!newComment && this.exit.next();"></div>
+<div class="divider" (click)="!newComment && this.exit.next()"></div>
 <div class="comments-viewer">
-  <div class="comment-title">{{'Comment' | lang | async}}</div>
+  <div class="comment-title">{{ "Comment" | lang | async }}</div>
   <!-- <mat-icon class="close" (click)="this.exit.next();">close</mat-icon> -->
   <div class="comment-form" *ngIf="hasCommentPermission">
     <textarea [(ngModel)]="newComment"></textarea>
@@ -8,22 +8,34 @@
   </div>
 
   <div class="no-comments" *ngIf="!totalPage">
-    {{'NoCommentsWelcomeToAdd' | lang | async}}
+    {{ "NoCommentsWelcomeToAdd" | lang | async }}
   </div>
-  <div class='commens-list ' *ngIf="commentsList.length > 0">
+  <div class="commens-list" *ngIf="commentsList.length > 0">
     <div class="comments" *ngFor="let comments of commentsList">
       <div class="comment" *ngFor="let comment of comments">
-        <img class="user-avatar" [src]="comment.userAvatar || ('CONFIG_DEFAULT_AVATAR' | lang | async) ">
+        <img
+          class="user-avatar"
+          [src]="comment.userAvatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
+        />
         <div class="comment-content">
-          <div class="user-name">{{comment.userName}}</div>
-          {{comment.detail}}
+          <div class="user-name">{{ comment.userName }}</div>
+          {{ comment.detail }}
         </div>
-        <mat-icon color="warn" *ngIf="ownComments.has(comment)" (click)="deleteComment(comment, comments)"
-          (click)="addComment()">
-          delete</mat-icon>
+        <mat-icon
+          color="warn"
+          *ngIf="ownComments.has(comment)"
+          (click)="deleteComment(comment, comments)"
+          (click)="addComment()"
+        >
+          delete</mat-icon
+        >
       </div>
     </div>
-    <div class="load-more" *ngIf="currentPage < totalPage -1" (click)="loadMoreComments()">
+    <div
+      class="load-more"
+      *ngIf="currentPage < totalPage - 1"
+      (click)="loadMoreComments()"
+    >
       <mat-icon>more_horiz</mat-icon>
     </div>
   </div>

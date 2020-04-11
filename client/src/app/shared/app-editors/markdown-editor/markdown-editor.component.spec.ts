@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { MarkdownEditorComponent } from './markdown-editor.component';
+import { MarkdownEditorComponent } from "./markdown-editor.component";
 
-describe('MarkdownEditorComponent', () => {
+describe("MarkdownEditorComponent", () => {
   let component: MarkdownEditorComponent;
   let fixture: ComponentFixture<MarkdownEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MarkdownEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [MarkdownEditorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('MarkdownEditorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

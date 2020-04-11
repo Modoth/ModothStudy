@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { NodeTagViewComponent } from './node-tag-view.component';
+import { NodeTagViewComponent } from "./node-tag-view.component";
 
-describe('NodeTagViewComponent', () => {
+describe("NodeTagViewComponent", () => {
   let component: NodeTagViewComponent;
   let fixture: ComponentFixture<NodeTagViewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeTagViewComponent ]
-    })
-    .compileComponents();
+      declarations: [NodeTagViewComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('NodeTagViewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

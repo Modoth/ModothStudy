@@ -1,13 +1,20 @@
-<div [class]="showBorder?'node-item':''" [class.fullscreen-node-item]="fullscreen">
-  <div *ngIf='showMenus' class="menus">
-    <mat-icon color="primary" (click)="fullscreen=!fullscreen">
-      {{fullscreen ? 'close' : 'zoom_out_map'}}
+<div
+  [class]="showBorder ? 'node-item' : ''"
+  [class.fullscreen-node-item]="fullscreen"
+>
+  <div *ngIf="showMenus" class="menus">
+    <mat-icon color="primary" (click)="fullscreen = !fullscreen">
+      {{ fullscreen ? "close" : "zoom_out_map" }}
     </mat-icon>
-    <mat-icon color="primary" *ngIf="popContentUrl != null" (click)="openContentUrl()">
+    <mat-icon
+      color="primary"
+      *ngIf="popContentUrl != null"
+      (click)="openContentUrl()"
+    >
       open_in_new
     </mat-icon>
     <mat-icon color="primary" (click)="showSource = !showSource">
-      {{showSource ? 'keyboard_arrow_up' : 'code' }}
+      {{ showSource ? "keyboard_arrow_up" : "code" }}
     </mat-icon>
     <!-- <mat-icon color="primary" *ngIf="pythonService && !showTerminal" (click)="showTerminal=true">
       keyboard
@@ -18,25 +25,33 @@
   </div>
   <div class="mask-container" *ngIf="!canPlay || play">
     <iframe #iframeRef [src]="contentUrl" sandbox="allow-scripts"></iframe>
-    <div class="mask" *ngIf="pause" (click)="pause=false;$event.stopPropagation();">
-      <mat-icon>play_arrow
-      </mat-icon>
+    <div
+      class="mask"
+      *ngIf="pause"
+      (click)="pause = false; $event.stopPropagation()"
+    >
+      <mat-icon>play_arrow </mat-icon>
     </div>
   </div>
   <div class="mask-container" *ngIf="canPlay && !play">
     <iframe [src]="nonScriptContentUrl" sandbox></iframe>
-    <div class="mask" *ngIf="!sandBox" (click)="play=true;pause=false;$event.stopPropagation();">
-      <mat-icon>play_arrow
-      </mat-icon>
+    <div
+      class="mask"
+      *ngIf="!sandBox"
+      (click)="play = true; pause = false; $event.stopPropagation()"
+    >
+      <mat-icon>play_arrow </mat-icon>
     </div>
-    <div class="mask" *ngIf="sandBox" (click)="popContentUrl != null && openContentUrl()">
-      <mat-icon>play_arrow
-      </mat-icon>
+    <div
+      class="mask"
+      *ngIf="sandBox"
+      (click)="popContentUrl != null && openContentUrl()"
+    >
+      <mat-icon>play_arrow </mat-icon>
     </div>
   </div>
   <!-- <div *ngIf="showTerminal" class="python-terminal">
     <app-python-terminal [pythonService]="pythonService"></app-python-terminal>
   </div> -->
 </div>
-<markdown [data]="mdSource" *ngIf="showSource && mdSource">
-</markdown>
+<markdown [data]="mdSource" *ngIf="showSource && mdSource"> </markdown>

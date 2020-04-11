@@ -12,7 +12,7 @@
   margin: 10px 0;
 }
 
-.user-info{
+.user-info {
   padding-bottom: 10px;
 }
 
@@ -43,7 +43,7 @@ mat-divider {
   overflow: hidden;
   display: flex;
 
-  &>* {
+  & > * {
     margin: auto;
     width: 50%;
     height: 50%;
@@ -51,7 +51,6 @@ mat-divider {
 }
 
 @media (max-width: 720px) {
-
   .login-panel,
   .user-panel {
     margin-left: 15%;

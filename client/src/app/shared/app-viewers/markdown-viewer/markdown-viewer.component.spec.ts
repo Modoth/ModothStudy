@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { MarkdownViewerComponent } from './markdown-viewer.component';
+import { MarkdownViewerComponent } from "./markdown-viewer.component";
 
-describe('MarkdownViewerComponent', () => {
+describe("MarkdownViewerComponent", () => {
   let component: MarkdownViewerComponent;
   let fixture: ComponentFixture<MarkdownViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MarkdownViewerComponent ]
-    })
-    .compileComponents();
+      declarations: [MarkdownViewerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('MarkdownViewerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

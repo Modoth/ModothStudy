@@ -5,7 +5,7 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  $dividerFg: mat-color($primary, 'lighter');
+  $dividerFg: mat-color($primary, "lighter");
 
   app-library {
     fieldset {

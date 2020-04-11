@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ArticleEditorComponent } from './article-editor.component';
+import { ArticleEditorComponent } from "./article-editor.component";
 
-describe('ArticleEditorDialogComponent', () => {
+describe("ArticleEditorDialogComponent", () => {
   let component: ArticleEditorComponent;
   let fixture: ComponentFixture<ArticleEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ArticleEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [ArticleEditorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ArticleEditorDialogComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

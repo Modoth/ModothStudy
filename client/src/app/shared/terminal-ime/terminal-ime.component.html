@@ -1,12 +1,23 @@
 <div (touchend)="onTouchend($event)" class="keyborad">
   <div class="keyborad-line" *ngFor="let line of keyboard">
-    <div [class]="'keyborad-key ' + key.code" (mouseleave)="onMousecancle(key)" (touchstart)="onMousedown(key)"
-      (touchend)="onMouseup(key)" *ngFor="let key of line">
+    <div
+      [class]="'keyborad-key ' + key.code"
+      (mouseleave)="onMousecancle(key)"
+      (touchstart)="onMousedown(key)"
+      (touchend)="onMouseup(key)"
+      *ngFor="let key of line"
+    >
       <div>
-        <div [class.hidden]='key.hideUpperKey && !key.showUpperPop' [class.popup]="key.showUpperPop"
-          *ngIf='key.upperKey != null' class="upperKey">
-          {{key.displayUpperKey || key.upperKey}}</div>
-        <div [class.hidden]="key.showUpperPop" class="key">{{key.displayKey || key.key}}
+        <div
+          [class.hidden]="key.hideUpperKey && !key.showUpperPop"
+          [class.popup]="key.showUpperPop"
+          *ngIf="key.upperKey != null"
+          class="upperKey"
+        >
+          {{ key.displayUpperKey || key.upperKey }}
+        </div>
+        <div [class.hidden]="key.showUpperPop" class="key">
+          {{ key.displayKey || key.key }}
         </div>
       </div>
     </div>

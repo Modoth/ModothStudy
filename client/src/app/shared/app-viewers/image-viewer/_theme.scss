@@ -10,14 +10,13 @@
     background: mat-color($background, background);
 
     .image-list {
-
       // background: mat-color($background, app-bar);
 
-      &>img {
+      & > img {
         background: mat-color($background, app-bar);
       }
 
-      &>.current {
+      & > .current {
         border-color: mat-color($primary);
       }
     }

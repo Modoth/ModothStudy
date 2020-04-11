@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { ScriptAppService } from './script-app.service';
+import { ScriptAppService } from "./script-app.service";
 
-describe('ScriptAppService', () => {
+describe("ScriptAppService", () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
-  it('should be created', () => {
+  it("should be created", () => {
     const service: ScriptAppService = TestBed.get(ScriptAppService);
     expect(service).toBeTruthy();
   });

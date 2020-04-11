@@ -1,6 +1,22 @@
 <ng-container [ngSwitch]="type">
-  <app-html-viewer *ngSwitchCase="'html'" [content]="content" [options]="options"></app-html-viewer>
-  <app-python-viewer *ngSwitchCase="'python'" [content]="content" [options]="options"></app-python-viewer>
-  <app-json-viewer *ngSwitchCase="'json'" [content]="content" [options]="options"></app-json-viewer>
-  <app-markdown-viewer *ngSwitchDefault [content]="content" [options]="options"></app-markdown-viewer>
+  <app-html-viewer
+    *ngSwitchCase="'html'"
+    [content]="content"
+    [options]="options"
+  ></app-html-viewer>
+  <app-python-viewer
+    *ngSwitchCase="'python'"
+    [content]="content"
+    [options]="options"
+  ></app-python-viewer>
+  <app-json-viewer
+    *ngSwitchCase="'json'"
+    [content]="content"
+    [options]="options"
+  ></app-json-viewer>
+  <app-markdown-viewer
+    *ngSwitchDefault
+    [content]="content"
+    [options]="options"
+  ></app-markdown-viewer>
 </ng-container>

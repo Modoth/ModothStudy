@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 
 interface KeyBoardItem {
   key: string;
@@ -11,12 +11,11 @@ interface KeyBoardItem {
 }
 
 @Component({
-  selector: 'app-terminal-ime',
-  templateUrl: './terminal-ime.component.html',
-  styleUrls: ['./terminal-ime.component.scss']
+  selector: "app-terminal-ime",
+  templateUrl: "./terminal-ime.component.html",
+  styleUrls: ["./terminal-ime.component.scss"],
 })
 export class TerminalImeComponent implements OnInit {
-
   @Input() target: HTMLInputElement;
 
   @Input() disabled = false;
@@ -25,38 +24,40 @@ export class TerminalImeComponent implements OnInit {
 
   keyboard: KeyBoardItem[][] = [
     [
-      { key: '', displayKey: '⊗', code: 'Esc' },
-      { key: '`', upperKey: '~', code: 'Backquote' },
-      { key: '-', upperKey: '_', code: 'Minus' },
-      { key: '=', upperKey: '+', code: 'Equal' },
-      { key: '[', upperKey: '{', code: 'BracketLeft' },
-      { key: ']', upperKey: '}', code: 'BracketRight' },
-      { key: ',', upperKey: '<', code: 'Comma' },
-      { key: '.', upperKey: '>', code: 'Period' },
+      { key: "", displayKey: "⊗", code: "Esc" },
+      { key: "`", upperKey: "~", code: "Backquote" },
+      { key: "-", upperKey: "_", code: "Minus" },
+      { key: "=", upperKey: "+", code: "Equal" },
+      { key: "[", upperKey: "{", code: "BracketLeft" },
+      { key: "]", upperKey: "}", code: "BracketRight" },
+      { key: ",", upperKey: "<", code: "Comma" },
+      { key: ".", upperKey: ">", code: "Period" },
       // { key: 'ArrowLeft', code: 'ArrowLeft', displayKey: '↤' },
-      { key: 'ArrowUp', code: 'ArrowUp', displayKey: '↥' },
-      { key: 'ArrowDown', code: 'ArrowDown', displayKey: '↧' },
+      { key: "ArrowUp", code: "ArrowUp", displayKey: "↥" },
+      { key: "ArrowDown", code: "ArrowDown", displayKey: "↧" },
       // { key: 'ArrowRight', code: 'ArrowRight', displayKey: '↦' },
-      { key: 'Enter', code: 'Enter', displayKey: '⏎' }
+      { key: "Enter", code: "Enter", displayKey: "⏎" },
     ],
     [
-      ...Array.from('!@#$%^&*()', (c, idx) => this.numberKeyBoardItem(c, ((idx + 1) % 10).toString())),
-      { key: 'Backspace', code: 'Backspace', displayKey: '⌫' },
+      ...Array.from("!@#$%^&*()", (c, idx) =>
+        this.numberKeyBoardItem(c, ((idx + 1) % 10).toString())
+      ),
+      { key: "Backspace", code: "Backspace", displayKey: "⌫" },
     ],
     [
-      ...Array.from('qwertyuiop', c => this.leterKeyBoardItem(c)),
-      { key: '\\', upperKey: '|', code: 'Backslash' },
+      ...Array.from("qwertyuiop", (c) => this.leterKeyBoardItem(c)),
+      { key: "\\", upperKey: "|", code: "Backslash" },
     ],
     [
-      ...Array.from('asdfghjkl', c => this.leterKeyBoardItem(c)),
-      { key: ';', upperKey: ':', code: 'Semicolon' },
-      { key: '\'', upperKey: '"', code: 'Quote' },
+      ...Array.from("asdfghjkl", (c) => this.leterKeyBoardItem(c)),
+      { key: ";", upperKey: ":", code: "Semicolon" },
+      { key: "'", upperKey: '"', code: "Quote" },
     ],
     [
-      ...Array.from('zxc', c => this.leterKeyBoardItem(c)),
-      { key: ' ', code: 'Space' },
-      ...Array.from('vbnm', c => this.leterKeyBoardItem(c)),
-      { key: '/', upperKey: '?', code: 'Slash' },
+      ...Array.from("zxc", (c) => this.leterKeyBoardItem(c)),
+      { key: " ", code: "Space" },
+      ...Array.from("vbnm", (c) => this.leterKeyBoardItem(c)),
+      { key: "/", upperKey: "?", code: "Slash" },
     ],
   ];
 
@@ -68,7 +69,7 @@ export class TerminalImeComponent implements OnInit {
     return {
       key,
       upperKey,
-      code: 'Digit' + key
+      code: "Digit" + key,
     };
   }
 
@@ -77,15 +78,14 @@ export class TerminalImeComponent implements OnInit {
     return {
       key,
       upperKey,
-      code: 'Key' + upperKey,
+      code: "Key" + upperKey,
       hideUpperKey: true,
     };
   }
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onTouchend(e) {
     e.preventDefault();
@@ -110,10 +110,12 @@ export class TerminalImeComponent implements OnInit {
       }
     }, this.longPressTime);
 
-    this.target.dispatchEvent(new KeyboardEvent('keydown', {
-      key: item.key,
-      code: item.code,
-    }));
+    this.target.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: item.key,
+        code: item.code,
+      })
+    );
   }
 
   onMouseup(item: KeyBoardItem) {
@@ -123,34 +125,34 @@ export class TerminalImeComponent implements OnInit {
     const longPress = item.showUpperPop === true;
     item.showUpperPop = false;
 
-
     this.pressedItem = null;
-    const key = longPress && item.upperKey || item.key;
+    const key = (longPress && item.upperKey) || item.key;
 
     switch (item.code) {
-      case 'Esc':
+      case "Esc":
         this.closed.emit(null);
         return;
-      case 'Enter':
+      case "Enter":
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         break;
-      case 'Backspace':
+      case "Backspace":
         this.target.value = this.target.value.slice(0, -1);
         break;
       default:
         this.target.value += key;
     }
-    this.target.dispatchEvent(new KeyboardEvent('keyup', {
-      key,
-      code: item.code,
-    }));
+    this.target.dispatchEvent(
+      new KeyboardEvent("keyup", {
+        key,
+        code: item.code,
+      })
+    );
   }
-
 }

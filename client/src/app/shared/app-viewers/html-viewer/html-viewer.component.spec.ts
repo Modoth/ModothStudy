@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { HtmlViewerComponent } from './html-viewer.component';
+import { HtmlViewerComponent } from "./html-viewer.component";
 
-describe('HtmlViewerComponent', () => {
+describe("HtmlViewerComponent", () => {
   let component: HtmlViewerComponent;
   let fixture: ComponentFixture<HtmlViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HtmlViewerComponent ]
-    })
-    .compileComponents();
+      declarations: [HtmlViewerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('HtmlViewerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

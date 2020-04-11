@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ImageEditorComponent } from './image-editor.component';
+import { ImageEditorComponent } from "./image-editor.component";
 
-describe('ImageEditorComponent', () => {
+describe("ImageEditorComponent", () => {
   let component: ImageEditorComponent;
   let fixture: ComponentFixture<ImageEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ImageEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [ImageEditorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ImageEditorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

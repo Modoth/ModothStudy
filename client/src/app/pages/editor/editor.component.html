@@ -1,86 +1,185 @@
 <app-toggle-button-group [icoRef]="icoBtns">
   <ng-template #icoBtns>
-    <button mat-mini-fab color="warn" (click)="close();">
+    <button mat-mini-fab color="warn" (click)="close()">
       <mat-icon>close</mat-icon>
     </button>
   </ng-template>
-  <button *ngIf="parentNode" mat-mini-fab color="primary" (click)="openLocation();">
+  <button
+    *ngIf="parentNode"
+    mat-mini-fab
+    color="primary"
+    (click)="openLocation()"
+  >
     <mat-icon>folder</mat-icon>
   </button>
   <ng-container *ngIf="hasAnySolution">
-    <button *ngIf="hasOtherNode" mat-mini-fab [color]="showEditor? 'accent':'basic'" (click)="toggleEditor()">
+    <button
+      *ngIf="hasOtherNode"
+      mat-mini-fab
+      [color]="showEditor ? 'accent' : 'basic'"
+      (click)="toggleEditor()"
+    >
       <mat-icon>question_answer</mat-icon>
     </button>
-    <button mat-mini-fab [color]="showSolution? 'primary':'basic'" (click)="switchSolutions()">
+    <button
+      mat-mini-fab
+      [color]="showSolution ? 'primary' : 'basic'"
+      (click)="switchSolutions()"
+    >
       <mat-icon>visibility</mat-icon>
     </button>
   </ng-container>
-  <button mat-mini-fab color="primary" (click)="appService.changeTheme();">
-    <mat-icon class='user-logo'>color_lens</mat-icon>
+  <button mat-mini-fab color="primary" (click)="appService.changeTheme()">
+    <mat-icon class="user-logo">color_lens</mat-icon>
   </button>
 </app-toggle-button-group>
 
 <div class="papper">
   <ng-container *ngFor="let node of nodes">
-
-    <div [class]="'node node-dir node-level-' +  node.pathLevel" *ngIf="node.isFolder">
+    <div
+      [class]="'node node-dir node-level-' + node.pathLevel"
+      *ngIf="node.isFolder"
+    >
       <div class="node-title">
         <mat-icon class="folder">folder</mat-icon>
-        {{node.node.name}}
+        {{ node.node.name }}
       </div>
-      <div class="tags" *ngIf="node.node != null && node.node.tags != null && node.node.tags.length > 0">
-        <app-node-tag-view [tags]="node.node.tags">
-        </app-node-tag-view>
+      <div
+        class="tags"
+        *ngIf="
+          node.node != null &&
+          node.node.tags != null &&
+          node.node.tags.length > 0
+        "
+      >
+        <app-node-tag-view [tags]="node.node.tags"> </app-node-tag-view>
       </div>
     </div>
 
-    <div [class]="'node node-blog node-level-' +  node.pathLevel" *ngIf="node.isBlog">
+    <div
+      [class]="'node node-blog node-level-' + node.pathLevel"
+      *ngIf="node.isBlog"
+    >
       <div class="node-content blog-content">
         <div class="node-title">
-          <mat-icon class="comment" (click)="commentingItem = node;">chat
-          </mat-icon>{{node.node.name}}
+          <mat-icon class="comment" (click)="commentingItem = node"
+            >chat </mat-icon
+          >{{ node.node.name }}
         </div>
-        <div class="tags" *ngIf="node.node != null && node.node.tags != null && node.node.tags.length > 0">
-          <app-node-tag-view [tags]="node.node.tags">
-          </app-node-tag-view>
+        <div
+          class="tags"
+          *ngIf="
+            node.node != null &&
+            node.node.tags != null &&
+            node.node.tags.length > 0
+          "
+        >
+          <app-node-tag-view [tags]="node.node.tags"> </app-node-tag-view>
         </div>
-        <app-article-viewer [type]="node.node.docType" [content]="node.node.content"
-          [options]="{getApp:{value:getNodeApp(node)}, play: {value: node.node.autoPlay},pause: {value: node.node.autoPlay},sandBox:{value: node.node.sandBox}, showMenus:{value:true},showBorder:{value:true}, pythonService:node.pythonService}">
+        <app-article-viewer
+          [type]="node.node.docType"
+          [content]="node.node.content"
+          [options]="{
+            getApp: { value: getNodeApp(node) },
+            play: { value: node.node.autoPlay },
+            pause: { value: node.node.autoPlay },
+            sandBox: { value: node.node.sandBox },
+            showMenus: { value: true },
+            showBorder: { value: true },
+            pythonService: node.pythonService
+          }"
+        >
         </app-article-viewer>
       </div>
-      <div class="node-content my-solution" *ngIf="!node.ownNode &&  node.hasSolution && showEditor">
-        <ng-container *ngIf="hasReplySolutionPersission;else tmpEditSolution">
-          <div (click)="loadMySolution(node, editPopup)" *ngIf="node.mySolution == null" class="reply-solution">
-            {{'ReplySolution' | lang | async }}</div>
-          <app-article-viewer *ngIf="node.mySolution != null" [type]="node.node.solutionType"
+      <div
+        class="node-content my-solution"
+        *ngIf="!node.ownNode && node.hasSolution && showEditor"
+      >
+        <ng-container *ngIf="hasReplySolutionPersission; else tmpEditSolution">
+          <div
+            (click)="loadMySolution(node, editPopup)"
+            *ngIf="node.mySolution == null"
+            class="reply-solution"
+          >
+            {{ "ReplySolution" | lang | async }}
+          </div>
+          <app-article-viewer
+            *ngIf="node.mySolution != null"
+            [type]="node.node.solutionType"
             [content]="node.mySolution"
-            [options]="{pythonService:node.pythonService,showMenus:{value:true}, menus:{value:[{icon:'edit' , onClick:getEditMySolution(node, editPopup) }]}}">
+            [options]="{
+              pythonService: node.pythonService,
+              showMenus: { value: true },
+              menus: {
+                value: [
+                  { icon: 'edit', onClick: getEditMySolution(node, editPopup) }
+                ]
+              }
+            }"
+          >
           </app-article-viewer>
         </ng-container>
         <ng-template #tmpEditSolution>
           <div class="data-will-not-save">
-            {{'TmpFileWillNotSave' | lang | async }}</div>
-          <app-article-viewer [type]="node.node.solutionType" [content]="node.myTmpSolution"
-            [options]="{pythonService:node.pythonService,showMenus:{value:true}, menus:{value:[{icon:'edit' , onClick:getEditTmpSolution(node, editPopup) }]}}">
+            {{ "TmpFileWillNotSave" | lang | async }}
+          </div>
+          <app-article-viewer
+            [type]="node.node.solutionType"
+            [content]="node.myTmpSolution"
+            [options]="{
+              pythonService: node.pythonService,
+              showMenus: { value: true },
+              menus: {
+                value: [
+                  { icon: 'edit', onClick: getEditTmpSolution(node, editPopup) }
+                ]
+              }
+            }"
+          >
           </app-article-viewer>
         </ng-template>
       </div>
-      <div class="node-content other-solution" *ngIf="node.hasSolution && showSolution">
-        <div (click)="loadSolution(node)" *ngIf="node.solution == null" class="view-solution">
-          {{'ViewSolution' | lang | async }}
+      <div
+        class="node-content other-solution"
+        *ngIf="node.hasSolution && showSolution"
+      >
+        <div
+          (click)="loadSolution(node)"
+          *ngIf="node.solution == null"
+          class="view-solution"
+        >
+          {{ "ViewSolution" | lang | async }}
         </div>
-        <app-article-viewer *ngIf="node.solution != null" [type]="node.node.solutionType" [content]="node.solution"
-          [options]="{pythonService:node.pythonService,showMenus:{value:true}}">
+        <app-article-viewer
+          *ngIf="node.solution != null"
+          [type]="node.node.solutionType"
+          [content]="node.solution"
+          [options]="{
+            pythonService: node.pythonService,
+            showMenus: { value: true }
+          }"
+        >
         </app-article-viewer>
       </div>
     </div>
   </ng-container>
 </div>
-<app-comments-viewer *ngIf="commentingItem != null" [node]="commentingItem.node" (exit)="commentingItem = null">
+<app-comments-viewer
+  *ngIf="commentingItem != null"
+  [node]="commentingItem.node"
+  (exit)="commentingItem = null"
+>
 </app-comments-viewer>
 <app-popup #editPopup type="page" [option]="popupOption">
-  <app-article-editor [maxImageSize]="editMode.maxImageSize" [content]="editMode.content" [type]="editMode.type"
-    [solutionToType]="editMode.solutionToType" [solutionToContent]="editMode.solutionToContent"
-    [imageInserted]="editMode.imageInserted" [saved]="editMode.saved" [closed]="editPopup.closed"
-    [errored]="editMode.errored"></app-article-editor>
+  <app-article-editor
+    [maxImageSize]="editMode.maxImageSize"
+    [content]="editMode.content"
+    [type]="editMode.type"
+    [solutionToType]="editMode.solutionToType"
+    [solutionToContent]="editMode.solutionToContent"
+    [imageInserted]="editMode.imageInserted"
+    [saved]="editMode.saved"
+    [closed]="editPopup.closed"
+    [errored]="editMode.errored"
+  ></app-article-editor>
 </app-popup>

@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { PythonViewerComponent } from './python-viewer.component';
+import { PythonViewerComponent } from "./python-viewer.component";
 
-describe('PythonViewerComponent', () => {
+describe("PythonViewerComponent", () => {
   let component: PythonViewerComponent;
   let fixture: ComponentFixture<PythonViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PythonViewerComponent ]
-    })
-    .compileComponents();
+      declarations: [PythonViewerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('PythonViewerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
