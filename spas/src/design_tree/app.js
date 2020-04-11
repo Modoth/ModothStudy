@@ -351,7 +351,7 @@ export class App {
         node.question &&
           this.mInsertElement(node, 'question', node.question, 'current')
       } else {
-        centerEle = this.mInsertElement(
+        this.mInsertElement(
           node,
           'value',
           node.value || '',
@@ -382,6 +382,7 @@ export class App {
       }
       uiTask = this.mClearUnusedElement().then(() => {
         uiTask = null
+        this.mRootElement.scrollTop = centerEle.offsetTop - 3
       })
     })
   }

@@ -10,8 +10,6 @@
   box-shadow: 1px 1px 3px; */
   background: var(--background);
   /* border-radius: 5px; */
-  padding-top: 0;
-  padding-bottom: 2000px;
   overflow-y: scroll;
 }
 
@@ -21,11 +19,19 @@
   box-shadow: 1px 1px 1px black;
   border-radius: 5px;
   width: 60%;
-  margin: 5px auto;
+  margin: 8px auto;
   /* opacity: 0.6; */
   user-select: none;
   max-height: 80vh;
   overflow-y: auto;
+}
+
+#app > *:first-child {
+  margin-top: 20px !important;
+}
+
+#app > *:last-child {
+  margin-bottom: 2000px !important;
 }
 
 .question {
@@ -53,6 +59,10 @@
   justify-content: center;
   box-shadow: 1px 1px 3px black;
   user-select: initial;
+}
+
+#app > .current.question {
+  min-height: 20vh;
 }
 
 #app > .current.value > div {
