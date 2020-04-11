@@ -336,8 +336,7 @@ export class App {
             'selected',
             () => tryResolve(questionNode)
           )
-        centerEle =
-          optionNode.name &&
+        optionNode.name &&
           this.mInsertElement(
             optionNode,
             'option',
@@ -349,10 +348,11 @@ export class App {
 
       const hasOptions = node.options && node.options.length
       if (hasOptions) {
-        node.question &&
+        centerEle =
+          node.question &&
           this.mInsertElement(node, 'question', node.question, 'current')
       } else {
-        this.mInsertElement(
+        centerEle = this.mInsertElement(
           node,
           'value',
           node.value || '',
@@ -380,7 +380,7 @@ export class App {
         })
       uiTask = this.mClearUnusedElement()
       if (centerEle) {
-        this.mRootElement.scrollTop = centerEle.offsetTop - 3
+        this.mRootElement.scrollTop = centerEle.offsetTop - 6
       }
       uiTask.then(() => {
         uiTask = null
