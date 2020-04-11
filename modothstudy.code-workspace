@@ -1,21 +1,21 @@
 {
-	"folders": [
-		{
-			"path": "server"
-		},
-		{
-			"path": "client"
-		},
-		{
-			"path": "docker"
-		},
-		{
-			"path": "spas"
-		}
-	],
-	"settings": {
-		"files.exclude": {
-			"**/node_modules/**": true
-		}
-	}
+  "folders": [
+    {
+      "path": "server"
+    },
+    {
+      "path": "client"
+    },
+    {
+      "path": "docker"
+    },
+    {
+      "path": "spas"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules/**": true
+    }
+  }
 }
