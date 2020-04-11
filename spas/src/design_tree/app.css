@@ -64,7 +64,7 @@
   min-height: 20vh;
 }
 
-#app > .current.question {
+#app > .current.value {
   min-height: 40vh;
 }
 
