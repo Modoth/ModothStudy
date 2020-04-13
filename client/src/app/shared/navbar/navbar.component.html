@@ -14,7 +14,7 @@
     </app-article-viewer>
   </div>
   <div class="navbar-logo-fb">
-    <a mat-button i18n (click)="drawer.toggle()">
+    <a mat-button i18n class="logo-icon" (click)="drawer.toggle()">
       <img class="logo" *ngIf="logoUrl; else svgLogo" [src]="logoUrl" />
       <ng-template #svgLogo>
         <mat-icon color="primary" class="logo">menu</mat-icon>
@@ -42,7 +42,7 @@
 <div class="navbar-buttons">
   <a
     [class.hiden-on-small]="node"
-    class="margin-top-3"
+    class="margin-top-3 logo-icon"
     mat-button
     i18n
     (click)="drawer.toggle()"

@@ -40,11 +40,12 @@
     .mat-button {
       margin: 0 auto;
       padding: 2px;
+      min-width: unset;
       &:nth-child(2) {
-        margin-left: 0;
+        margin-left: 10px;
       }
       &:nth-last-child(2) {
-        margin-right: 0;
+        margin-right: 10px;
       }
     }
   }
@@ -69,13 +70,18 @@
     display: unset;
   }
   &:first-child {
-    margin-left: 0;
+    margin-left: 10px;
   }
   &:last-child {
-    margin-right: 0;
+    margin-right: 10px;
   }
 }
 
 .margin-top-3 {
-  margin-top: 3px !important;
+  margin-top: 4px !important;
+}
+
+.logo-icon {
+  padding: 0;
+  margin-left: 10px !important;
 }

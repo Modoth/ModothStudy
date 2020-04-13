@@ -9,11 +9,16 @@
 
   app-navbar {
     background: white;
-    color: mat-color($foreground, secondary-text);
+    // color: mat-color($foreground, secondary-text);
+    color: $fg;
     box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
   }
 
   .active-link.mat-button {
-    color: $fg;
+    // background: $fg;
+    // font-size: 1.05em;
+    font-weight: bolder;
+    text-decoration: underline;
+    // color: mat-color($accent);
   }
 }
