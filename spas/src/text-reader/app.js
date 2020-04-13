@@ -105,14 +105,14 @@ export class App {
     ]
     this.mThemes = [
       {
-        fontSize: 24,
+        fontSize: 18,
         color: 'darkslateblue',
         hightcolor: 'red',
         fontFamily: 'serif',
         background: '#f6f6e2',
       },
       {
-        fontSize: 24,
+        fontSize: 18,
         color: '#eee',
         hightcolor: 'red',
         fontFamily: 'serif',
