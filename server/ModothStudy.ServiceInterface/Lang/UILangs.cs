@@ -4,6 +4,8 @@ namespace ModothStudy.ServiceInterface.Lang
 {
     public enum UILangs
     {
+        Home,
+
         Library,
 
         Name,
@@ -123,5 +125,9 @@ namespace ModothStudy.ServiceInterface.Lang
         Reference,
 
         PwdDescription,
+
+        PythonConsole,
+
+        OpenFile,
     }
 }

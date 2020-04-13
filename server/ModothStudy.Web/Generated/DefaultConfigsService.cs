@@ -39,6 +39,7 @@ namespace ModothStudy.Web.Generated
         public string PERMISSION_SHARE_BLOG {get;set;}
         public string PERMISSION_COMMENT {get;set;}
         public string PERMISSION_THIRD_SHARE {get;set;}
+        public string Home {get;set;}
         public string Library {get;set;}
         public string Name {get;set;}
         public string UserName {get;set;}
@@ -107,11 +108,14 @@ namespace ModothStudy.Web.Generated
         public string InvalidApiSignature {get;set;}
         public string Reference {get;set;}
         public string PwdDescription {get;set;}
+        public string PythonConsole {get;set;}
+        public string OpenFile {get;set;}
         public string CONFIG_MAX_FILE_SIZE {get;set;}
         public string CONFIG_MENUS {get;set;}
         public string CONFIG_EDITOR_STYLES {get;set;}
         public string CONFIG_EDITOR_STYLE_TAG {get;set;}
         public string CONFIG_DAILY_TAG {get;set;}
+        public string CONFIG_HEAD_TAG {get;set;}
         public string CONFIG_SANDBOX_APP_TAG {get;set;}
         public string CONFIG_LOGO {get;set;}
         public string CONFIG_BG {get;set;}

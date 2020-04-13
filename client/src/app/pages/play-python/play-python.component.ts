@@ -6,19 +6,7 @@ import { Component, OnInit, ElementRef } from "@angular/core";
   styleUrls: ["./play-python.component.scss"],
 })
 export class PlayPythonComponent implements OnInit {
-  initCommends = `async def f():
-    print("sleep")
-    await sleep(2000)
-    print("123 sleep")
-    await sleep(2000)
-    print("123 sleep")
-    await sleep(2000)
-    print("123 sleep")
-    await 123
-    print("awake")
-
-print("enjoy")
-f()`;
+  initCommends = `print("hello!")`;
 
   constructor(public hostRef: ElementRef<HTMLElement>) {}
 

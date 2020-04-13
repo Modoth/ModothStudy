@@ -1,15 +1,24 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import { AppService, MenuConfig } from "src/app/services/app.service";
-import { LoginUser, Configs, Query, Condition } from "src/app/apis";
+import {
+  LoginUser,
+  Configs,
+  Query,
+  Condition,
+  NodesService,
+} from "src/app/apis";
 import { Router, NavigationError } from "@angular/router";
-import { Subscription, BehaviorSubject } from "rxjs";
+import { Subscription, BehaviorSubject, empty } from "rxjs";
 import { QueryComponent } from "src/app/pages/query/query.component";
 import { EditorComponent } from "src/app/pages/editor/editor.component";
 import { ErrorHandler } from "@angular/router/src/router";
 import { ConfigsService } from "src/app/services/configs.service";
 import { NotifyService } from "src/app/services/notify.service";
-import { MatIconRegistry } from "@angular/material";
+import { MatIconRegistry, MatDrawer } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
+import { switchMap, tap } from "rxjs/operators";
+import { ScriptAppService } from "src/app/services/script-app.service";
+import { ConvertToNodeModel, Node } from "src/app/models/node";
 
 @Component({
   selector: "app-navbar",
@@ -23,7 +32,9 @@ export class NavbarComponent implements OnInit {
     public configsService: ConfigsService,
     public router: Router,
     public matIconRegistry: MatIconRegistry,
-    public domSanitizer: DomSanitizer
+    public domSanitizer: DomSanitizer,
+    private nodesApi: NodesService,
+    private scriptAppService: ScriptAppService
   ) {
     this.appService.loginUsers.subscribe((u) => (this.loginUser = u));
     this.configsService
@@ -40,6 +51,41 @@ export class NavbarComponent implements OnInit {
       };
       this.errorUrl = error.url;
     });
+    this.configsService
+      .getConfig(Configs.AppConfigsEnum.HEADTAG.toString())
+      .pipe(
+        switchMap((tag) =>
+          tag ? this.nodesApi.getBlogsByTag(tag, null, 1) : empty()
+        ),
+        switchMap((apiRes) =>
+          apiRes
+            ? ConvertToNodeModel(apiRes.data.data, this.configsService)
+            : empty()
+        ),
+        tap((nodes) => {
+          if (nodes && nodes.length) {
+            this.node = nodes[0];
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  public node: Node;
+
+  @Input() drawer: MatDrawer;
+
+  apps = new Map<string, string>();
+
+  appTag: string = null;
+
+  getNodeApp(node: Node) {
+    return this.scriptAppService.getNodeApp(
+      this,
+      node.tags,
+      this.nodesApi,
+      this.configsService
+    );
   }
 
   public loginUser: LoginUser;

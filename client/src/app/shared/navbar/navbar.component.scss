@@ -1,48 +1,81 @@
 :host {
   display: flex;
-  flex-wrap: nowrap;
-  padding: 0px 5px 0px 0;
-
-  & > .mat-button {
-    min-width: 0;
-    padding: 0;
-    align-self: stretch;
+  flex-direction: column;
+  padding: 0;
+  .navbar-logo {
+    position: relative;
+  }
+  .navbar-logo-fb {
+    width: 100%;
+    bottom: 50%;
+    transform: translate(0, 50%);
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    & > .mat-button {
+      margin: 0;
+      min-width: auto;
+    }
   }
 
   & .logo {
     height: 32px;
-    padding: 3px 10px 0 10px;
-    margin: -10px 0;
+    padding: 3px;
   }
 
   & .user-logo {
     width: 24px;
-    padding: 5px 5px 0 5px;
     margin: 0;
   }
 
   & .user-avatar {
     width: 24px;
-    margin: 5px 5px 0 5px;
     border-radius: 3px;
+  }
+
+  .navbar-buttons {
+    display: inline-flex;
+    overflow-x: auto;
+
+    .mat-button {
+      margin: 0 auto;
+      padding: 2px;
+      &:nth-child(2) {
+        margin-left: 0;
+      }
+      &:nth-last-child(2) {
+        margin-right: 0;
+      }
+    }
   }
 }
 
-.navbar-buttons {
-  display: inline-flex;
-  overflow-x: auto;
-  flex-basis: 1;
-  flex-grow: 1;
-  padding: 0;
-  align-self: center;
+.hiden-on-big {
+  display: unset;
+}
+.hiden-on-small {
+  display: none;
+}
 
-  .mat-button {
-    min-width: 0;
-    padding: 2px 10px;
-    font-size: 1.05rem;
-
-    & > :last-child {
-      margin-left: auto;
-    }
+@media (min-width: 720px) {
+  // :host > * {
+  //   width: 720px;
+  //   align-self: center;
+  // }
+  .hiden-on-big {
+    display: none;
   }
+  .hiden-on-small {
+    display: unset;
+  }
+  &:first-child {
+    margin-left: 0;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.margin-top-3 {
+  margin-top: 3px !important;
 }

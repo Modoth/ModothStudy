@@ -1,0 +1,25 @@
+<mat-list role="list">
+  <mat-divider></mat-divider>
+  <mat-list-item role="listitem"
+    ><a mat-button color="primary" (click)="appService.changeTheme()">
+      <mat-icon class="user-logo">color_lens</mat-icon><span>ChangeTheme</span>
+    </a></mat-list-item
+  >
+  <mat-divider></mat-divider>
+  <mat-list-item
+    (click)="drawer.close()"
+    *ngFor="let link of links"
+    role="listitem"
+  >
+    <a
+      [routerLink]="link.defaultLink"
+      color="primary"
+      routerLinkActive="active-link"
+      mat-button
+    >
+      <mat-icon class="user-logo">{{ link.icon }}</mat-icon
+      ><span>{{ link.name | lang | async }}</span>
+    </a>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+</mat-list>

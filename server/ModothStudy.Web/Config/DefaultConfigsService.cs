@@ -28,6 +28,10 @@ namespace ModothStudy.Web.Generated
             NoSuchFolder = "无此文件夹";
             NoSuchNode = "无此节点";
             InvalidFileType = "无效文件类型";
+            Home = "首页";
+            OpenFile = "打开文件";
+            PythonConsole = "Python控制台";
+
             Library = "浏览";
             Name = "名称";
             UserName = "用户名";
@@ -94,7 +98,7 @@ namespace ModothStudy.Web.Generated
             ViewSolution = "查看答案";
             MySolutions = "我的答案";
             BlogEditor = "文档编辑";
-            ImageEditor = "图片编辑";
+            ImageEditor = "图片";
             PERMISSION_COMMENT = "回复";
             NoSuchComment = "无此回复";
             LoadMore = "加载更多";
@@ -103,8 +107,8 @@ namespace ModothStudy.Web.Generated
             NewPassword = "新密码";
             PasswordNotSame = "密码不一致";
             LivePreview = "实时预览";
-            DataWillNotSave = "沙盒页面不保存数据";
-            Python = "脚本";
+            DataWillNotSave = "当前页面不保存数据";
+            Python = "Python";
             CommentSuccess = "评论成功";
             NoCommentsWelcomeToAdd = "暂无评论";
             Run = "运行";
@@ -122,6 +126,7 @@ namespace ModothStudy.Web.Generated
             CONFIG_DOC_TYPE_TAG = "类型";
             CONFIG_SOLUTION_TYPE_TAG = "题型";
             CONFIG_DAILY_TAG = "首页推荐";
+            CONFIG_HEAD_TAG = "doodle";
             CONFIG_AUTOPLAY_TAG = "自动运行";
             CONFIG_MAX_FILE_SIZE = "500000";
             CONFIG_LOGO = "/assets/imgs/logo.svg";

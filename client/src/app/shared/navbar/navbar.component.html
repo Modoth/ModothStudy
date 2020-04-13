@@ -1,14 +1,61 @@
-<a mat-button i18n routerLink="explorer">
-  <img class="logo" *ngIf="logoUrl; else svgLogo" [src]="logoUrl" />
-  <ng-template #svgLogo>
-    <mat-icon
-      color="primary"
-      svgIcon="{{ logoIcon | async }}"
-      class="logo"
-    ></mat-icon>
-  </ng-template>
-</a>
+<div *ngIf="node" class="navbar-logo hiden-on-big">
+  <div class="navbar-logo-bg">
+    <app-article-viewer
+      [type]="node.docType"
+      [content]="node.content"
+      [options]="{
+        getApp: { value: getNodeApp(node) },
+        loopPlay: { value: true },
+        play: { value: true },
+        summary: { value: true },
+        showBorder: { value: false }
+      }"
+    >
+    </app-article-viewer>
+  </div>
+  <div class="navbar-logo-fb">
+    <a mat-button i18n (click)="drawer.toggle()">
+      <img class="logo" *ngIf="logoUrl; else svgLogo" [src]="logoUrl" />
+      <ng-template #svgLogo>
+        <mat-icon color="primary" class="logo">menu</mat-icon>
+      </ng-template>
+      <!-- svgIcon="{{ logoIcon | async }}" -->
+    </a>
+    <a
+      mat-button
+      *ngIf="appService.canLogin || loginUser"
+      i18n
+      routerLink="login"
+    >
+      <ng-container *ngIf="loginUser; else loginButton">
+        <img
+          class="user-avatar"
+          [src]="loginUser.avatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
+        />
+      </ng-container>
+      <ng-template #loginButton>
+        <mat-icon class="user-logo">person</mat-icon>
+      </ng-template>
+    </a>
+  </div>
+</div>
 <div class="navbar-buttons">
+  <a
+    [class.hiden-on-small]="node"
+    class="margin-top-3"
+    mat-button
+    i18n
+    (click)="drawer.toggle()"
+  >
+    <img class="logo" *ngIf="logoUrl; else svgLogo" [src]="logoUrl" />
+    <ng-template #svgLogo>
+      <mat-icon color="primary" class="logo">menu</mat-icon>
+    </ng-template>
+    <!-- svgIcon="{{ logoIcon | async }}" -->
+  </a>
+  <a routerLink="explorer" routerLinkActive="active-link" mat-button>
+    <span>{{ "Home" | lang | async }}</span>
+  </a>
   <a
     *ngFor="let menu of menus"
     routerLinkActive="active-link"
@@ -30,21 +77,24 @@
   >
     <span>{{ "Manage" | lang | async }}</span>
   </a>
+  <a
+    [class.hiden-on-small]="node"
+    mat-button
+    *ngIf="appService.canLogin || loginUser"
+    i18n
+    routerLink="login"
+  >
+    <ng-container *ngIf="loginUser; else loginButton">
+      <img
+        class="user-avatar"
+        [src]="loginUser.avatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
+      />
+    </ng-container>
+    <ng-template #loginButton>
+      <mat-icon class="user-logo">person</mat-icon>
+    </ng-template>
+  </a>
 </div>
 <!-- <a mat-button color="primary" routerLinkActive="active-link" routerLink="tools">
   <mat-icon class='user-logo'>ac_unit</mat-icon>
 </a> -->
-<a mat-button color="primary" (click)="appService.changeTheme()">
-  <mat-icon class="user-logo">color_lens</mat-icon>
-</a>
-<a mat-button *ngIf="appService.canLogin || loginUser" i18n routerLink="login">
-  <ng-container *ngIf="loginUser; else loginButton">
-    <img
-      class="user-avatar"
-      [src]="loginUser.avatar || ('CONFIG_DEFAULT_AVATAR' | lang | async)"
-    />
-  </ng-container>
-  <ng-template #loginButton>
-    <mat-icon class="user-logo">person</mat-icon>
-  </ng-template>
-</a>

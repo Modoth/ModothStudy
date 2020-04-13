@@ -154,6 +154,7 @@ namespace ModothStudy.Service.CommonServices
                 .Where(p =>
                 p.EndsWith("jpeg", StringComparison.CurrentCultureIgnoreCase)
                 || p.EndsWith("jpg", StringComparison.CurrentCultureIgnoreCase)
+                || p.EndsWith("gif", StringComparison.CurrentCultureIgnoreCase)
                 || p.EndsWith("png", StringComparison.CurrentCultureIgnoreCase)).ToList(),
                 Author = node.User == null ? String.Empty : node.User.Name,
                 Title = node.Name,

@@ -26,6 +26,7 @@ namespace ModothStudy.Service.EntityServices
             "png",
             "jpeg",
             "jpg",
+            "gif",
             "svg",
         };
 

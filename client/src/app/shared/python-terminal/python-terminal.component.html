@@ -3,16 +3,14 @@
     {{ output.value }}
   </div>
   <div class="input-line stdin">
-    <div class="input-prefix">
-      {{
+    <div class="input-prefix">{{
         isEvaling
           ? evalPrefix
           : inputs.length > 0
           ? multilinePrefix + tabIndent.repeat(nextIndent)
           : inputPrefix
-      }}
-    </div>
-    <input
+      }}</div>
+      <span *ngIf='!isEvaling' class='caret'>|</span><input
       [disabled]="isEvaling || useTerminalIme"
       #inputRef
       class="input"

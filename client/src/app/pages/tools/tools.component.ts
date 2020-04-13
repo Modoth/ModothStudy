@@ -8,12 +8,12 @@ import { Component, OnInit } from "@angular/core";
 export class ToolsComponent implements OnInit {
   public links = [
     {
-      name: "ImageEditor",
-      url: "imageeditor",
-    },
-    {
       name: "Python",
       url: "python",
+    },
+    {
+      name: "ImageEditor",
+      url: "imageeditor",
     },
   ];
 

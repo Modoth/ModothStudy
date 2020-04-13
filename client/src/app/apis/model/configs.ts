@@ -18,13 +18,14 @@ export interface Configs {
     uiLangs?: Configs.UiLangsEnum;
 }
 export namespace Configs {
-    export type AppConfigsEnum = 'CONFIG_MAX_FILE_SIZE' | 'CONFIG_MENUS' | 'CONFIG_EDITOR_STYLES' | 'CONFIG_EDITOR_STYLE_TAG' | 'CONFIG_DAILY_TAG' | 'CONFIG_SANDBOX_APP_TAG' | 'CONFIG_LOGO' | 'CONFIG_BG' | 'CONFIG_DEFAULT_AVATAR' | 'CONFIG_TITLE' | 'CONFIG_DOC_TYPE_TAG' | 'CONFIG_SOLUTION_TYPE_TAG' | 'CONFIG_APP_TAG' | 'CONFIG_SCRIPT_TAG' | 'CONFIG_AUTOPLAY_TAG' | 'CONFIG_PWD_EXP' | 'CONFIG_WX_API_URL' | 'CONFIG_WX_API_TOKEN' | 'CONFIG_WX_JS_DOMAIN' | 'CONFIG_WX_APP_ID' | 'CONFIG_WX_APP_SECRET' | 'CONFIG_WX_API_URL_TOKEN' | 'CONFIG_WX_ENABLED' | 'CONFIG_ICP' | 'CONFIG_WX_API_URL_MENU' | 'CONFIG_WX_API_URL_SENDALL' | 'CONFIG_WX_API_URL_PREVIEW' | 'CONFIG_WX_API_URL_UPLOAD' | 'CONFIG_WX_API_URL_UPLOAD_IMG' | 'CONFIG_WX_API_PREVIEW_USERID' | 'CONFIG_WX_API_URL_UPLOAD_NEWS' | 'CONFIG_WX_API_URL_DELETE_MSG' | 'CONFIG_HOME_URL' | 'CONFIG_WX_SHARE_TAG' | 'CONFIG_WX_SHARE_DEFAULT_THUMB' | 'CONFIG_WX_SHARE_DEFAULT_THUMB_ID' | 'CONFIG_WX_SHARE_MAX_ARTICLE_COUNT';
+    export type AppConfigsEnum = 'CONFIG_MAX_FILE_SIZE' | 'CONFIG_MENUS' | 'CONFIG_EDITOR_STYLES' | 'CONFIG_EDITOR_STYLE_TAG' | 'CONFIG_DAILY_TAG' | 'CONFIG_HEAD_TAG' | 'CONFIG_SANDBOX_APP_TAG' | 'CONFIG_LOGO' | 'CONFIG_BG' | 'CONFIG_DEFAULT_AVATAR' | 'CONFIG_TITLE' | 'CONFIG_DOC_TYPE_TAG' | 'CONFIG_SOLUTION_TYPE_TAG' | 'CONFIG_APP_TAG' | 'CONFIG_SCRIPT_TAG' | 'CONFIG_AUTOPLAY_TAG' | 'CONFIG_PWD_EXP' | 'CONFIG_WX_API_URL' | 'CONFIG_WX_API_TOKEN' | 'CONFIG_WX_JS_DOMAIN' | 'CONFIG_WX_APP_ID' | 'CONFIG_WX_APP_SECRET' | 'CONFIG_WX_API_URL_TOKEN' | 'CONFIG_WX_ENABLED' | 'CONFIG_ICP' | 'CONFIG_WX_API_URL_MENU' | 'CONFIG_WX_API_URL_SENDALL' | 'CONFIG_WX_API_URL_PREVIEW' | 'CONFIG_WX_API_URL_UPLOAD' | 'CONFIG_WX_API_URL_UPLOAD_IMG' | 'CONFIG_WX_API_PREVIEW_USERID' | 'CONFIG_WX_API_URL_UPLOAD_NEWS' | 'CONFIG_WX_API_URL_DELETE_MSG' | 'CONFIG_HOME_URL' | 'CONFIG_WX_SHARE_TAG' | 'CONFIG_WX_SHARE_DEFAULT_THUMB' | 'CONFIG_WX_SHARE_DEFAULT_THUMB_ID' | 'CONFIG_WX_SHARE_MAX_ARTICLE_COUNT';
     export const AppConfigsEnum = {
         MAXFILESIZE: 'CONFIG_MAX_FILE_SIZE' as AppConfigsEnum,
         MENUS: 'CONFIG_MENUS' as AppConfigsEnum,
         EDITORSTYLES: 'CONFIG_EDITOR_STYLES' as AppConfigsEnum,
         EDITORSTYLETAG: 'CONFIG_EDITOR_STYLE_TAG' as AppConfigsEnum,
         DAILYTAG: 'CONFIG_DAILY_TAG' as AppConfigsEnum,
+        HEADTAG: 'CONFIG_HEAD_TAG' as AppConfigsEnum,
         SANDBOXAPPTAG: 'CONFIG_SANDBOX_APP_TAG' as AppConfigsEnum,
         LOGO: 'CONFIG_LOGO' as AppConfigsEnum,
         BG: 'CONFIG_BG' as AppConfigsEnum,
@@ -101,8 +102,9 @@ export namespace Configs {
         COMMENT: 'PERMISSION_COMMENT' as PermissionDescriptionsEnum,
         THIRDSHARE: 'PERMISSION_THIRD_SHARE' as PermissionDescriptionsEnum
     };
-    export type UiLangsEnum = 'Library' | 'Name' | 'UserName' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription';
+    export type UiLangsEnum = 'Home' | 'Library' | 'Name' | 'UserName' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription' | 'PythonConsole' | 'OpenFile';
     export const UiLangsEnum = {
+        Home: 'Home' as UiLangsEnum,
         Library: 'Library' as UiLangsEnum,
         Name: 'Name' as UiLangsEnum,
         UserName: 'UserName' as UiLangsEnum,
@@ -170,6 +172,8 @@ export namespace Configs {
         NoWxTokenFound: 'NoWxTokenFound' as UiLangsEnum,
         InvalidApiSignature: 'InvalidApiSignature' as UiLangsEnum,
         Reference: 'Reference' as UiLangsEnum,
-        PwdDescription: 'PwdDescription' as UiLangsEnum
+        PwdDescription: 'PwdDescription' as UiLangsEnum,
+        PythonConsole: 'PythonConsole' as UiLangsEnum,
+        OpenFile: 'OpenFile' as UiLangsEnum
     };
 }

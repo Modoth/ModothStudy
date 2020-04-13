@@ -18,6 +18,8 @@ namespace ModothStudy.ServiceInterface.Lang
 
         CONFIG_DAILY_TAG,
 
+        CONFIG_HEAD_TAG,
+
         CONFIG_SANDBOX_APP_TAG,
 
 

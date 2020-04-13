@@ -148,6 +148,26 @@ app-manage {
   }
 }
 
+.navbar-logo-bg {
+  .media.summary {
+    margin: 0 !important;
+    img {
+      display: block;
+      object-fit: contain;
+    }
+  }
+}
+
+.navbar-logo-bg {
+  overflow: hidden;
+  app-markdown-viewer,
+  app-python-viewer,
+  app-json-viewer,
+  app-html-viewer {
+    max-height: 72px;
+  }
+}
+
 @keyframes move-ops {
   from {
     transform: translateX(-100%);

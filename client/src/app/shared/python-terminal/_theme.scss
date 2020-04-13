@@ -12,6 +12,9 @@
       background: mat-color($background, background);
       color: mat-color($foreground, text);
 
+      .caret {
+        color: mat-color($foreground, hint-text);
+      }
       .stdin {
         color: mat-color($foreground, hint-text);
 

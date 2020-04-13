@@ -34,6 +34,7 @@ import {
   MatCardModule,
   MatListModule,
   MatRadioModule,
+  MatSidenavModule,
 } from "@angular/material";
 import { MdReloadService } from "./services/md-reload.service";
 import { LangPipe } from "./pipes/lang.pipe";
@@ -79,6 +80,7 @@ import { ToggleButtonGroupComponent } from "./shared/toggle-button-group/toggle-
 import { BASE_PATH } from "./apis/variables";
 import { SelectNodeComponent } from "./shared/select-node/select-node.component";
 import { JsonViewerComponent } from "./shared/app-viewers/json-viewer/json-viewer.component";
+import { SideBarComponent } from './shared/side-bar/side-bar.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -130,6 +132,7 @@ import { JsonViewerComponent } from "./shared/app-viewers/json-viewer/json-viewe
     ToggleButtonGroupComponent,
     SelectNodeComponent,
     JsonViewerComponent,
+    SideBarComponent,
   ],
   imports: [
     OverlayModule,
@@ -137,6 +140,7 @@ import { JsonViewerComponent } from "./shared/app-viewers/json-viewer/json-viewe
     BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
+    MatSidenavModule,
     HttpClientModule,
     MarkdownModule.forRoot(),
     MatButtonModule,

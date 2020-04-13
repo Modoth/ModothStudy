@@ -12,5 +12,10 @@
     & > *:last-child {
       flex: 1;
     }
+
+    .data-will-not-save-warn {
+      color: mat-color($foreground, secondary-text);
+      background: mat-color($warn, 50);
+    }
   }
 }

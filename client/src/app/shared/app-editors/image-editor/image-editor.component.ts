@@ -583,6 +583,10 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
   }
 
   public async apply() {
+    if (this._image.type === "image/gif") {
+      this.closed.emit(this._image);
+      return;
+    }
     if (this._image.type === "image/svg+xml" && this.imagesDatas.length === 1) {
       this.closed.emit(this._image);
       return;

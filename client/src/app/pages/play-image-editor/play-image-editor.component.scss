@@ -4,6 +4,10 @@
   flex-direction: column;
   margin: 10px;
 
+  app-image-selector {
+    flex: 1;
+  }
+
   ::ng-deep input {
     margin: 10px;
     // align-self: center;
