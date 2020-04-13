@@ -56,7 +56,7 @@ export class TextRender {
   }
 
   mOnMouseMove(ev) {
-    if (!this.mIsSelecting) {
+    if (!this.mIsSelecting || !this.mMouseDownChar) {
       return
     }
     const now = Date.now()
@@ -386,16 +386,16 @@ export class TextRender {
     /**@type number */ offset,
     /**@type number */ fontSize,
     /**@type string */ fontFamily,
-    /**@type number */ clientWidth,
-    /**@type number */ clientHeight,
+    /**@type number */ width,
+    /**@type number */ height,
     /**@type number */ lineHeight,
     padding,
     includeLineInfo = true,
     hightLimit = true
   ) {
     const lineInfos = []
-    canvas.width = clientWidth
-    canvas.height = clientHeight
+    canvas.width = width
+    canvas.height = height
     let pageWidth = canvas.width - padding.left - padding.right
     let pageHeight = canvas.height - padding.top - padding.bottom
     let pOffset = offset
@@ -454,8 +454,8 @@ export class TextRender {
     cancleToken = {}
   ) {
     return new Promise(async (resolve) => {
-      this.mMeasureCanvas.width = this.mRoot.clientWidth
-      this.mMeasureCanvas.height = this.mRoot.clientHeight
+      this.mMeasureCanvas.width = this.mRoot.clientWidth * this.mRatio
+      this.mMeasureCanvas.height = this.mRoot.clientHeight * this.mRatio
       let pageWidth =
         this.mMeasureCanvas.width - this.mPadding.left - this.mPadding.right
       let pageHeight =
@@ -561,8 +561,19 @@ export class TextRender {
     /**@type string */ color,
     /**@type string */ hightcolor,
   }) {
+    const devicePixelRatio = window.devicePixelRatio || 1
+    const ctx = this.mCanvas.getContext('2d')
+    const backingStoreRatio =
+      ctx.webkitBackingStorePixelRatio ||
+      ctx.mozBackingStorePixelRatio ||
+      ctx.msBackingStorePixelRatio ||
+      ctx.oBackingStorePixelRatio ||
+      ctx.backingStorePixelRatio ||
+      1
+    this.mRatio = devicePixelRatio / backingStoreRatio
     this.mColor = color
     this.mHightlightColor = hightcolor
+    fontSize *= this.mRatio
     this.mFontSize = fontSize
     this.mFontFamily = fontFamily
     this.mLineHeight = fontSize * 1.2
@@ -582,8 +593,8 @@ export class TextRender {
   ) {
     this.mContent = content.slice(offset, nextOffset)
     this.mNextOffset = nextOffset
-    this.mCanvas.width = this.mRoot.clientWidth
-    this.mCanvas.height = this.mRoot.clientHeight
+    this.mCanvas.width = this.mRoot.clientWidth * this.mRatio
+    this.mCanvas.height = this.mRoot.clientHeight * this.mRatio
     this.mContext = this.mCanvas.getContext('2d')
     this.mContext.font = `${this.mFontSize}px ${this.mFontFamily}`
     const {
