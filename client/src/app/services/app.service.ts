@@ -82,9 +82,11 @@ export class AppService {
   public currentThemeIdx = -1;
   public readonly themes = [
     "theme-purple-green",
-    "theme-pink-bluegrey",
-    "theme-deeppurple-amber",
+    // "theme-pink-bluegrey",
+    // "theme-deeppurple-amber",
     "theme-indigo-pink",
+    // "theme-purple-green-dark",
+    // "theme-indigo-pink-dark",
   ];
 
   public init() {

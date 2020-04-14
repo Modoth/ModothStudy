@@ -150,8 +150,8 @@ $theme-configs: (
     @include app-theme($theme);
   }
 
-  // .theme-#{$name}-dark {
-  //   $theme: mat-dark-theme($primary, $accent, $warn);
-  //   @include app-theme($theme);
-  // }
+  .theme-#{$name}-dark {
+    $theme: mat-dark-theme($primary, $accent, $warn);
+    @include app-theme($theme);
+  }
 }

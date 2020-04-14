@@ -9,9 +9,9 @@ import {
   ElementRef,
   EventEmitter,
   OnDestroy,
-} from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
-import { Configs } from "src/app/apis";
+} from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Configs } from 'src/app/apis';
 
 class MaskAnchor {
   constructor(
@@ -73,22 +73,22 @@ class MaskAnchorCollection {
 
 class ImageCroper implements OnDestroy {
   ngOnDestroy(): void {
-    this.canvas.removeEventListener("touchstart", this.startMove);
-    this.canvas.removeEventListener("touchmove", this.move);
-    this.canvas.removeEventListener("touchend", this.stopMove);
-    this.canvas.removeEventListener("touchcancel", this.stopMove);
-    this.canvas.removeEventListener("mousedown", this.startMove);
-    this.canvas.removeEventListener("mousemove", this.move);
-    this.canvas.removeEventListener("mouseup", this.stopMove);
-    this.canvas.removeEventListener("mouseleave", this.stopMove);
-    let ctx = this.canvas.getContext("2d");
+    this.canvas.removeEventListener('touchstart', this.startMove);
+    this.canvas.removeEventListener('touchmove', this.move);
+    this.canvas.removeEventListener('touchend', this.stopMove);
+    this.canvas.removeEventListener('touchcancel', this.stopMove);
+    this.canvas.removeEventListener('mousedown', this.startMove);
+    this.canvas.removeEventListener('mousemove', this.move);
+    this.canvas.removeEventListener('mouseup', this.stopMove);
+    this.canvas.removeEventListener('mouseleave', this.stopMove);
+    let ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   constructor(
     public canvas: HTMLCanvasElement,
-    public shadowStyle = "#00000040",
-    public archorStyle = "white",
+    public shadowStyle = '#00000040',
+    public archorStyle = 'white',
     public archR = 2
   ) {
     this.archD = this.archR * 2;
@@ -99,14 +99,14 @@ class ImageCroper implements OnDestroy {
     let width = this.canvas.width;
     let height = this.canvas.height;
     this.anchors = new MaskAnchorCollection(0, width, height, 0);
-    this.canvas.addEventListener("touchstart", this.startMove);
-    this.canvas.addEventListener("touchmove", this.move);
-    this.canvas.addEventListener("touchend", this.stopMove);
-    this.canvas.addEventListener("touchcancel", this.stopMove);
-    this.canvas.addEventListener("mousedown", this.startMove);
-    this.canvas.addEventListener("mousemove", this.move);
-    this.canvas.addEventListener("mouseup", this.stopMove);
-    this.canvas.addEventListener("mouseleave", this.stopMove);
+    this.canvas.addEventListener('touchstart', this.startMove);
+    this.canvas.addEventListener('touchmove', this.move);
+    this.canvas.addEventListener('touchend', this.stopMove);
+    this.canvas.addEventListener('touchcancel', this.stopMove);
+    this.canvas.addEventListener('mousedown', this.startMove);
+    this.canvas.addEventListener('mousemove', this.move);
+    this.canvas.addEventListener('mouseup', this.stopMove);
+    this.canvas.addEventListener('mouseleave', this.stopMove);
     this.drawMask();
   }
 
@@ -283,7 +283,7 @@ class ImageCroper implements OnDestroy {
 
   public drawMask() {
     console.log(this.anchors);
-    let ctx = this.canvas.getContext("2d");
+    let ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     //SHADOW
@@ -336,9 +336,9 @@ class ImageCroper implements OnDestroy {
 }
 
 @Component({
-  selector: "app-image-editor",
-  templateUrl: "./image-editor.component.html",
-  styleUrls: ["./image-editor.component.scss"],
+  selector: 'app-image-editor',
+  templateUrl: './image-editor.component.html',
+  styleUrls: ['./image-editor.component.scss'],
 })
 export class ImageEditorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
@@ -349,7 +349,7 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
 
   public _image: Blob;
 
-  public imgType: string = "image/jpeg";
+  public imgType: string = 'image/jpeg';
 
   @Input() maxImageSize: number;
 
@@ -413,19 +413,19 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
         this.revertEdit();
       },
       hidden: () => !this.imagesDatas || this.imagesDatas.length < 2,
-      icon: "undo",
+      icon: 'undo',
     },
     {
       func: (op) => {
         this.startOp(op);
       },
-      icon: "crop",
+      icon: 'crop',
       ops: [
         {
           func: () => {
             this.cancleCrop();
           },
-          icon: "close",
+          icon: 'close',
         },
         {
           func: () => {
@@ -433,37 +433,37 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
           },
           hidden: () =>
             !this.croper.statuses || this.croper.statuses.length < 1,
-          icon: "undo",
+          icon: 'undo',
         },
         {
           func: () => {
             this.croper.setCropRatio(16 / 9);
           },
-          icon: "crop_16_9",
+          icon: 'crop_16_9',
         },
         {
           func: () => {
             this.croper.setCropRatio(3 / 2);
           },
-          icon: "crop_3_2",
+          icon: 'crop_3_2',
         },
         {
           func: () => {
             this.croper.setCropRatio(1);
           },
-          icon: "crop_din",
+          icon: 'crop_din',
         },
         {
           func: () => {
             this.croper.setCropRatio(NaN);
           },
-          icon: "crop_free",
+          icon: 'crop_free',
         },
         {
           func: () => {
             this.applyCrop();
           },
-          icon: "check",
+          icon: 'check',
         },
       ],
     },
@@ -471,32 +471,32 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
       func: () => {
         this.execEdit(this.rotateLeft);
       },
-      icon: "rotate_left",
+      icon: 'rotate_left',
     },
     {
       func: () => {
         this.execEdit(this.rotateRight);
       },
-      icon: "rotate_right",
+      icon: 'rotate_right',
     },
     {
       func: () => {
         this.cancle();
       },
-      icon: "close",
+      icon: 'close',
     },
     {
       func: () => {
         this.apply();
       },
-      icon: "check",
+      icon: 'check',
     },
   ];
 
   @Output() closed = new EventEmitter<Blob>();
 
-  @ViewChild("canvas") canvasRef: ElementRef<HTMLCanvasElement>;
-  @ViewChild("canvasMask") canvasMaskRef: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvas') canvasRef: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvasMask') canvasMaskRef: ElementRef<HTMLCanvasElement>;
 
   constructor(public somSanitizer: DomSanitizer) {}
 
@@ -504,7 +504,7 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
 
   public async getImage(blob: Blob): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
-      var img: HTMLImageElement = window.document.createElement("img");
+      var img: HTMLImageElement = window.document.createElement('img');
       let imgUrl = window.URL.createObjectURL(blob);
       img.src = imgUrl;
       this.somSanitizer.bypassSecurityTrustUrl(imgUrl);
@@ -576,22 +576,23 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
     let canvas = this.canvasRef.nativeElement;
     let img = await this.getImage(this._image);
     this.updateCanvasWidth(canvas, img.naturalWidth, img.naturalHeight);
-    let ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
     this.imagesDatas = [];
     this.imagesDatas.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
   }
 
   public async apply() {
-    if (this._image.type === "image/gif") {
+    if (
+      this.imagesDatas.length === 1 &&
+      (this._image.type === 'image/gif' ||
+        this._image.type === 'image/svg+xml' ||
+        this._image.type === 'image/png')
+    ) {
       this.closed.emit(this._image);
       return;
     }
-    if (this._image.type === "image/svg+xml" && this.imagesDatas.length === 1) {
-      this.closed.emit(this._image);
-      return;
-    }
-    let blob = await this.normanizeImage();
+    const blob = await this.normanizeImage();
     if (this.maxImageSize && blob.size > this.maxImageSize) {
       this.onError.emit(Configs.ServiceMessagesEnum.FileToLarge.toString());
       return;
@@ -625,7 +626,7 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
     this.imagesDatas.push(data);
     let canvas = this.canvasRef.nativeElement;
     this.updateCanvasWidth(canvas, data.width, data.height);
-    let ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext('2d');
     ctx.putImageData(data, 0, 0);
   }
 
@@ -653,12 +654,12 @@ export class ImageEditorComponent implements OnInit, OnDestroy {
       width = requiredWidth;
       height = maxHeight;
     }
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
     canvas.width = naturalWidth;
     canvas.height = naturalHeight;
-    canvasMask.style.width = width + "px";
-    canvasMask.style.height = height + "px";
+    canvasMask.style.width = width + 'px';
+    canvasMask.style.height = height + 'px';
     canvasMask.width = width;
     canvasMask.height = height;
     this.maskRatio = naturalWidth / width;
