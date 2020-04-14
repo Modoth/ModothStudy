@@ -11,8 +11,12 @@
           ? multilinePrefix + tabIndent.repeat(nextIndent)
           : inputPrefix
       }}</div>
-      <span *ngIf='!isEvaling' class='caret'>|</span><input
-      [disabled]="isEvaling || useTerminalIme"
+      <ng-container>
+        <span [class.hidden]='!useTerminalIme' [class.caret]='!isEvaling' class='emu-input'>{{input}}</span>
+      </ng-container>
+      <input
+      [disabled]="isEvaling"
+      [class.hidden]='useTerminalIme'
       #inputRef
       class="input"
       (keyup)="onKeyup($event)"

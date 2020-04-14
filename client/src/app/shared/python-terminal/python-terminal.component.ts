@@ -400,7 +400,7 @@ export class PythonTerminalComponent implements OnInit, AfterViewChecked {
     }
     try {
       const result = await this.pythonService.exec(exp);
-      this.addToOutputs(result, "stdout");
+      this.addToOutputs(result, result ? "stdout" : "stdout empty");
     } catch (error) {
       this.addToOutputs(error, "stderr");
     }

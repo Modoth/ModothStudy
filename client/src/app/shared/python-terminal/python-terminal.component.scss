@@ -24,6 +24,7 @@ iframe {
   display: flex;
 }
 
+.emu-input,
 .input {
   flex: 1;
   border-width: 0px;
@@ -60,10 +61,15 @@ iframe {
   }
 }
 
-.caret {
+.emu-input.caret::after {
+  content: "|";
   animation: caret-blink 1s infinite;
 }
 
 .input:focus {
   outline: none;
+}
+
+.stdout.empty {
+  line-height: 0.75em;
 }

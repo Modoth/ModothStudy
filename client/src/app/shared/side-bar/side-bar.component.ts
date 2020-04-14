@@ -18,7 +18,7 @@ export class SideBarComponent implements OnInit {
       {
         name: 'PythonConsole',
         defaultLink: '/tools/python',
-        icon: 'play_arrow',
+        icon: 'code',
       },
     ];
   }

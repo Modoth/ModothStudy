@@ -39,6 +39,7 @@
   .navbar-buttons {
     display: inline-flex;
     overflow-x: auto;
+    overflow-y: hidden;
 
     .mat-button {
       margin: 0 auto;

@@ -8,7 +8,7 @@ import { Component, OnInit } from "@angular/core";
 export class ToolsComponent implements OnInit {
   public links = [
     {
-      name: "Python",
+      name: "PythonConsole",
       url: "python",
     },
     {

@@ -22,6 +22,8 @@ export class TerminalImeComponent implements OnInit {
 
   @Output() closed = new EventEmitter();
 
+  private pressId : number
+
   keyboard: KeyBoardItem[][] = [
     [
       { key: "", displayKey: "⊗", code: "Esc" },
@@ -104,8 +106,10 @@ export class TerminalImeComponent implements OnInit {
       return;
     }
     this.pressedItem = item;
+    const pressId = this.pressId || Date.now()
+    this.pressId = pressId
     setTimeout(() => {
-      if (this.pressedItem === item) {
+      if (this.pressId === pressId && this.pressedItem === item) {
         item.showUpperPop = true;
       }
     }, this.longPressTime);
@@ -119,7 +123,9 @@ export class TerminalImeComponent implements OnInit {
   }
 
   onMouseup(item: KeyBoardItem) {
+    this.pressId = 0
     if (this.target == null || this.pressedItem !== item) {
+      this.pressedItem = null;
       return;
     }
     const longPress = item.showUpperPop === true;
