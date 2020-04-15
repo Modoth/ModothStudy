@@ -109,7 +109,7 @@ export class App {
         color: 'darkslateblue',
         hightcolor: 'red',
         fontFamily: 'serif',
-        background: 'cadetblue',
+        background: '#f6f6e2',
       },
       {
         fontSize: 18,
@@ -119,7 +119,6 @@ export class App {
         background: '#333',
       },
     ]
-    this.mChangeTheme()
     this.mClickResionsHeight = this.mClickResions.length
     this.mClickResionsWidth = this.mClickResions[0].length
     /**@type Map<number,number> */
@@ -255,6 +254,10 @@ export class App {
   }
 
   async mLoadFile(/**@type File*/ file) {
+    if (!this.mThemeInited) {
+      this.mChangeTheme()
+      this.mThemeInited = true
+    }
     this.mIsLoadingFile = true
     this.mLogoContainer.classList.add('hidden')
     this.mReaderContainer.classList.remove('hidden')
