@@ -33,10 +33,15 @@ export class ExplorerComponent implements OnInit {
         })
       )
       .subscribe();
+    this.configsService
+      .configs(Configs.AppConfigsEnum.ICP.toString())
+      .subscribe((icp) => {
+        this.CONFIG_ICP = icp;
+      });
   }
 
   apps = new Map<string, string>();
-
+  public CONFIG_ICP: string = "";
   appTag: string = null;
 
   getNodeApp(node: Node) {

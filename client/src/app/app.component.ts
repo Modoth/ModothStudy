@@ -16,8 +16,7 @@ export class AppComponent implements OnInit {
   @ViewChild("appBg") bgRef: ElementRef<HTMLElement>;
 
   public navbarVisibility = true;
-  public CONFIG_ICP: string = "";
-  title = "modoth-study";
+  title = "modoth";
   async ngOnInit() {
     this.appService.init();
     this.appService.tryLogin().subscribe();
@@ -30,11 +29,6 @@ export class AppComponent implements OnInit {
         this.bgRef.nativeElement.style.background = bg
           ? `url(${bg}) center/60% no-repeat`
           : "";
-      });
-    this.configsService
-      .configs(Configs.AppConfigsEnum.ICP.toString())
-      .subscribe((icp) => {
-        this.CONFIG_ICP = icp;
       });
   }
 }
