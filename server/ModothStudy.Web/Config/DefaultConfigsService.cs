@@ -132,7 +132,7 @@ namespace ModothStudy.Web.Generated
             CONFIG_LOGO = "/assets/imgs/logo.svg";
             CONFIG_BG = "/assets/imgs/logo.svg";
             CONFIG_DEFAULT_AVATAR = "/assets/imgs/logo.svg";
-            CONFIG_TITLE = "Modoth Study";
+            CONFIG_TITLE = "Modoth";
             CONFIG_APP_TAG = "应用";
             CONFIG_SCRIPT_TAG = "应用型";
             CONFIG_PWD_EXP = "^(?=.*[-`=[\\]\\\\;',./~!@#$%^&*()_+{}|:\\\"<>?])(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[-`=[\\]\\\\;',./~!@#$%^&*()_+{}|:\\\"<>?0-9a-zA-Z]{8,16}$";
