@@ -20,6 +20,12 @@
     border-style: solid;
   }
 
+  .node-level-0 {
+    .node-title {
+      margin: 30px 0 20px 0;
+    }
+  }
+
   .node:first-of-type > .node-title {
     border-width: 0;
   }
