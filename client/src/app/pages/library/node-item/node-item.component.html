@@ -49,7 +49,7 @@
   </div>
   <div
     class="tags"
-    *ngIf="
+    *ngIf="isOwnNode&&
       !summary && node != null && node.tags != null && node.tags.length > 0
     "
   >

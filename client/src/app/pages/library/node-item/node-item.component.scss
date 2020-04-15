@@ -18,13 +18,12 @@
     align-items: center;
 
     & > * {
-      font-size: 1rem;
       vertical-align: middle;
       display: inline-block;
     }
 
     & > mat-icon {
-      font-size: 1.5rem;
+      font-size: 1.5em;
       margin: 0 5px 2px 0;
       height: unset;
 

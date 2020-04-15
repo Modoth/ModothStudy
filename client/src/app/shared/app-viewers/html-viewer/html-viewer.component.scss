@@ -27,10 +27,11 @@
           color: white;
           background: #0002;
           border-radius: 1em;
+          border: 1px solid #fff2;
           font-size: 2rem;
           padding: 0.25em;
           mix-blend-mode: luminosity;
-          box-shadow: inset 0px 0px 10px 2px #fffc, 0px 0px 1px 1px #fffc;
+          /* box-shadow: inset 0px 0px 10px 2px #fffc, 0px 0px 1px 1px #fffc; */
         }
       }
     }
@@ -40,7 +41,6 @@
       display: flex;
 
       & > * {
-        font-size: 1rem;
         vertical-align: middle;
         display: inline-block;
         align-self: center;
@@ -48,7 +48,7 @@
       }
 
       & > mat-icon {
-        font-size: 1.5rem;
+        font-size: 1.5em;
 
         &:last-child {
           margin: 0;

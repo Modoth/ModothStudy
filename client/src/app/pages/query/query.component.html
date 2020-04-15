@@ -21,11 +21,6 @@
   <div class="node-item" *ngFor="let node of nodes">
     <div [routerLink]="'editor/' + node.id">
       <div class="title">
-        <mat-icon>
-          <!-- {{getIcon(node)}} -->
-          navigate_next
-        </mat-icon>
-        <!-- <img class="user-avatar" [src]="node.user.avatar  || ('CONFIG_DEFAULT_AVATAR' | lang | async)"> -->
         <span> {{ node.name }}</span>
         <span class="divider"></span>
         <span class="header-user-name"> {{ node.user.nickName }}</span>
@@ -48,17 +43,6 @@
         >
         </app-article-viewer>
       </div>
-      <div
-        class="tags"
-        *ngIf="node != null && node.tags != null && node.tags.length > 0"
-      >
-        <app-node-tag-view [tags]="node.tags"> </app-node-tag-view>
-      </div>
-      <!-- <div class="title">
-        <span class="divider"></span>
-        <span class="header-user-name"> {{ node.user.nickName }}</span>
-        <span class="header-created-time"> {{ node.created | friendlyDate }}</span>
-      </div> -->
     </div>
   </div>
   <div *ngIf="totalCount > pageSize" class="paginator">

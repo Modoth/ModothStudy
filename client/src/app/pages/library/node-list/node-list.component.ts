@@ -316,6 +316,8 @@ export class NodeListComponent implements OnInit, OnDestroy {
   }
 
   public getSubNodes(filter, pageId, pageSize) {
+    this.subNodes = [];
+    this.totalCount = 0;
     var nodeId =
       this.currentNode && this.currentNode.reference
         ? this.currentNode.reference.id

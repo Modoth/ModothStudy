@@ -44,16 +44,6 @@
         <mat-icon class="folder">folder</mat-icon>
         {{ node.node.name }}
       </div>
-      <div
-        class="tags"
-        *ngIf="
-          node.node != null &&
-          node.node.tags != null &&
-          node.node.tags.length > 0
-        "
-      >
-        <app-node-tag-view [tags]="node.node.tags"> </app-node-tag-view>
-      </div>
     </div>
 
     <div
@@ -62,19 +52,9 @@
     >
       <div class="node-content blog-content">
         <div class="node-title">
-          <mat-icon class="comment" (click)="commentingItem = node"
-            >chat </mat-icon
+          <span class="comment"
+            ><mat-icon (click)="commentingItem = node">chat </mat-icon></span
           >{{ node.node.name }}
-        </div>
-        <div
-          class="tags"
-          *ngIf="
-            node.node != null &&
-            node.node.tags != null &&
-            node.node.tags.length > 0
-          "
-        >
-          <app-node-tag-view [tags]="node.node.tags"> </app-node-tag-view>
         </div>
         <app-article-viewer
           [type]="node.node.docType"

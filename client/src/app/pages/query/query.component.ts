@@ -134,6 +134,7 @@ export class QueryComponent implements OnInit, OnDestroy {
   }
 
   public reloadNodesOnPage() {
+    this.nodes = [];
     this.nodesApi
       .queryNodes(
         this.menu.query,
