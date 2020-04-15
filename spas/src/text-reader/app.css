@@ -8,7 +8,7 @@
   height: 100%;
   box-sizing: border-box;
   display: flex;
-  background-color: #f6f6e2;
+  background-color: cadetblue;
   flex-direction: column;
   padding: 5px;
 }
@@ -28,10 +28,20 @@
   margin: 0 auto;
   display: block;
   text-align: center;
-  font-size: 3rem;
+  font-size: 6rem;
   /* font-family: curive; */
   color: darkslateblue;
-  text-shadow: 0 1px #6a4c4c;
+  text-shadow: inset 1px #6a4c4c;
+  box-shadow: 2px 2px 5px;
+  padding: 20px 30px;
+  /* border-radius: 2px; */
+  font-family: serif;
+  /* width: 4em; */
+  /* text-align: center; */
+  /* border-radius: 4em; */
+  /* height: 4em; */
+  background: white;
+  border-radius: 20%;
 }
 
 #readerContainer > canvas {

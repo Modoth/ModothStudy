@@ -109,7 +109,7 @@ export class App {
         color: 'darkslateblue',
         hightcolor: 'red',
         fontFamily: 'serif',
-        background: '#f6f6e2',
+        background: 'cadetblue',
       },
       {
         fontSize: 18,
