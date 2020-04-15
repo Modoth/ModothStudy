@@ -47,13 +47,13 @@ export class App {
   async mLoadFile(/**@type File*/file) {
     this.mIsLoadingFile = true;
     const dataUrl = await toDataUrl(file);
-    this.mLogoContainer.classList.add('hiden');
+    this.mLogoContainer.classList.add('hidden');
     const meta = this.mGetFileMeta(file.name, dataUrl);
     const { type } = meta;
-    this.mPreviews.forEach(p => p.classList.add('hiden'))
+    this.mPreviews.forEach(p => p.classList.add('hidden'))
     switch (type) {
       case 'image':
-        this.mPreviewImage.classList.remove('hiden')
+        this.mPreviewImage.classList.remove('hidden')
         this.mPreviewImage.src = dataUrl;
         break;
       case 'font':
@@ -65,9 +65,10 @@ export class App {
           font-style: normal;
       }
       `;
-        this.mPreviewFont.classList.remove('hiden');
+        this.mPreviewFont.classList.remove('hidden');
         break;
     }
+    this.mDataUrl.classList.remove('hidden');
     this.mDataUrl.innerText = dataUrl;
     this.mIsLoadingFile = false;
   }

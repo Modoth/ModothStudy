@@ -124,7 +124,7 @@ export class App {
             }
         }
         distanceElement.innerHTML = '';
-        displayElement.classList.remove("hiden")
+        displayElement.classList.remove("hidden")
         let lastPos;
         let lastAnimation;
         let initProps = (obj) => {
@@ -132,7 +132,7 @@ export class App {
         }
         let refreshProps = (props) => {
             propsElement.innerHTML = '';
-            propsElement.classList.add('hiden');
+            propsElement.classList.add('hidden');
             let hasProps = false;
             for (let prop in props) {
                 hasProps = true;
@@ -148,7 +148,7 @@ export class App {
                 propsElement.appendChild(div);
             }
             if (hasProps) {
-                propsElement.classList.remove('hiden');
+                propsElement.classList.remove('hidden');
             }
         }
         let objsProps = new Map(sessionData.objects.map(obj => [obj, initProps(obj)]))
@@ -187,7 +187,7 @@ export class App {
                                 if (!defender.attack && defender == sessionData.objects[sessionData.end]) {
                                     attacker.successCant && await gamePauseToast(getCant(attacker, attacker.successCant));
                                     success = true;
-                                    displayElement.classList.add("hiden")
+                                    displayElement.classList.add("hidden")
                                     game.stop()
                                     return;
                                 }
@@ -213,7 +213,7 @@ export class App {
                                         }
                                         await gamePauseToast(getCant(attacker, attacker.failedCant) || '失败');
                                         success = false;
-                                        displayElement.classList.add("hiden")
+                                        displayElement.classList.add("hidden")
                                         game.stop()
                                         return;
                                     }
@@ -222,7 +222,7 @@ export class App {
                                         && objsProps.get(attacker)[attacker.successCondition.prop] >= (attacker.successCondition.threshold || 1)) {
                                         attacker.successCant && await gamePauseToast(getCant(attacker, attacker.successCant));
                                         success = true;
-                                        displayElement.classList.add("hiden")
+                                        displayElement.classList.add("hidden")
                                         game.stop()
                                         return;
                                     }

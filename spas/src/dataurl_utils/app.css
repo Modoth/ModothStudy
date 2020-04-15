@@ -1,22 +1,29 @@
 #app {
   position: fixed;
-  top: 6px;
-  right: 6px;
-  bottom: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  box-shadow: 0.5px 0.5px 2px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 1px;
   padding: 0px;
 }
 
-#app > * {
-  flex: 2;
+.previews {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background: white;
+}
+
+.previews > * {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 #logo-contaier {
@@ -26,12 +33,15 @@
 }
 
 #logo {
-  margin: 0 auto;
   display: block;
   text-align: center;
-  font-size: 4rem;
-  color: rgba(0, 0, 0, 0.3);
-  text-shadow: 0 1px white;
+  font-size: 1.5rem;
+  /* color: rgba(0, 0, 0, 0.3); */
+  box-shadow: 1px 1px 3px #0004;
+  margin: 0 20px;
+  padding: 10px 0;
+  background: #2d2d2d;
+  border-radius: 4px;
 }
 
 #previewImage {
@@ -59,8 +69,11 @@
 .preview {
   margin: 5px;
   padding: 5px;
-  max-height: 60%;
   background: transparent;
+}
+
+#previewImage {
+  max-height: 50%;
 }
 
 #previewFont {
@@ -82,56 +95,74 @@
 #dataUrl {
   flex: 1;
   margin: 5px;
-  color: rgba(0, 0, 0, 0.8);
+  color: #666;
+  background: white;
+  border-radius: 4px;
   display: block;
   overflow-y: auto;
   word-break: break-all;
   overflow-wrap: anywhere;
+  font-family: monospace;
+  font-size: em;
 }
 
 #menu {
-  flex: none;
+  flex: 0;
+  flex-shrink: 0;
   display: flex;
-  margin: 10px 0;
+  margin: 0;
+  background: salmon;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .menu-item {
   flex: 1;
-  color: rgba(0, 0, 0, 0.3);
-  text-shadow: 0 1px white;
+  color: snow;
+  border-top: 1px solid #eee;
   font-size: 1.25em;
   text-align: center;
+  padding: 5px 0;
+}
+
+.menu-item:first-child {
+  margin-left: 10px;
+}
+
+.menu-item:last-child {
+  margin-right: 10px;
 }
 
 #inputFile {
   display: none;
 }
 
-.hiden {
+.hidden {
   display: none !important;
 }
 
 @media (orientation: landscape) {
-  #app {
+  .previews {
     flex-direction: row;
-  }
-  #app > * {
-    flex: 1;
   }
 
   #menu {
     flex: 0;
-    flex-direction: column;
-    margin: 10px;
+    /* flex-direction: column; */
+    /* margin: 10px; */
   }
 
   .menu-item {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
   }
-  .preview {
-    max-width: 60%;
+  #previewImage {
+    max-width: 50%;
+    max-height: unset;
   }
 }
 
@@ -140,4 +171,25 @@
   flex-direction: column;
   place-content: center;
   flex: 10;
+  background-color: salmon;
+}
+
+span.protocol {
+  color: #f08d49;
+}
+
+span.optional {
+  color: #67cdcc;
+}
+
+span.variable-name {
+  color: #cc99cd;
+}
+
+span.const {
+  color: #f8c555;
+}
+
+span.variable {
+  color: #7ec699;
 }
