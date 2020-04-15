@@ -45,12 +45,21 @@
     }
   }
 
-  markdown {
+  markdown.summary-content {
     code,
     pre,
     code[class*="language-"],
     pre[class*="language-"] {
       background: transparent; // mat-color($background, card);
+    }
+  }
+
+  markdown {
+    code,
+    pre,
+    code[class*="language-"],
+    pre[class*="language-"] {
+      border-radius: 4px;
     }
   }
 
