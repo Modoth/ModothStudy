@@ -588,6 +588,7 @@
     font-size: small;
     line-height: initial;
     text-align: initial;
+    user-select: none;
   }
   .menu{
     display: flex;
@@ -636,6 +637,7 @@
   }
   .style-group{
     padding: 0px;
+    user-select: inherit;
   }
   .group-item-title{
     font-weight: bolder;
