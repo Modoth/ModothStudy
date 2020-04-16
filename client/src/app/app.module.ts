@@ -75,7 +75,7 @@ import { NodeItemComponent } from "./pages/library/node-item/node-item.component
 import { NodeListComponent } from "./pages/library/node-list/node-list.component";
 import { NodeDetailComponent } from "./pages/library/node-detail/node-detail.component";
 import { NodeHeaderComponent } from "./pages/library/node-header/node-header.component";
-import { JsonEditorComponent } from "./shared/app-editors/json-editor/json-editor.component";
+import { SimpleEditorComponent } from "./shared/app-editors/simple-editor/simple-editor.component";
 import { ToggleButtonGroupComponent } from "./shared/toggle-button-group/toggle-button-group.component";
 import { BASE_PATH } from "./apis/variables";
 import { SelectNodeComponent } from "./shared/select-node/select-node.component";
@@ -129,7 +129,7 @@ import { markedOptionsFactory } from "./shared/marked-options-factory";
     NodeListComponent,
     NodeDetailComponent,
     NodeHeaderComponent,
-    JsonEditorComponent,
+    SimpleEditorComponent,
     ToggleButtonGroupComponent,
     SelectNodeComponent,
     WrapmdViewerComponent,

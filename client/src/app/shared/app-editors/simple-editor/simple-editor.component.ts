@@ -4,11 +4,11 @@ import { EditorBase } from "../editor-base";
 import { Observable } from "rxjs";
 
 @Component({
-  selector: "app-json-editor",
-  templateUrl: "./json-editor.component.html",
-  styleUrls: ["./json-editor.component.scss"],
+  selector: "app-simple-editor",
+  templateUrl: "./simple-editor.component.html",
+  styleUrls: ["./simple-editor.component.scss"],
 })
-export class JsonEditorComponent extends EditorBase implements OnInit {
+export class SimpleEditorComponent extends EditorBase implements OnInit {
   editorOptions = {
     theme: "vs",
     lineNumbers: false,

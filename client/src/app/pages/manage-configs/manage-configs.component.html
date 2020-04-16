@@ -84,10 +84,11 @@
   </app-form-builder>
 </app-popup>
 <div class="editor" *ngIf="showEditor">
-  <app-json-editor
+  <app-simple-editor
+    type="json"
     [defalutContent]="editData.value"
     (closed)="closeEditor($event)"
     (saved)="saveConfig($event)"
   >
-  </app-json-editor>
+  </app-simple-editor>
 </div>

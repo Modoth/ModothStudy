@@ -83,7 +83,7 @@
     >
     </app-html-editor>
     <ng-container *ngSwitchDefault>
-      <app-json-editor
+      <app-simple-editor
         *ngIf="type"
         [defalutContent]="content"
         [type]="type"
@@ -92,7 +92,7 @@
         (saved)="saved($event); changedContent = $event"
         (changed)="changedContent = $event"
       >
-      </app-json-editor>
+      </app-simple-editor>
       <app-markdown-editor
         *ngIf="!type"
         [defalutContent]="content"
