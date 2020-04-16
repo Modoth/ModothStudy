@@ -837,7 +837,7 @@
         {
           name: '取样',
           onclick: (e) => {
-            this.mUpdateSelections(end)
+            this.mUpdateSelections(start,end)
           },
         },
         {
