@@ -28,6 +28,7 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
 
   .non-shared-title {
     color: mat-color($foreground, secondary-text) !important;
@@ -50,7 +51,13 @@
     pre,
     code[class*="language-"],
     pre[class*="language-"] {
-      background: transparent; // mat-color($background, card);
+      // background: transparent; // mat-color($background, card);
+    }
+    pre > .code-menu::before {
+      // top: 0em;
+      // background: #00000005;
+      // padding: 1px 3px;
+      // border-radius: 0.4em;
     }
   }
 
@@ -60,6 +67,10 @@
     code[class*="language-"],
     pre[class*="language-"] {
       border-radius: 4px;
+    }
+    pre > .code-menu::after,
+    pre > .code-menu::before {
+      color: mat-color($accent);
     }
   }
 

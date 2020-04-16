@@ -110,6 +110,7 @@ namespace ModothStudy.Web.Generated
         public string PwdDescription {get;set;}
         public string PythonConsole {get;set;}
         public string OpenFile {get;set;}
+        public string SuccessToCopy {get;set;}
         public string CONFIG_MAX_FILE_SIZE {get;set;}
         public string CONFIG_MENUS {get;set;}
         public string CONFIG_EDITOR_STYLES {get;set;}

@@ -102,7 +102,7 @@ export namespace Configs {
         COMMENT: 'PERMISSION_COMMENT' as PermissionDescriptionsEnum,
         THIRDSHARE: 'PERMISSION_THIRD_SHARE' as PermissionDescriptionsEnum
     };
-    export type UiLangsEnum = 'Home' | 'Library' | 'Name' | 'UserName' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription' | 'PythonConsole' | 'OpenFile';
+    export type UiLangsEnum = 'Home' | 'Library' | 'Name' | 'UserName' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription' | 'PythonConsole' | 'OpenFile' | 'SuccessToCopy';
     export const UiLangsEnum = {
         Home: 'Home' as UiLangsEnum,
         Library: 'Library' as UiLangsEnum,
@@ -174,6 +174,7 @@ export namespace Configs {
         Reference: 'Reference' as UiLangsEnum,
         PwdDescription: 'PwdDescription' as UiLangsEnum,
         PythonConsole: 'PythonConsole' as UiLangsEnum,
-        OpenFile: 'OpenFile' as UiLangsEnum
+        OpenFile: 'OpenFile' as UiLangsEnum,
+        SuccessToCopy: 'SuccessToCopy' as UiLangsEnum
     };
 }

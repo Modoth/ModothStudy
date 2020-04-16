@@ -129,5 +129,7 @@ namespace ModothStudy.ServiceInterface.Lang
         PythonConsole,
 
         OpenFile,
+
+        SuccessToCopy,
     }
 }

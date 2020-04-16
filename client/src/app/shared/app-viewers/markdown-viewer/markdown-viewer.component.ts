@@ -4,8 +4,12 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
+  HostListener,
 } from "@angular/core";
 import { MdReloadService } from "src/app/services/md-reload.service";
+import { copy } from "../../copy";
+import { NotifyService } from "src/app/services/notify.service";
+import { Configs } from "src/app/apis";
 
 @Component({
   selector: "app-markdown-viewer",
@@ -35,7 +39,18 @@ export class MarkdownViewerComponent implements OnInit, OnChanges {
 
   public maxCharLength = 128;
 
-  constructor(public mdReload: MdReloadService) {}
+  @HostListener("code-menu-click", ["$event"])
+  mOnCodeMenuClick(e: CustomEvent) {
+    const code: HTMLPreElement = e.target as HTMLPreElement;
+    copy(code.innerText);
+    this.notifyService.toast(Configs.UiLangsEnum.SuccessToCopy);
+    e.stopPropagation();
+  }
+
+  constructor(
+    public mdReload: MdReloadService,
+    private notifyService: NotifyService
+  ) {}
 
   ngOnInit() {}
 

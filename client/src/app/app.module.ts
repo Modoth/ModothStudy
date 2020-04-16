@@ -1,7 +1,7 @@
 import { HttpClientModule } from "@angular/common/http";
 import { LOCALE_ID, NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { MarkdownModule } from "ngx-markdown";
+import { MarkdownModule, MarkedOptions } from "ngx-markdown";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -80,7 +80,8 @@ import { ToggleButtonGroupComponent } from "./shared/toggle-button-group/toggle-
 import { BASE_PATH } from "./apis/variables";
 import { SelectNodeComponent } from "./shared/select-node/select-node.component";
 import { JsonViewerComponent } from "./shared/app-viewers/json-viewer/json-viewer.component";
-import { SideBarComponent } from './shared/side-bar/side-bar.component';
+import { SideBarComponent } from "./shared/side-bar/side-bar.component";
+import { markedOptionsFactory } from "./shared/marked-options-factory";
 @NgModule({
   declarations: [
     AppComponent,
@@ -142,7 +143,12 @@ import { SideBarComponent } from './shared/side-bar/side-bar.component';
     FormsModule,
     MatSidenavModule,
     HttpClientModule,
-    MarkdownModule.forRoot(),
+    MarkdownModule.forRoot({
+      markedOptions: {
+        provide: MarkedOptions,
+        useFactory: markedOptionsFactory,
+      },
+    }),
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,

@@ -116,6 +116,7 @@ namespace ModothStudy.Web.Generated
             NoWxTokenFound = "未配置微信接口TOKEN";
             InvalidApiSignature = "错误接口签名";
             NoSuchFile = "无此文件，请重新上传";
+            SuccessToCopy = "复制成功";
 
             #region Config
 

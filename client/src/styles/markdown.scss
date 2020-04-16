@@ -49,6 +49,28 @@ markdown {
     word-break: break-all;
     overflow: hidden;
   }
+  pre {
+    position: relative;
+  }
+  pre > .code-menu::after,
+  pre > .code-menu::before {
+    position: absolute;
+    font-family: Ringside Regular A, Ringside Regular B, Rubik, Lato,
+      Lucida Grande, Lucida Sans Unicode, Tahoma, Sans-Serif;
+    font-weight: bolder;
+    font-size: 0.6em;
+    position: absolute;
+    right: 1em;
+  }
+  pre > .code-menu::before {
+    content: "copy";
+    top: 0.2em;
+  }
+  pre > .code-menu::after {
+    content: attr(data-language);
+    top: 2.2em;
+    display: none;
+  }
 }
 
 @media (min-width: 720px) {
