@@ -3,7 +3,7 @@
     return
   }
 import { copy } from '../commons/copy.js'
-
+  const consoleLogType = { toString: () => '' }
   const PropMetas = {
     'animation-delay': {},
     'animation-direction': {},
@@ -596,12 +596,12 @@ import { copy } from '../commons/copy.js'
   .console{
     background: lightslategrey;
     color: white;
+    min-height: 1.4em;
     overflow: auto;
-    display: none;
-    flex:1;
+    flex:0;
   }
   .console.enable{
-    display:block;
+    flex:1;
   }
   .console-line{
     line-height:1.4em;
@@ -699,6 +699,7 @@ import { copy } from '../commons/copy.js'
       }
       this.mSelectedElement = ele
       this.mSelectedElement.classList.add(this.mHightlightClass)
+      console.log(consoleLogType, `选中${ele.nodeName}`)
       this.mRefreshStyleDisplay(ele, displayProps)
     }
     this.mUpdateSelections = (start, end) => {
@@ -783,7 +784,7 @@ import { copy } from '../commons/copy.js'
           groupItem.classList.add('group-item')
           groupItem.addEventListener('click', () => {
             copy(`${prop} : ${value};`)
-            console.log('复制成功')
+            console.log(consoleLogType, '复制成功')
           })
           const propEle = document.createElement('span')
           propEle.innerText = prop
@@ -856,7 +857,8 @@ import { copy } from '../commons/copy.js'
             } else {
               e.classList.remove('enable')
               this.mConsole.classList.remove('enable')
-              this.mConsole.innerHTML = ''
+              this.mLastConsoleLine &&
+                setTimeout(() => this.mLastConsoleLine.scrollIntoView(), 0)
             }
           },
         },
@@ -916,19 +918,21 @@ import { copy } from '../commons/copy.js'
     }
     this.mMaxConsoleLines = 200
     this.mLog = (...args) => {
-      if (!this.mLogConsole) {
+      if (!this.mLogConsole && args[0] !== consoleLogType) {
         return
       }
       this.mConsoleLines = this.mConsoleLines || []
       const ne = document.createElement('div')
       ne.classList.add('console-line')
       this.mConsole.appendChild(ne)
-      ne.innerText = args.map((arg) => JSON.stringify(arg)).join('\n')
+      ne.innerText = args.join('')
       this.mConsoleLines.push(ne)
       if (this.mConsoleLines > this.mMaxConsoleLines) {
         const e = this.mConsoleLines.shift()
         this.mConsole.removeChild(e)
       }
+      this.mLastConsoleLine = ne
+      setTimeout(() => ne.scrollIntoView(), 0)
     }
     this.exit = () => {
       this.mWindow.document.body.removeChild(this.mShadow)
@@ -942,10 +946,12 @@ import { copy } from '../commons/copy.js'
           const savedLog = this.mWindow.console.log
           let log = (...args) => {
             this.mLog(...args)
+            args = args[0] === consoleLogType ? args.slice(1) : args
             savedLog.call(this.mWindow.console, ...args)
           }
           this.mWindow.console.log = log
           this.mInitComponents()
+          console.log(consoleLogType, '移动光标选取样式')
           this.mResolve = resolve
         })
       return this.mLunchTask
