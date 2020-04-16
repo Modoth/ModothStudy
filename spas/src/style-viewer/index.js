@@ -624,7 +624,7 @@
   .controller{
     flex:1;
     overflow: hidden;
-    background: red;
+    background: radial-gradient(circle closest-side,lightblue 0%, transparent 80%);
     display:none;
   }
   .controller.enable{
