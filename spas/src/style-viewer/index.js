@@ -2,7 +2,8 @@
   if (window.__m_style_viewer_instance) {
     return
   }
-  // const { App } = await import('./app.js')
+import { copy } from '../commons/copy.js'
+
   const PropMetas = {
     'animation-delay': {},
     'animation-direction': {},
@@ -588,7 +589,6 @@
     font-size: small;
     line-height: initial;
     text-align: initial;
-    user-select: none;
   }
   .menu{
     display: flex;
@@ -610,6 +610,7 @@
     flex:1;
     text-align: center;
     color: #333;
+    user-select: none;
   }
   .menu-item.enable,.menu-item:active{
     color:white;
@@ -621,6 +622,7 @@
     animation: black-white 2s ease-in-out infinite alternate;
     left:20px;
     top:20%;
+    user-select: none;
   }
   .controller{
     flex:1;
@@ -779,6 +781,10 @@
           }
           const groupItem = document.createElement('div')
           groupItem.classList.add('group-item')
+          groupItem.addEventListener('click', () => {
+            copy(`${prop} : ${value};`)
+            console.log('复制成功')
+          })
           const propEle = document.createElement('span')
           propEle.innerText = prop
           propEle.classList.add('prop')
