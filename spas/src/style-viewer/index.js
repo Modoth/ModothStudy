@@ -26,7 +26,7 @@
     'border-bottom-right-radius': {},
     'border-bottom-style': {},
     'border-bottom-width': {},
-    'border-collapse': {},
+    'border-collapse': { inheritance: true },
     'border-image-outset': {},
     'border-image-repeat': {},
     'border-image-slice': {},
@@ -49,39 +49,39 @@
     'break-after': {},
     'break-before': {},
     'break-inside': {},
-    'caption-side': {},
+    'caption-side': { inheritance: true },
     clear: {},
     clip: {},
     color: { inheritance: true },
     content: {},
-    cursor: {},
-    direction: {},
+    cursor: { inheritance: true },
+    direction: { inheritance: true },
     display: {},
-    'empty-cells': {},
+    'empty-cells': { inheritance: true },
     float: {},
-    'font-family': {},
+    'font-family': { inheritance: true },
     'font-kerning': {},
     'font-optical-sizing': {},
-    'font-size': {},
+    'font-size': { inheritance: true },
     'font-stretch': {},
-    'font-style': {},
-    'font-variant': {},
+    'font-style': { inheritance: true },
+    'font-variant': { inheritance: true },
     'font-variant-ligatures': {},
     'font-variant-caps': {},
     'font-variant-numeric': {},
     'font-variant-east-asian': {},
-    'font-weight': {},
+    'font-weight': { inheritance: true },
     height: {},
     'image-rendering': {},
     isolation: {},
     'justify-items': {},
     'justify-self': {},
     left: {},
-    'letter-spacing': {},
-    'line-height': {},
-    'list-style-image': {},
-    'list-style-position': {},
-    'list-style-type': {},
+    'letter-spacing': { inheritance: true },
+    'line-height': { inheritance: true },
+    'list-style-image': { inheritance: true },
+    'list-style-position': { inheritance: true },
+    'list-style-type': { inheritance: true },
     'margin-bottom': {},
     'margin-left': {},
     'margin-right': {},
@@ -97,7 +97,7 @@
     'offset-path': {},
     'offset-rotate': {},
     opacity: {},
-    orphans: {},
+    orphans: { inheritance: true },
     'outline-color': {},
     'outline-offset': {},
     'outline-style': {},
@@ -115,10 +115,10 @@
     resize: {},
     right: {},
     'scroll-behavior': {},
-    speak: {},
+    speak: { inheritance: true },
     'table-layout': {},
     'tab-size': {},
-    'text-align': {},
+    'text-align': { inheritance: true },
     'text-align-last': {},
     'text-decoration': {},
     'text-decoration-line': {},
@@ -126,12 +126,12 @@
     'text-decoration-color': {},
     'text-decoration-skip-ink': {},
     'text-underline-position': {},
-    'text-indent': {},
+    'text-indent': { inheritance: true },
     'text-rendering': {},
     'text-shadow': {},
     'text-size-adjust': {},
     'text-overflow': {},
-    'text-transform': {},
+    'text-transform': { inheritance: true },
     top: {},
     'touch-action': {},
     'transition-delay': {},
@@ -140,13 +140,13 @@
     'transition-timing-function': {},
     'unicode-bidi': {},
     'vertical-align': {},
-    visibility: {},
-    'white-space': {},
-    widows: {},
+    visibility: { inheritance: true },
+    'white-space': { inheritance: true },
+    widows: { inheritance: true },
     width: {},
     'will-change': {},
     'word-break': {},
-    'word-spacing': {},
+    'word-spacing': { inheritance: true },
     'z-index': {},
     zoom: {},
     '-webkit-appearance': {},
@@ -449,7 +449,7 @@
           parentProps.map((p) =>
             Object.assign({}, p, {
               priority: p.priority - 10,
-              inheritance: true,
+              inheritanceFrom: p.inheritanceFrom || ele.parentElement,
             })
           )
         )
@@ -581,6 +581,8 @@
     flex-direction: column;
     color: #333;
     font-size: small;
+    line-height: initial;
+    text-align: initial;
   }
   .menu{
     display: flex;
@@ -603,7 +605,7 @@
     text-align: center;
     color: #333;
   }
-  .menu-item.enable{
+  .menu-item.enable,.menu-item:active{
     color:white;
     background:lightskyblue;
   }
@@ -749,9 +751,16 @@
         group.classList.add('style-group')
         const groupTitle = document.createElement('div')
         groupTitle.classList.add('style-group-title')
-        groupTitle.innerText = style.source.selectorText || 'embeded'
+        groupTitle.innerText =
+          style.source.selectorText || `${style.source.nodeName}内嵌`
+        if (style.inheritanceFrom) {
+          groupTitle.innerText += `, 继承:${style.inheritanceFrom.nodeName}`
+        }
         group.appendChild(groupTitle)
         for (const [prop, { value, affected }] of style.styles) {
+          if (value === 'initial') {
+            continue
+          }
           const groupItem = document.createElement('div')
           groupItem.classList.add('group-item')
           const propEle = document.createElement('span')
@@ -812,6 +821,12 @@
             }
           },
         },
+        {
+          name: '关闭',
+          onclick: () => {
+            this.exit()
+          },
+        },
       ]
       menuItems.forEach((item) => {
         const i = document.createElement('div')
@@ -834,7 +849,6 @@
       shadow.appendChild(root)
       shadow.appendChild(uiStyle)
       this.mShadow = shadowElement
-      this.mWindow.document.body.appendChild(shadowElement)
       this.mStart = start
       this.mConsole = cons
       this.mEnd = end
@@ -842,6 +856,7 @@
       const injectStyle = document.createElement('style')
       injectStyle.innerText = this.mInjectStyleContent
       this.mInjectStyle = injectStyle
+      this.mWindow.document.body.appendChild(shadowElement)
       this.mWindow.document.body.appendChild(this.mInjectStyle)
     }
     this.mMaxConsoleLines = 200
@@ -860,18 +875,30 @@
         this.mConsole.removeChild(e)
       }
     }
+    this.exit = () => {
+      this.mWindow.document.body.removeChild(this.mShadow)
+      this.mWindow.document.body.removeChild(this.mInjectStyle)
+      this.mResolve()
+    }
     this.launch = async () => {
-      const savedLog = this.mWindow.console.log
-      let log = (...args) => {
-        this.mLog(...args)
-        savedLog.call(this.mWindow.console, ...args)
-      }
-      this.mWindow.console.log = log
-      this.mInitComponents()
+      this.mLunchTask =
+        this.mLunchTask ||
+        new Promise((resolve) => {
+          const savedLog = this.mWindow.console.log
+          let log = (...args) => {
+            this.mLog(...args)
+            savedLog.call(this.mWindow.console, ...args)
+          }
+          this.mWindow.console.log = log
+          this.mInitComponents()
+          this.mResolve = resolve
+        })
+      return this.mLunchTask
     }
   }
 
   const styleViewer = new App(window)
   window.__m_style_viewer_instance = styleViewer
   await styleViewer.launch()
+  window.__m_style_viewer_instance = null
 })(window)
