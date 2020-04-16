@@ -352,7 +352,7 @@ export class App {
           node.question &&
           this.mInsertElement(node, 'question', node.question, 'current')
       } else {
-        centerEle = this.mInsertElement(
+        this.mInsertElement(
           node,
           'value',
           node.value || '',
