@@ -15,7 +15,7 @@ export class JsonEditorComponent extends EditorBase implements OnInit {
     wordWrap: "on",
     contextmenu: false,
     minimap: { enabled: false },
-    language: this.type || "json",
+    language: "",
   };
 
   constructor(mdReload: MdReloadService, cdRef: ChangeDetectorRef) {
@@ -24,7 +24,9 @@ export class JsonEditorComponent extends EditorBase implements OnInit {
 
   @Input() errored: (error: string) => Observable<any>;
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.editorOptions.language = this.type;
+  }
 
   getContent = () => this.changedContent;
 }

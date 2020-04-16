@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { JsonViewerComponent } from "./json-viewer.component";
+import { WrapmdViewerComponent } from "./wrapmd-viewer.component";
 
-describe("JsonViewerComponent", () => {
-  let component: JsonViewerComponent;
-  let fixture: ComponentFixture<JsonViewerComponent>;
+describe("WrapmdViewerComponent", () => {
+  let component: WrapmdViewerComponent;
+  let fixture: ComponentFixture<WrapmdViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [JsonViewerComponent],
+      declarations: [WrapmdViewerComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(JsonViewerComponent);
+    fixture = TestBed.createComponent(WrapmdViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -32,23 +32,28 @@
         [options]="Object.assign({}, viewerOptions, { play: { value: true } })"
       >
       </app-python-viewer>
-      <app-json-viewer
-        *ngSwitchCase="'json'"
-        [content]="changedContent"
-        [options]="
-          Object.assign({}, viewerOptions, {
-            hideSource: { value: true },
-            play: { value: true }
-          })
-        "
-      >
-      </app-json-viewer>
-      <app-markdown-viewer
-        *ngSwitchDefault
-        [content]="changedContent"
-        [options]="Object.assign({}, viewerOptions, { play: { value: true } })"
-      >
-      </app-markdown-viewer>
+      <ng-container *ngSwitchDefault>
+        <app-wrapmd-viewer
+          *ngIf="type"
+          [type]="type"
+          [content]="changedContent"
+          [options]="
+            Object.assign({}, viewerOptions, {
+              hideSource: { value: true },
+              play: { value: true }
+            })
+          "
+        >
+        </app-wrapmd-viewer>
+        <app-markdown-viewer
+          [content]="changedContent"
+          *ngIf="!type"
+          [options]="
+            Object.assign({}, viewerOptions, { play: { value: true } })
+          "
+        >
+        </app-markdown-viewer>
+      </ng-container>
     </ng-container>
   </ng-template>
 </section>
@@ -77,27 +82,29 @@
       (changed)="changedContent = $event"
     >
     </app-html-editor>
-    <app-json-editor
-      *ngSwitchCase="'json'"
-      [defalutContent]="content"
-      [type]="type"
-      [errored]="errored"
-      (closed)="closed($event)"
-      (saved)="saved($event); changedContent = $event"
-      (changed)="changedContent = $event"
-    >
-    </app-json-editor>
-    <app-markdown-editor
-      *ngSwitchDefault
-      [defalutContent]="content"
-      [type]="type"
-      [maxImageSize]="maxImageSize"
-      [errored]="errored"
-      [imageInserted]="imageInserted"
-      (closed)="closed($event)"
-      (saved)="saved($event); changedContent = $event"
-      (changed)="changedContent = $event"
-    >
-    </app-markdown-editor>
+    <ng-container *ngSwitchDefault>
+      <app-json-editor
+        *ngIf="type"
+        [defalutContent]="content"
+        [type]="type"
+        [errored]="errored"
+        (closed)="closed($event)"
+        (saved)="saved($event); changedContent = $event"
+        (changed)="changedContent = $event"
+      >
+      </app-json-editor>
+      <app-markdown-editor
+        *ngIf="!type"
+        [defalutContent]="content"
+        [type]="type"
+        [maxImageSize]="maxImageSize"
+        [errored]="errored"
+        [imageInserted]="imageInserted"
+        (closed)="closed($event)"
+        (saved)="saved($event); changedContent = $event"
+        (changed)="changedContent = $event"
+      >
+      </app-markdown-editor>
+    </ng-container>
   </ng-container>
 </section>

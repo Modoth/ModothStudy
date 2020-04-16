@@ -2,14 +2,16 @@ import { Component, OnInit, SimpleChanges, Input } from "@angular/core";
 import { Observable } from "rxjs";
 
 @Component({
-  selector: "app-json-viewer",
-  templateUrl: "./json-viewer.component.html",
-  styleUrls: ["./json-viewer.component.scss"],
+  selector: "app-wrapmd-viewer",
+  templateUrl: "./wrapmd-viewer.component.html",
+  styleUrls: ["./wrapmd-viewer.component.scss"],
 })
-export class JsonViewerComponent implements OnInit {
+export class WrapmdViewerComponent implements OnInit {
   @Input() options: any;
 
   @Input() content: string;
+
+  @Input() type: string;
 
   appContent: string;
 
@@ -97,7 +99,7 @@ export class JsonViewerComponent implements OnInit {
       this.content && this.summary
         ? this.getSummary(this.content)
         : this.content || "";
-    this.markdownContent = "```json\n" + content + "\n```";
+    this.markdownContent = "```" + this.type + "\n" + content + "\n```";
   }
   getSummary(content: string) {
     let lineRemain = this.maxLine;

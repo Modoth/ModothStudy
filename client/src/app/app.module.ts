@@ -79,7 +79,7 @@ import { JsonEditorComponent } from "./shared/app-editors/json-editor/json-edito
 import { ToggleButtonGroupComponent } from "./shared/toggle-button-group/toggle-button-group.component";
 import { BASE_PATH } from "./apis/variables";
 import { SelectNodeComponent } from "./shared/select-node/select-node.component";
-import { JsonViewerComponent } from "./shared/app-viewers/json-viewer/json-viewer.component";
+import { WrapmdViewerComponent } from "./shared/app-viewers/wrapmd-viewer/wrapmd-viewer.component";
 import { SideBarComponent } from "./shared/side-bar/side-bar.component";
 import { markedOptionsFactory } from "./shared/marked-options-factory";
 @NgModule({
@@ -132,7 +132,7 @@ import { markedOptionsFactory } from "./shared/marked-options-factory";
     JsonEditorComponent,
     ToggleButtonGroupComponent,
     SelectNodeComponent,
-    JsonViewerComponent,
+    WrapmdViewerComponent,
     SideBarComponent,
   ],
   imports: [
