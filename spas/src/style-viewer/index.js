@@ -765,6 +765,7 @@ import { copy } from '../commons/copy.js'
         displayProps
       ).reverse()
       this.mStylesPanel.innerHTML = ''
+      this.mStylesPanel.scrollTo(0,0)
       for (const style of styles) {
         const group = document.createElement('div')
         group.classList.add('style-group')
