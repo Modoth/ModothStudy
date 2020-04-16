@@ -459,12 +459,8 @@
     return styles
   }
 
-  const attachDragMove = (document, target, moved) => {
+  registerMouseMove = (document, target, start, moving, end) => {
     let isMoving = false
-    let offsetTop
-    let offsetLeft
-    let screenX
-    let screenY
     const getPos = (ev) => {
       if (ev.touches) {
         return ev.touches[0]
@@ -474,29 +470,18 @@
     }
     const dragStart = (ev) => {
       isMoving = true
-      ;({ screenX, screenY } = getPos(ev))
-      ;({ offsetTop, offsetLeft } = target)
+      start(getPos(ev))
     }
-    const dragEnd = (ev) => {
-      if (isMoving && moved) {
-        setTimeout(() => {
-          try {
-            moved(target)
-          } catch (e) {
-            console.log(e.stack)
-          }
-        }, 0)
+    const dragEnd = () => {
+      if (isMoving) {
+        end()
       }
       isMoving = false
     }
     const drag = (ev) => {
       if (isMoving) {
         ev.preventDefault()
-        const current = getPos(ev)
-        const dx = current.screenX - screenX
-        const dy = current.screenY - screenY
-        target.style.left = dx + offsetLeft + 'px'
-        target.style.top = dy + offsetTop + 'px'
+        moving(getPos(ev))
       }
     }
     target.addEventListener('mousedown', dragStart, false)
@@ -506,25 +491,45 @@
     document.addEventListener('touchend', dragEnd, false)
     document.addEventListener('touchmove', drag, { passive: false })
   }
+  const attachDragMove = (document, target, moved, source = null, p = 1) => {
+    let offsetTop
+    let offsetLeft
+    let screenX
+    let screenY
+    const dragStart = (current) => {
+      isMoving = true
+      ;({ screenX, screenY } = current)
+      ;({ offsetTop, offsetLeft } = target)
+    }
+    const dragEnd = () => {
+      setTimeout(() => {
+        try {
+          moved()
+        } catch (e) {
+          console.log(e.stack)
+        }
+      }, 0)
+    }
+    const drag = (current) => {
+      const dx = (current.screenX - screenX) * p
+      const dy = (current.screenY - screenY) * p
+      target.style.left = dx + offsetLeft + 'px'
+      target.style.top = dy + offsetTop + 'px'
+    }
+    registerMouseMove(document, source || target, dragStart, drag, dragEnd)
+  }
 
-  const getRegion = (start, end, triger) => {
+  const getRegion = (start, end) => {
     let beginX, beginY, endX, endY
     let left = start.offsetLeft + start.offsetWidth / 2
     let top = start.offsetTop + start.offsetHeight / 2
 
     let right = end.offsetLeft + end.offsetWidth / 2
     let bottom = end.offsetTop + end.offsetHeight / 2
-    if (start == triger) {
-      beginX = left
-      beginY = top
-      endX = right
-      endY = bottom
-    } else {
-      beginX = right
-      beginY = bottom
-      endX = left
-      endY = top
-    }
+    beginX = left
+    beginY = top
+    endX = right
+    endY = bottom
     if (left > right) {
       let tmp = right
       right = left
@@ -616,6 +621,15 @@
     left:20px;
     top:20%;
   }
+  .controller{
+    flex:1;
+    overflow: hidden;
+    background: red;
+    display:none;
+  }
+  .controller.enable{
+    display:block;
+  }
   .display-panel{
     flex: 1;
     overflow: auto;
@@ -683,8 +697,8 @@
       this.mSelectedElement.classList.add(this.mHightlightClass)
       this.mRefreshStyleDisplay(ele, displayProps)
     }
-    this.mUpdateSelections = (triger) => {
-      const region = getRegion(this.mStart, this.mEnd, triger)
+    this.mUpdateSelections = (start, end) => {
+      const region = getRegion(start, end)
       const { left, top, right, bottom, beginX, beginY, endX, endY } = region
       const filter = (e) => e !== this.mShadow
       const atBegins = new Set(
@@ -786,23 +800,40 @@
       const { shadowElement, shadow } = createShadow()
       const start = document.createElement('span')
       start.classList.add('start')
-      start.innerText = '⦿'
+      start.innerText = '⊕'
       const end = document.createElement('span')
       end.innerText = '⊗'
       end.classList.add('end')
       attachDragMove(this.mWindow.document, start, () => {
         end.style.left = start.offsetLeft + start.offsetWidth + 'px'
         end.style.top = start.offsetTop + 'px'
-        this.mUpdateSelections(end)
+        end.classList.remove('enabled')
+        this.mUpdateSelections(start, start)
       })
-      attachDragMove(this.mWindow.document, end, this.mUpdateSelections)
+      attachDragMove(this.mWindow.document, end, () => {
+        end.classList.add('enabled')
+        this.mUpdateSelections(end, start)
+      })
       const root = document.createElement('div')
       root.classList.add('root')
       const menu = document.createElement('div')
       menu.classList.add('menu')
       const menuItems = [
         {
-          name: '捕获',
+          name: '微调',
+          onclick: (e) => {
+            this.mShowController = !this.mShowController
+            if (this.mShowController) {
+              e.classList.add('enable')
+              this.mController.classList.add('enable')
+            } else {
+              e.classList.remove('enable')
+              this.mController.classList.remove('enable')
+            }
+          },
+        },
+        {
+          name: '取样',
           onclick: (e) => {
             this.mUpdateSelections(end)
           },
@@ -839,7 +870,22 @@
       cons.classList.add('console')
       const stylesPanel = document.createElement('div')
       stylesPanel.classList.add('display-panel')
+      const controller = document.createElement('div')
+      controller.classList.add('controller')
+      attachDragMove(
+        this.mWindow.document,
+        start,
+        () => {
+          end.style.left = start.offsetLeft + start.offsetWidth + 'px'
+          end.style.top = start.offsetTop + 'px'
+          end.classList.remove('enabled')
+          this.mUpdateSelections(start, start)
+        },
+        controller,
+        0.1
+      )
       root.appendChild(menu)
+      root.appendChild(controller)
       root.appendChild(cons)
       root.appendChild(stylesPanel)
       root.appendChild(end)
@@ -853,6 +899,7 @@
       this.mConsole = cons
       this.mEnd = end
       this.mStylesPanel = stylesPanel
+      this.mController = controller
       const injectStyle = document.createElement('style')
       injectStyle.innerText = this.mInjectStyleContent
       this.mInjectStyle = injectStyle
