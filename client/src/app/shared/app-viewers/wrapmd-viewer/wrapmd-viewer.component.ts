@@ -1,5 +1,6 @@
 import { Component, OnInit, SimpleChanges, Input } from "@angular/core";
 import { Observable } from "rxjs";
+import { DataConvertService } from "src/app/services/data-convert.service";
 
 @Component({
   selector: "app-wrapmd-viewer",
@@ -41,7 +42,7 @@ export class WrapmdViewerComponent implements OnInit {
 
   public maxLine = 3;
 
-  constructor() {}
+  constructor(private converter: DataConvertService) {}
 
   ngOnInit() {}
 
@@ -85,8 +86,10 @@ export class WrapmdViewerComponent implements OnInit {
           this.appContent = content;
           if (this.appContent) {
             this.mergedContent =
-              `<script>window.appData=${this.content}</script>\n` +
-              this.appContent;
+              `<script>window.appData=${this.converter.toJsonStr(
+                this.content,
+                this.type
+              )}</script>\n` + this.appContent;
           }
         });
       }
