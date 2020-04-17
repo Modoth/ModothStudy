@@ -36,6 +36,8 @@ import { Component, OnInit, Input } from "@angular/core";
 export class ArticleViewerComponent implements OnInit {
   @Input() type: string;
 
+  @Input() id: string;
+
   @Input() options: any;
 
   @Input() content: string;

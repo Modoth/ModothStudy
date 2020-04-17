@@ -2,23 +2,27 @@
   <app-html-viewer
     *ngSwitchCase="'html'"
     [content]="content"
+    [id]="id"
     [options]="options"
   ></app-html-viewer>
   <app-python-viewer
     *ngSwitchCase="'python'"
     [content]="content"
+    [id]="id"
     [options]="options"
   ></app-python-viewer>
   <ng-container *ngSwitchDefault>
     <app-wrapmd-viewer
       *ngIf="type"
       [content]="content"
+      [id]="id"
       [type]="type"
       [options]="options"
     ></app-wrapmd-viewer>
     <app-markdown-viewer
       *ngIf="!type"
       [content]="content"
+      [id]="id"
       [options]="options"
     ></app-markdown-viewer>
   </ng-container>

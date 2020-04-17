@@ -7,6 +7,8 @@ export interface ArticleEditorModel {
 
   content: string;
 
+  id: string;
+
   type: string;
 
   solutionToType?: string | undefined;
@@ -31,6 +33,9 @@ export class ArticleEditorComponent implements OnInit, OnChanges {
   @Input() maxImageSize: number;
 
   @Input() content: string;
+
+  @Input() id: string;
+
 
   @Input() type: string;
 

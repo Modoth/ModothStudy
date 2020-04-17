@@ -17,8 +17,11 @@
     >
       open_in_new
     </mat-icon>
-    <mat-icon *ngIf="mergedContent" (click)="showSource = !showSource">
-      {{ showSource ? "play_arrow" : "code" }}
+    <mat-icon
+      *ngIf="!fullscreen && mergedContent"
+      (click)="showSource = !showSource"
+    >
+      {{ showSource ? "keyboard_arrow_up" : "code" }}
     </mat-icon>
     <div class="divider"></div>
     <ng-container *ngIf="menus && menus.length > 0">
@@ -32,10 +35,12 @@
     </ng-container>
   </div>
   <markdown
-    [class.hidden]="hideSource || (mergedContent && !showSource)"
+    *ngIf="!mergedContent"
+    [class.hidden]="hideSource"
     [data]="markdownContent"
   ></markdown>
   <app-html-viewer
+    [id]='id'
     [fullscreen]="fullscreen"
     *ngIf="mergedContent"
     (popContentUrlChange)="popContentUrl = $event"
@@ -44,3 +49,8 @@
   >
   </app-html-viewer>
 </div>
+<markdown
+  *ngIf="mergedContent"
+  [class.hidden]="hideSource || !showSource"
+  [data]="markdownContent"
+></markdown>

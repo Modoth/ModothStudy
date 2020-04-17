@@ -340,6 +340,7 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
     this.editMode = {
       maxImageSize: this.maxImageSize,
       content: (this.solution && this.solution.content) || "",
+      id: this.solution && this.solution.id,
       solutionToContent: this.blog.content || "",
       type: this.currentNode.solutionType,
       solutionToType: this.currentNode.docType,
@@ -364,6 +365,7 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
     this.editMode = {
       maxImageSize: this.maxImageSize,
       content: this.blog.content || "",
+      id: this.blog.id,
       type: this.currentNode.docType,
       imageInserted: this.toInsertImage,
       errored: this.onError,

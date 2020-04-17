@@ -30,7 +30,7 @@ enum PopupType {
 })
 export class PopupComponent implements OnDestroy {
   @Input() type: PopupType = PopupType.dialog;
-  @Input() title: string = "";
+  @Input() title: string | string[] = "";
   @Input() subTitle: string;
   @Input() btnSaveStr: string = "Ok";
   @Input() btnCancelStr: string = "Cancle";

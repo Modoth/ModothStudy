@@ -30,6 +30,7 @@
       </div>
       <div *ngIf="node.content != null && node.content != ''" class="body">
         <app-article-viewer
+          [id]='node.id'
           [type]="node.docType"
           [content]="node.content"
           [options]="{

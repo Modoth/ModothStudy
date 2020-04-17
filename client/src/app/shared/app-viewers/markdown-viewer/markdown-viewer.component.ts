@@ -17,6 +17,8 @@ export class MarkdownViewerComponent implements OnInit, OnChanges {
 
   @Input() content: string;
 
+  @Input() id: string;
+
   summary = false;
 
   summaryImg: string;

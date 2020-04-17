@@ -100,6 +100,10 @@
     background-color: transparent;
   }
 
+  .open-file-warn {
+    color: mat-color($accent);
+  }
+
   @include image-viewer-theme($theme);
   @include terminal-ime-theme($theme);
   @include python-terminal-theme($theme);

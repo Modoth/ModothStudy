@@ -57,6 +57,7 @@
           >{{ node.node.name }}
         </div>
         <app-article-viewer
+          [id]='node.node.id'
           [type]="node.node.docType"
           [content]="node.node.content"
           [options]="{
@@ -86,6 +87,7 @@
           <app-article-viewer
             *ngIf="node.mySolution != null"
             [type]="node.node.solutionType"
+            [id]='node.node.solutionId'
             [content]="node.mySolution"
             [options]="{
               pythonService: node.pythonService,
@@ -105,6 +107,7 @@
           </div>
           <app-article-viewer
             [type]="node.node.solutionType"
+            [id]='node.node.solutionId'
             [content]="node.myTmpSolution"
             [options]="{
               pythonService: node.pythonService,
@@ -133,6 +136,7 @@
         <app-article-viewer
           *ngIf="node.solution != null"
           [type]="node.node.solutionType"
+          [id]='node.node.solutionId'
           [content]="node.solution"
           [options]="{
             pythonService: node.pythonService,
@@ -155,6 +159,7 @@
     [maxImageSize]="editMode.maxImageSize"
     [content]="editMode.content"
     [type]="editMode.type"
+    [id]='editMode.id'
     [solutionToType]="editMode.solutionToType"
     [solutionToContent]="editMode.solutionToContent"
     [imageInserted]="editMode.imageInserted"

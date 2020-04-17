@@ -14,6 +14,7 @@
   <app-article-viewer
     *ngIf="node"
     [type]="node.docType"
+    [id]='node.id'
     [content]="node.content"
     [options]="{
       getApp: { value: getNodeApp(node) },

@@ -19,6 +19,8 @@ import { Observable } from "rxjs";
 export class PythonViewerComponent implements OnInit, OnChanges {
   @Input() options: any;
 
+  @Input() id: string;
+
   @Input() content: string;
 
   fullscreen = false;

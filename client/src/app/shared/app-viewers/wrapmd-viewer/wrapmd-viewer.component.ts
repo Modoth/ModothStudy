@@ -12,6 +12,8 @@ export class WrapmdViewerComponent implements OnInit {
 
   @Input() content: string;
 
+  @Input() id: string;
+
   @Input() type: string;
 
   appContent: string;

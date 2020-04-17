@@ -2,6 +2,7 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
 
   $bg: mat-color($background, app-bar);
   $fg: mat-color($primary);
@@ -13,6 +14,10 @@
 
     .mask-container > .mask > * {
       color: #ccc;
+    }
+
+    .mask-container > .mask.block > * {
+      color: mat-color($accent);
     }
   }
 }

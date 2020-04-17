@@ -37,6 +37,7 @@
     </ng-container>
   </div>
   <app-html-viewer
+    [id]="id"
     [fullscreen]="fullscreen"
     *ngIf="appContent"
     [class.hidden]="!isRunning"

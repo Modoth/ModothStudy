@@ -3,17 +3,20 @@
     <ng-container [ngSwitch]="solutionToType">
       <app-html-viewer
         *ngSwitchCase="'html'"
+        [id]="id"
         [content]="solutionToContent"
         [options]="{ play: { value: true }, pythonService: pythonService }"
       ></app-html-viewer>
       <app-python-viewer
         *ngSwitchCase="'python'"
         [content]="solutionToContent"
+        [id]="id"
         [options]="{ play: { value: true }, pythonService: pythonService }"
       ></app-python-viewer>
       <app-markdown-viewer
         *ngSwitchDefault
         [content]="solutionToContent"
+        [id]="id"
         [options]="{ play: { value: true }, pythonService: pythonService }"
       ></app-markdown-viewer>
     </ng-container>
@@ -22,12 +25,14 @@
     <ng-container [ngSwitch]="type">
       <app-html-viewer
         *ngSwitchCase="'html'"
+        [id]="id"
         [content]="changedContent"
         [options]="Object.assign({}, viewerOptions, { play: { value: true } })"
       >
       </app-html-viewer>
       <app-python-viewer
         *ngSwitchCase="'python'"
+        [id]="id"
         [content]="changedContent"
         [options]="Object.assign({}, viewerOptions, { play: { value: true } })"
       >
@@ -35,6 +40,7 @@
       <ng-container *ngSwitchDefault>
         <app-wrapmd-viewer
           *ngIf="type"
+          [id]="id"
           [type]="type"
           [content]="changedContent"
           [options]="
@@ -46,6 +52,7 @@
         >
         </app-wrapmd-viewer>
         <app-markdown-viewer
+          [id]="id"
           [content]="changedContent"
           *ngIf="!type"
           [options]="

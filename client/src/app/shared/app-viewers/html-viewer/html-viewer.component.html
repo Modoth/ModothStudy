@@ -36,15 +36,17 @@
   <div class="mask-container" *ngIf="canPlay && !play">
     <iframe [src]="nonScriptContentUrl" sandbox></iframe>
     <div
+      [class.block]="isBlock"
       class="mask"
-      *ngIf="!sandBox"
+      *ngIf="!sandBox && !isBlock"
       (click)="play = true; pause = false; $event.stopPropagation()"
     >
       <mat-icon>play_arrow </mat-icon>
     </div>
     <div
+      [class.block]="isBlock"
       class="mask"
-      *ngIf="sandBox"
+      *ngIf="sandBox && !isBlock"
       (click)="popContentUrl != null && openContentUrl()"
     >
       <mat-icon>play_arrow </mat-icon>
