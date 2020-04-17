@@ -65,6 +65,7 @@ export class ResizeWatcher {
 export class App {
   constructor(window) {
     this.mWindow = window
+    this.mStorage = window.$localStorage || window.localStorage
   }
   async launch() {
     this.mRoot = document.getElementById('app')
@@ -75,8 +76,10 @@ export class App {
         return
       }
       if (window.$localStorage) {
-        const res = await window.$localStorage.openFile('text/plain', 'Text')
-        await this.mLoadFile(res.file, res.data)
+        const res = await window.$localStorage.openFile('text/*', 'Text')
+        if (res) {
+          await this.mLoadFile(res.file, res.data)
+        }
       } else {
         this.mInputFile.click()
       }
@@ -101,8 +104,8 @@ export class App {
       }
     })
     this.mClickResions = [
-      '11111111144',
-      '11111111144',
+      '11066666044',
+      '11066666044',
       '11000000022',
       '11003330022',
       '11003330022',
@@ -158,7 +161,29 @@ export class App {
       case 5:
         this.mChangeTheme()
         break
+      case 6:
+        this.mGoto()
+        break
     }
+  }
+
+  async mGoto() {
+    let res = await this.mModal.prompt(
+      '转到',
+      Math.floor((this.mCurrentOffset * 100) / this.mFileContent.length),
+      {
+        type: 'range',
+        max: 100,
+        min: 0,
+      }
+    )
+    if (!res) {
+      return
+    }
+    this.mCurrentOffset = Math.floor(
+      (this.mFileContent.length * (res >>> 0)) / 100
+    )
+    await this.mReload()
   }
 
   mChangeFullscreen() {
@@ -233,6 +258,7 @@ export class App {
       const nextOffset =
         page.offset +
         this.mTextRender.rend(this.mFileContent, page.offset, page.nextOffset)
+      this.mStorage.setItem(`${this.mFileName}_offset`, this.mCurrentOffset)
       if (
         this.mPages.has(this.mCurrentPageIdx + 1) &&
         this.mPages.get(this.mCurrentPageIdx + 1).offset !== nextOffset &&
@@ -269,8 +295,13 @@ export class App {
     this.mIsLoadingFile = true
     this.mLogoContainer.classList.add('hidden')
     this.mReaderContainer.classList.remove('hidden')
+    this.mFileName = file.name
     this.mFileContent = await readFile(file)
-    this.mCurrentOffset = 0
+    const offset = await this.mStorage.getItem(`${this.mFileName}_offset`)
+    this.mCurrentOffset = Math.min(
+      parseInt(offset) || 0,
+      this.mFileContent.length
+    )
     await this.mReload()
     this.mIsLoadingFile = false
   }

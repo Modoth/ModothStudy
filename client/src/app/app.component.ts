@@ -84,22 +84,24 @@ export class AppComponent implements OnInit {
       this.iptFile.nativeElement.accept = mimeType;
       this.iptFile.nativeElement.onchange = () => {
         this.openFilePopup.save();
-        const file = this.iptFile.nativeElement.files[0];
-        const reader = new FileReader();
-        const readAs = `readAs${resultType}`;
-        if (!reader[readAs]) {
-          resolve({ file });
-        }
-        reader.onabort = () => resolve(null);
-        reader.onerror = () => resolve(null);
-        reader.onload = () => {
-          resolve({
-            file,
-            data: reader.result,
-          });
-        };
-        reader[readAs](file);
-        this.iptFile.nativeElement.value = null;
+        setTimeout(() => {
+          const file = this.iptFile.nativeElement.files[0];
+          const reader = new FileReader();
+          const readAs = `readAs${resultType}`;
+          if (!reader[readAs]) {
+            resolve({ file });
+          }
+          reader.onabort = () => resolve(null);
+          reader.onerror = () => resolve(null);
+          reader.onload = () => {
+            resolve({
+              file,
+              data: reader.result,
+            });
+          };
+          reader[readAs](file);
+          this.iptFile.nativeElement.value = null;
+        }, 50);
       };
       this.openFilePopup.show();
     });
