@@ -10,6 +10,14 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
-<app-popup #openFilePopup type="dialog">
-  <input #iptFile type="file" class="hidden" accept="*/*" />
+<app-popup #openFilePopup [customizeBtnGroupRef]="btns" type="dialog">
+  <ng-template #btns>
+    <button mat-button (click)="openFilePopup.close()">
+      {{ "Cancle" | lang | async }}
+    </button>
+    <button mat-button color="primary" (click)="iptFile.click()">
+      {{ "Ok" | lang | async }}
+    </button>
+  </ng-template>
 </app-popup>
+<input #iptFile type="file" class="hidden" />

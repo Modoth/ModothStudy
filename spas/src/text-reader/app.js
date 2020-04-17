@@ -70,8 +70,16 @@ export class App {
     this.mRoot = document.getElementById('app')
     document.addEventListener('keydown', (ev) => this.mHandlerKeys(ev))
     this.mLogoContainer = document.getElementById('logoContainer')
-    this.mTryOpenFile = () => {
-      this.mIsLoadingFile || this.mInputFile.click()
+    this.mTryOpenFile = async () => {
+      if (this.mIsLoadingFile) {
+        return
+      }
+      if (window.$localStorage) {
+        const res = await window.$localStorage.openFile('text/plain', 'Text')
+        await this.mLoadFile(res.file, res.data)
+      } else {
+        this.mInputFile.click()
+      }
     }
     this.mKeyBindings = {
       'C-O': this.mTryOpenFile,

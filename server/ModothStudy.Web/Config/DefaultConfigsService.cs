@@ -117,6 +117,7 @@ namespace ModothStudy.Web.Generated
             InvalidApiSignature = "错误接口签名";
             NoSuchFile = "无此文件，请重新上传";
             SuccessToCopy = "复制成功";
+            OpenFileFromThisApp = "为【{0}】打开文件";
 
             #region Config
 

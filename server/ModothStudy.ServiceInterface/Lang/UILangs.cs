@@ -131,5 +131,7 @@ namespace ModothStudy.ServiceInterface.Lang
         OpenFile,
 
         SuccessToCopy,
+
+        OpenFileFromThisApp,
     }
 }
