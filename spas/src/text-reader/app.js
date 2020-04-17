@@ -76,7 +76,7 @@ export class App {
         return
       }
       if (window.$localStorage) {
-        const res = await window.$localStorage.openFile('text/*', 'Text')
+        const res = await window.$localStorage.openFile('text/plain', 'Text')
         if (res) {
           await this.mLoadFile(res.file, res.data)
         }
@@ -287,7 +287,7 @@ export class App {
     await this.mLoadPage(0)
   }
 
-  async mLoadFile(/**@type File*/ file) {
+  async mLoadFile(/**@type File*/ file, content) {
     if (!this.mThemeInited) {
       this.mChangeTheme()
       this.mThemeInited = true
@@ -296,7 +296,7 @@ export class App {
     this.mLogoContainer.classList.add('hidden')
     this.mReaderContainer.classList.remove('hidden')
     this.mFileName = file.name
-    this.mFileContent = await readFile(file)
+    this.mFileContent = content && (await readFile(file))
     const offset = await this.mStorage.getItem(`${this.mFileName}_offset`)
     this.mCurrentOffset = Math.min(
       parseInt(offset) || 0,

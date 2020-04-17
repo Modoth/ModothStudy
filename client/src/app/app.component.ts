@@ -89,13 +89,13 @@ export class AppComponent implements OnInit {
           const reader = new FileReader();
           const readAs = `readAs${resultType}`;
           if (!reader[readAs]) {
-            resolve({ file });
+            resolve({ file: Object.assign({}, file) });
           }
           reader.onabort = () => resolve(null);
           reader.onerror = () => resolve(null);
           reader.onload = () => {
             resolve({
-              file,
+              file: Object.assign({}, file),
               data: reader.result,
             });
           };
