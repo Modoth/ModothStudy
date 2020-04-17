@@ -65,7 +65,14 @@ export class ResizeWatcher {
 export class App {
   constructor(window) {
     this.mWindow = window
-    this.mStorage = window.$localStorage || window.localStorage
+    try {
+      this.mStorage = window.$localStorage || window.localStorage
+    } catch {
+      this.mStorage = {
+        getItem: () => '',
+        setItem: () => true,
+      }
+    }
   }
   async launch() {
     this.mRoot = document.getElementById('app')
@@ -296,7 +303,7 @@ export class App {
     this.mLogoContainer.classList.add('hidden')
     this.mReaderContainer.classList.remove('hidden')
     this.mFileName = file.name
-    this.mFileContent = content && (await readFile(file))
+    this.mFileContent = content || (await readFile(file))
     const offset = await this.mStorage.getItem(`${this.mFileName}_offset`)
     this.mCurrentOffset = Math.min(
       parseInt(offset) || 0,
