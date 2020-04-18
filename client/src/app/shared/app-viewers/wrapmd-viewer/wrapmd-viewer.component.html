@@ -12,7 +12,7 @@
     </mat-icon>
     <mat-icon
       color="primary"
-      *ngIf="mergedContent && popContentUrl != null"
+      *ngIf="mergedContent && popContentUrl != null && !fullscreen"
       (click)="openContentUrl()"
     >
       open_in_new
@@ -24,7 +24,7 @@
       {{ showSource ? "keyboard_arrow_up" : "code" }}
     </mat-icon>
     <div class="divider"></div>
-    <ng-container *ngIf="menus && menus.length > 0">
+    <ng-container *ngIf="menus && menus.length > 0 && !fullscreen">
       <mat-icon
         *ngFor="let menu of menus"
         color="primary"

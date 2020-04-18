@@ -13,20 +13,20 @@
       stop
     </mat-icon>
     <mat-icon
-      *ngIf="isRunning && appContent"
+      *ngIf="isRunning && appContent && !fullscreen"
       (click)="showTerminal = !showTerminal"
     >
       {{ showTerminal ? "keyboard_arrow_up" : "keyboard_arrow_down" }}
     </mat-icon>
     <mat-icon
       color="primary"
-      *ngIf="showRun && !isRunning"
+      *ngIf="showRun && !isRunning && !fullscreen"
       (click)="isRunning = true"
     >
       play_arrow
     </mat-icon>
     <div class="divider"></div>
-    <ng-container *ngIf="menus && menus.length > 0">
+    <ng-container *ngIf="menus && menus.length > 0 && !fullscreen">
       <mat-icon
         *ngFor="let menu of menus"
         color="primary"

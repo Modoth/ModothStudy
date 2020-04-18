@@ -130,10 +130,20 @@
 
   .fullscreen-node-item {
     .menus {
-      padding: 8px 3px;
-      margin: 0 0 1px !important;
-      background-color: mat-color($background, app-bar);
-      box-shadow: 0 1px 3px 1px mat-color($foreground, divider);
+      padding: 8px;
+      margin: 0 !important;
+      background-color: transparent;
+      box-shadow: none;
+      position: absolute;
+      z-index: 2;
+      mat-icon {
+        background-color: #0004;
+        border-radius: 0.5em;
+        padding: 5px 10px !important;
+        text-align: center;
+        color: #eee;
+        mix-blend-mode: luminosity;
+      }
     }
   }
 }
