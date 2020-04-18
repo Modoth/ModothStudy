@@ -108,7 +108,8 @@ export class HtmlViewerComponent
 
   constructor(
     public sanitizer: DomSanitizer,
-    private htmlAppService: HtmlAppService
+    private htmlAppService: HtmlAppService,
+    private hostElement: ElementRef<HTMLElement>
   ) {
     this.window = window;
     this.appId = Math.random().toString().slice(2, 32);
@@ -382,6 +383,34 @@ export class HtmlViewerComponent
 
   getDataUrl(content) {
     return "data:text/html;charset=utf-8," + encodeURIComponent(content);
+  }
+
+  toogleFullscreen() {
+    const ele: any = this.hostElement.nativeElement;
+    if (!ele) {
+      return;
+    }
+    const doc: any = document;
+    if (this.fullscreen) {
+      const requestFullScreen =
+        ele.webkitRequestFullScreen ||
+        ele.webkitEnterFullscreen ||
+        ele.mozRequestFullScreen ||
+        ele.requestFullScreen ||
+        ele.requestFullScreen;
+      if (requestFullScreen) {
+        requestFullScreen.call(ele);
+      }
+    } else {
+      const cancelFullScreen =
+        doc.webkitCancelFullScreen ||
+        doc.mozCancelFullScreen ||
+        doc.cancelFullScreen ||
+        doc.exitFullscreen;
+      if (cancelFullScreen) {
+        cancelFullScreen.call(doc);
+      }
+    }
   }
 
   parseContent() {

@@ -86,10 +86,12 @@ class App {
   calculateSize() {
     let cellWidth = 36
     this.width = Math.floor(window.innerWidth / cellWidth)
-    this.height = Math.min(
-      this.width / 0.618,
-      Math.floor(window.innerHeight / cellWidth)
-    )
+    this.height = Math.floor(window.innerHeight / cellWidth)
+    if (this.width < this.height) {
+      this.height = Math.min(this.width / 0.618, this.height)
+    } else {
+      this.width = Math.min(this.height / 0.618, this.width)
+    }
     this.cellsTable.style.width = `${this.width * cellWidth}px`
     this.cellsTable.style.height = `${this.height * cellWidth}px`
   }

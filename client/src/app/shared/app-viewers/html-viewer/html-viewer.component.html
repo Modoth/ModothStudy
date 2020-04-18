@@ -5,7 +5,7 @@
   <div *ngIf="showMenus" class="menus">
     <mat-icon
       [color]="fullscreen ? '' : 'primary'"
-      (click)="fullscreen = !fullscreen"
+      (click)="fullscreen = !fullscreen; toogleFullscreen()"
     >
       {{ fullscreen ? "close" : "zoom_out_map" }}
     </mat-icon>
