@@ -42,7 +42,7 @@ const getLocalConfigs = async () => {
   }
   for (let subfolder of subfolders) {
     let indexFile
-    for (const fileName of ['index.html', 'index.js']) {
+    for (const fileName of ['index.html', 'index.js', 'app.js']) {
       let file = path.join(srcFolder, subfolder, fileName)
       if (await FileUtils.exists(file)) {
         indexFile = file
