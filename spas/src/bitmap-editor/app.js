@@ -83,7 +83,7 @@ class App {
     popupRoot.appendChild(style)
     this.mPopupRoot = popupRoot
     this.mModal = new Modal()
-    this.mRatio = window.devicePixelRatio
+    this.mRatio = Math.min(window.devicePixelRatio, 2)
     this.mDragMoveCanvas = new DragMoveCanvas(
       0.5,
       0.5,
@@ -99,13 +99,19 @@ class App {
     this.mRedraw()
   }
 
+  async mImport() {
+    
+  }
+
   async mExport() {
     this.closePopup()
     const [top, right, bottom, left] = this.bitmaps.getRegion()
     const ppw = this.ppw * this.mRatio
     const pph = this.pph * this.mRatio
-    const width = (right - left) * ppw
-    const height = (bottom - top) * pph
+    const dx = ppw
+    const dy = pph
+    const width = (right - left) * ppw + 2 * dx
+    const height = (bottom - top) * pph + 2 * dy
     if (!width || !height) {
       return
     }
@@ -120,7 +126,7 @@ class App {
         const a = color & 0xff
         for (let j = 0; j < pph; j++) {
           for (let i = 0; i < ppw; i++) {
-            const idx = (i + x * ppw + (j + y * pph) * width) * 4
+            const idx = (i + dx + x * ppw + (j + dy + y * pph) * width) * 4
             imageData.data[idx] = r
             imageData.data[idx + 1] = g
             imageData.data[idx + 2] = b
@@ -270,8 +276,8 @@ class App {
     this.mDragMoveCanvas.onClick = this.mChangeCurrentPosition.bind(this)
     this.offsetPx = 0
     this.offsetPy = 0
-    this.ppw = 32
-    this.pph = 32
+    this.ppw = 24
+    this.pph = 24
     this.mNewImage()
     this.mResizeCanvas(this.mDragMoveCanvas.width, this.mDragMoveCanvas.height)
   }

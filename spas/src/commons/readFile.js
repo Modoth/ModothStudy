@@ -1,5 +1,5 @@
 /**@type function(Blob file):Promise<string> */
-export const readFile = (file) => {
+export const readFile = (file, type = 'Text') => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {
@@ -7,6 +7,6 @@ export const readFile = (file) => {
     }
     reader.onerror = reject
     reader.onabort = reject
-    reader.readAsText(file)
+    reader['readAs' + type](file)
   })
 }
