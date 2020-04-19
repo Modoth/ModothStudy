@@ -90,7 +90,9 @@ export class Modal {
       let panel = document.createElement('div')
       panel.className = 'popup-panel'
       let closeModal = (ok) => {
-        this.mContainer.removeChild(panel)
+        try {
+          this.mContainer.removeChild(panel)
+        } catch {}
         resolve(ok)
       }
       if (showClose) {
