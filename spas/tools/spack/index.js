@@ -147,6 +147,24 @@ class JsHtmlAdaper {
   }
 }
 
+class JsJsonAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports json\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return content
+  }
+}
+
+class JsTextAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports txt\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return JSON.stringify(content)
+  }
+}
+
 class JsCssAdaper {
   constructor() {
     this.reg = /\/\*\*\s*@imports css\s*\*\/ '([^']*)'/gm
@@ -310,8 +328,12 @@ class Packer {
           new JsJsAdaper(),
           new JsHtmlAdaper(),
           new JsCssAdaper(),
+          new JsJsonAdaper(),
+          new JsTextAdaper(),
           new JsPngAdaper()
         )
+      case '.json':
+      case '.txt':
       case '.css':
         return new TextImporter()
       case '.png':

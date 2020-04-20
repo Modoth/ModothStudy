@@ -16,8 +16,10 @@ export class DataConvertService {
       case "yaml":
         const y = YAML.parse(content);
         return JSON.stringify(y);
-      default:
+      case "json":
         return content;
+      default:
+        return JSON.stringify(content);
     }
   }
 }
