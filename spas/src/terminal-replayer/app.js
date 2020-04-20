@@ -18,17 +18,18 @@ class App {
 
   async start(data) {
     this.mHighlightedData = [highlight(data || this.mTestData)]
-    await this.play()
+    const option = { inputCharDelay: 1, outputCharDelay: 0 }
+    await this.play(option)
   }
 
-  async play() {
+  async play(option) {
     if (this.isReplay) {
       return
     }
     this.isReplay = true
     this.mReplay.classList.add('playing')
-    this.mReplay.innerText = "PLAY..."
-    await this.mReplayer.replay(this.mHighlightedData)
+    this.mReplay.innerText = 'PLAY...'
+    await this.mReplayer.replay(this.mHighlightedData, option)
     this.mReplay.classList.remove('playing')
     this.mReplay.innerText = 'REPLAY'
     this.isReplay = false

@@ -12,10 +12,7 @@ class Context {
 }
 
 export class TerminalReplayer {
-  constructor(option) {
-    const { inputCharDelay = 100, outputCharDelay = 5 } = option || {}
-    this.mInputCharDelay = inputCharDelay
-    this.mOutputCharDelay = outputCharDelay
+  constructor() {
     this.mRoot = document.createElement('div')
     const shadow = this.mRoot.attachShadow({ mode: 'closed' })
     const style = /**@imports css */ './terminal-replayer.css'
@@ -262,7 +259,10 @@ export class TerminalReplayer {
     }
   }
 
-  async replay(data) {
+  async replay(data, option) {
+    const { inputCharDelay = 100, outputCharDelay = 5 } = option || {}
+    this.mInputCharDelay = inputCharDelay
+    this.mOutputCharDelay = outputCharDelay
     const ctx = new Context()
     ctx.lines = data
     this.mScreen.innerHTML = ''
