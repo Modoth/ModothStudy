@@ -2,6 +2,8 @@ import { DragMoveCanvas } from '../commons/drag-move-canvas.js'
 import { Modal } from '../modal/index.js'
 import { FlexBitmap } from '../commons/flex-bitmap.js'
 import { ColorPaletteFactory } from '../commons/color-palette-factory.js'
+import { readFile } from '../commons/readFile.js'
+import { loadImageData } from '../commons/load-imagedata.js'
 
 class App {
   constructor() {
@@ -9,6 +11,15 @@ class App {
     this.root
   }
   async initComponents() {
+    const appStyle = /**@imports css */ './app.css'
+    const iptFile = document.createElement('input')
+    iptFile.type = 'file'
+    iptFile.accept = 'image/*'
+    iptFile.classList.add('hidden')
+    iptFile.onchange = this.mLoadFile.bind(this)
+    this.root.appendChild(iptFile)
+    this.root.appendChild(appStyle)
+    this.mIptFile = iptFile
     const menuItems = [
       {
         name: '清空',
@@ -17,6 +28,10 @@ class App {
       {
         name: '预览',
         onclick: this.mExport.bind(this),
+      },
+      {
+        name: '导入',
+        onclick: this.mImport.bind(this),
       },
     ]
     const menu = document.createElement('div')
@@ -31,7 +46,7 @@ class App {
       item.innerText = m.name
       menu.appendChild(item)
     })
-    const style = /**@imports css */ './main.css'
+    const paletteStyle = /**@imports css */ './palette.css'
     this.mColors = [
       '#00000000',
       '#ccccccff',
@@ -55,10 +70,12 @@ class App {
     popupRoot.classList.add('popup-root')
     popupRoot.appendChild(palette)
     popupRoot.appendChild(menu)
-    popupRoot.appendChild(style)
+    popupRoot.appendChild(paletteStyle)
     this.mPopupRoot = popupRoot
     this.mModal = new Modal()
     this.mRatio = Math.min(window.devicePixelRatio, 2)
+    this.mMaxWidth = 2048
+    this.mMaxHeight = 2048
     this.mDragMoveCanvas = new DragMoveCanvas(
       0.5,
       0.5,
@@ -74,17 +91,97 @@ class App {
     this.mRedraw()
   }
 
-  async mImport() {}
+  async mLoadFile() {
+    const file = this.mIptFile.files[0]
+    if (!file) {
+      return
+    }
+    const fileContent = await readFile(file, 'DataURL')
+    const imgData = await loadImageData(fileContent)
+    await this.mLoadImageData(imgData)
+  }
 
-  async mExport() {
+  async mLoadImageData(/**@type ImageData */ imgData) {
+    const scale = Math.max(
+      1,
+      imgData.width / this.mMaxWidth,
+      imgData.height / this.mMaxHeight
+    )
+    const width = Math.floor(imgData.width / scale)
+    const height = Math.floor(imgData.height / scale)
+    const data = imgData.data
+    const newBitmaps = new FlexBitmap(width, height)
+    for (let j = 0; j < height; j++) {
+      const fixJ = Math.floor(j * scale)
+      for (let i = 0; i < width; i++) {
+        const idx = (Math.floor(i * scale) + fixJ * imgData.width) * 4
+        let r = data[idx] << 24
+        if (r < 0) {
+          r += 0x100000000
+        }
+        const color =
+          r + (data[idx + 1] << 16) + (data[idx + 2] << 8) + data[idx + 3]
+        newBitmaps.set(i, j, color)
+      }
+    }
+    this.bitmaps = newBitmaps
+    this.mRedraw()
+  }
+
+  async mImport() {
     this.closePopup()
+    if (window.$localStorage) {
+      const res = await window.$localStorage.openFile('image/*', 'DataURL')
+      if (res) {
+        const imgData = await loadImageData(res.data)
+        await this.mLoadImageData(imgData)
+      }
+    } else {
+      this.mIptFile.click()
+    }
+  }
+
+  mGetPreviewImage(ppw, pph, dx, dy, sourceData) {
+    if (ppw < 1 || pph < 1 || dx < 0 || dy < 0) {
+      return null
+    }
+    const width = sourceData.width * ppw + 2 * dx
+    const height = sourceData.height * pph + 2 * dy
+    if (width >= this.mMaxWidth || height > this.mMaxHeight) {
+      return null
+    }
+    const imageData = new ImageData(width, height)
+    for (let j = 0; j < sourceData.height; j++) {
+      for (let i = 0; i < sourceData.width; i++) {
+        const sourceIdx = (j * sourceData.width + i) * 4
+        const r = sourceData.data[sourceIdx]
+        const g = sourceData.data[sourceIdx + 1]
+        const b = sourceData.data[sourceIdx + 2]
+        const a = sourceData.data[sourceIdx + 3]
+        for (let n = 0; n < pph; n++) {
+          for (let m = 0; m < ppw; m++) {
+            const idx = (dx + i * ppw + m + (dy + j * pph + n) * width) * 4
+            imageData.data[idx] = r
+            imageData.data[idx + 1] = g
+            imageData.data[idx + 2] = b
+            imageData.data[idx + 3] = a
+          }
+        }
+      }
+    }
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    ctx.putImageData(imageData, 0, 0)
+    const imgUrl = canvas.toDataURL()
+    return { width, height, imgUrl }
+  }
+
+  mGetPreviewImageData() {
     const [top, right, bottom, left] = this.bitmaps.getRegion()
-    const ppw = this.ppw * this.mRatio
-    const pph = this.pph * this.mRatio
-    const dx = ppw
-    const dy = pph
-    const width = (right - left) * ppw + 2 * dx
-    const height = (bottom - top) * pph + 2 * dy
+    const width = right - left
+    const height = bottom - top
     if (!width || !height) {
       return
     }
@@ -97,47 +194,106 @@ class App {
         const g = (color >> 16) & 0xff
         const b = (color >> 8) & 0xff
         const a = color & 0xff
-        for (let j = 0; j < pph; j++) {
-          for (let i = 0; i < ppw; i++) {
-            const idx = (i + dx + x * ppw + (j + dy + y * pph) * width) * 4
-            imageData.data[idx] = r
-            imageData.data[idx + 1] = g
-            imageData.data[idx + 2] = b
-            imageData.data[idx + 3] = a
-          }
-        }
+        const idx = (x + y * width) * 4
+        imageData.data[idx] = r
+        imageData.data[idx + 1] = g
+        imageData.data[idx + 2] = b
+        imageData.data[idx + 3] = a
       }
     }
-    let resolve
+    return imageData
+  }
+
+  mCreatePreviewPanel(imageData) {
     const root = document.createElement('div')
     const shadow = root.attachShadow({ mode: 'closed' })
     const style = /**@imports css */ './preview.css'
     shadow.appendChild(style)
-    root.onclick = () => resolve()
     const preview = document.createElement('div')
     preview.classList.add('preview')
-
-    const a = document.createElement('a')
-    a.download = '预览.png'
+    const menu = document.createElement('div')
     const previewImg = document.createElement('img')
     previewImg.classList.add('preview-img')
-    previewImg.width = width / this.mRatio
-    previewImg.height = height / this.mRatio
-
+    let config = {
+      ppw: 1,
+      pph: 1,
+      dx: 0,
+      dy: 0,
+    }
+    let width = 0
+    let height = 0
+    let imgUrl = ''
+    const configsStack = []
+    const changeImg = (ppw, pph, dx, dy) => {
+      const img = this.mGetPreviewImage(ppw, pph, dx, dy, imageData)
+      if (!img) {
+        return false
+      }
+      config = { ppw, pph, dx, dy }
+      ;({ width, height, imgUrl } = img)
+      previewImg.width = width / this.mRatio
+      previewImg.height = height / this.mRatio
+      previewImg.src = imgUrl
+      a.href = previewImg.src
+      return true
+    }
     preview.onclick = (ev) => {
       ev.stopPropagation()
     }
-
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    const ctx = canvas.getContext('2d')
-    ctx.putImageData(imageData, 0, 0)
-    previewImg.src = canvas.toDataURL()
-    a.href = previewImg.src
+    const menuItems = [
+      {
+        name: '加大分辨率',
+        onclick: () => {
+          const his = config
+          changeImg(
+            config.ppw * 2,
+            config.pph * 2,
+            config.dx + config.ppw * 2,
+            config.dy + config.pph * 2
+          ) && configsStack.push(his)
+        },
+      },
+      {
+        name: '减小分辨率',
+        onclick: () => {
+          let config = configsStack.pop()
+          config && changeImg(config.ppw, config.pph, config.dx, config.dy)
+        },
+      },
+    ]
+    menu.classList.add('menu')
+    menuItems.forEach((m) => {
+      const item = document.createElement('div')
+      item.onclick = (ev) => {
+        ev.stopPropagation()
+        m.onclick()
+      }
+      item.classList.add('menu-item')
+      item.innerText = m.name
+      menu.appendChild(item)
+    })
+    const a = document.createElement('a')
+    a.classList.add('menu-item')
+    a.innerText = '下载'
+    a.download = '预览.png'
+    menu.appendChild(a)
     shadow.appendChild(preview)
-    preview.appendChild(a)
-    a.appendChild(previewImg)
+    preview.appendChild(previewImg)
+    preview.appendChild(menu)
+    changeImg(config.ppw, config.pph, config.dx, config.dy) &&
+      configsStack.push(config)
+    return root
+  }
+
+  async mExport() {
+    this.closePopup()
+    const img = this.mGetPreviewImageData()
+    if (!img || img.width == 0 || img.height === 0) {
+      return
+    }
+    let resolve
+    const root = this.mCreatePreviewPanel(img)
+    root.onclick = () => resolve()
     await this.mModal.popup(root, (r) => (resolve = r), false)
   }
 
@@ -199,6 +355,7 @@ class App {
     const color = this.bitmaps.get(x, y)
     return this.mGetRgbaFromUint32(color)
   }
+
   mRedraw() {
     this.mDragMoveCanvas.redraw({
       x: this.offsetPx,
