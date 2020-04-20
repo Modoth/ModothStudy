@@ -31,28 +31,7 @@ class App {
       item.innerText = m.name
       menu.appendChild(item)
     })
-    const style = document.createElement('style')
-    style.innerHTML = `
-:{
-
-}
-.menu{
-  align-items: center;
-  align-content: space-between;
-  padding: 5px;
-  margin: 0px 10%;
-  background: #fff8;
-  backdrop-filter: blur(5px);
-  border-radius: 8px;
-  display: flex;
-  background: #fffe;
-  z-index:1;
-}
-.menu-item{
-  margin:5px auto;
-  padding:5px 10px;
-}
-`
+    const style = /**@imports css */ './main.css'
     this.mColors = [
       '#00000000',
       '#ccccccff',
@@ -70,14 +49,10 @@ class App {
       '#00000000',
       this.mSelectColor.bind(this)
     )
+    palette.classList.add('palette')
     const popupRoot = document.createElement('div')
     popupRoot.onclick = () => this.closePopup && this.closePopup()
-    popupRoot.style.display = 'flex'
-    popupRoot.style.justifyContent = 'center'
-    popupRoot.style.flexDirection = 'column'
-    popupRoot.style.width = '100%'
-    popupRoot.style.height = '100%'
-
+    popupRoot.classList.add('popup-root')
     popupRoot.appendChild(palette)
     popupRoot.appendChild(menu)
     popupRoot.appendChild(style)
@@ -99,9 +74,7 @@ class App {
     this.mRedraw()
   }
 
-  async mImport() {
-    
-  }
+  async mImport() {}
 
   async mExport() {
     this.closePopup()
@@ -137,53 +110,22 @@ class App {
     }
     let resolve
     const root = document.createElement('div')
-    root.style.flex = '1'
-    root.style.display = 'flex'
-    root.style.alignItems = 'center'
+    const shadow = root.attachShadow({ mode: 'closed' })
+    const style = /**@imports css */ './preview.css'
+    shadow.appendChild(style)
     root.onclick = () => resolve()
     const preview = document.createElement('div')
-    preview.style.margin = '0 auto'
-    preview.style.padding = '20px'
-    preview.style.background = 'white'
-    preview.style.borderRadius = '8px'
-    preview.style.boxShadow = '1px 1px 3px'
-    preview.style.boxSizing = 'border-box'
+    preview.classList.add('preview')
 
     const a = document.createElement('a')
     a.download = '预览.png'
     const previewImg = document.createElement('img')
+    previewImg.classList.add('preview-img')
     previewImg.width = width / this.mRatio
     previewImg.height = height / this.mRatio
-    previewImg.style.maxWidth = '75vw'
-    previewImg.style.maxHeight = '75vh'
-    previewImg.style.backgroundImage = `linear-gradient(
-      45deg,
-      #0001 25%,
-      transparent 25%,
-      transparent 75%,
-      #0001 75%,
-      #0001
-      ),
-    linear-gradient(
-      45deg,
-      #0001 26%,
-      transparent 26%,
-      transparent 74%,
-      #0001 74%,
-      #0001
-    )`
-    previewImg.style.backgroundSize = '20px 20px'
-    previewImg.style.backgroundPosition = '0 0, 10px 10px'
 
     preview.onclick = (ev) => {
       ev.stopPropagation()
-      // const s = window.getSelection()
-      // s.removeAllRanges()
-      // const r = new Range()
-      // r.selectNode(previewImg)
-      // s.addRange(r)
-      // document.execCommand('copy')
-      // this.mModal.toast('已复制')
     }
 
     const canvas = document.createElement('canvas')
@@ -193,7 +135,7 @@ class App {
     ctx.putImageData(imageData, 0, 0)
     previewImg.src = canvas.toDataURL()
     a.href = previewImg.src
-    root.appendChild(preview)
+    shadow.appendChild(preview)
     preview.appendChild(a)
     a.appendChild(previewImg)
     await this.mModal.popup(root, (r) => (resolve = r), false)

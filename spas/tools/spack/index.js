@@ -126,10 +126,37 @@ class HtmlCssAdaper {
 
 class JsPngAdaper {
   constructor() {
-    this.reg = /\/\*\*\s*@imports\s*\*\/ '([^']*)'/gm
+    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm
   }
   convert(content) {
     return `'data:image/png;base64,${content.toString('base64')}'`
+  }
+}
+
+class JsHtmlAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports html\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return `(()=>{
+      const root = document.createElement('div')
+      const shadow = root.attachShadow({mode:"closed"})
+      shadow.innerHTML = ${JSON.stringify(content)}
+      return root
+    })()`
+  }
+}
+
+class JsCssAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports css\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return `(()=>{
+      const style = document.createElement('style')
+      style.innerHTML = ${JSON.stringify(content)}
+      return style
+    })()`
   }
 }
 
@@ -279,7 +306,12 @@ class Packer {
       case '.html':
         return new TextImporter(new HtmlCssAdaper(), new HtmlScriptAdaper())
       case '.js':
-        return new TextImporter(new JsJsAdaper(), new JsPngAdaper())
+        return new TextImporter(
+          new JsJsAdaper(),
+          new JsHtmlAdaper(),
+          new JsCssAdaper(),
+          new JsPngAdaper()
+        )
       case '.css':
         return new TextImporter()
       case '.png':

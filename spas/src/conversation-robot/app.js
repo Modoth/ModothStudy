@@ -19,7 +19,7 @@ export class App {
     async mInitComponents() {
         const spriteConfigs = {
             '大摩': {
-                url: /**@imports */ '../../assets/man.png',
+                url: /**@imports image */ '../../assets/man.png',
                 height: 1,
                 width: 5,
                 animas: [{
@@ -27,7 +27,7 @@ export class App {
                 }]
             },
             '小豆': {
-                url: /**@imports */ '../../assets/woman.png',
+                url: /**@imports image */ '../../assets/woman.png',
                 height: 1,
                 width: 5,
                 animas: [{
