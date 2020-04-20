@@ -204,8 +204,9 @@ class App {
     return imageData
   }
 
-  mCreatePreviewPanel(imageData) {
+  mCreatePreviewPanel(imageData, onclose) {
     const root = document.createElement('div')
+    root.onclick = onclose
     const shadow = root.attachShadow({ mode: 'closed' })
     const style = /**@imports css */ './preview.css'
     shadow.appendChild(style)
@@ -240,9 +241,13 @@ class App {
     preview.onclick = (ev) => {
       ev.stopPropagation()
     }
+    const a = document.createElement('a')
+    a.classList.add('hidden')
+    a.download = '预览.png'
+    menu.appendChild(a)
     const menuItems = [
       {
-        name: '加大分辨率',
+        name: '加大',
         onclick: () => {
           const his = config
           changeImg(
@@ -254,10 +259,22 @@ class App {
         },
       },
       {
-        name: '减小分辨率',
+        name: '减小',
         onclick: () => {
           let config = configsStack.pop()
           config && changeImg(config.ppw, config.pph, config.dx, config.dy)
+        },
+      },
+      {
+        name: '下载',
+        onclick: () => {
+          a.click()
+        },
+      },
+      {
+        name: '关闭',
+        onclick: () => {
+          onclose && onclose()
         },
       },
     ]
@@ -272,11 +289,6 @@ class App {
       item.innerText = m.name
       menu.appendChild(item)
     })
-    const a = document.createElement('a')
-    a.classList.add('menu-item')
-    a.innerText = '下载'
-    a.download = '预览.png'
-    menu.appendChild(a)
     shadow.appendChild(preview)
     preview.appendChild(previewImg)
     preview.appendChild(menu)
@@ -292,8 +304,7 @@ class App {
       return
     }
     let resolve
-    const root = this.mCreatePreviewPanel(img)
-    root.onclick = () => resolve()
+    const root = this.mCreatePreviewPanel(img, () => resolve())
     await this.mModal.popup(root, (r) => (resolve = r), false)
   }
 
