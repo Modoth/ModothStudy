@@ -461,7 +461,7 @@ class Packer {
           const {
             results,
             dependentedBys: newDependentedBys,
-          } = await this.packOnce(workdir, toUpdateEntries, outputTemplate)
+          } = await this.packOnce(workdir, toUpdateEntries, outputTemplate, options)
           console.log('============\nend\n')
           onchange(results)
           for (const dep in newDependentedBys) {

@@ -1,5 +1,5 @@
-/**@type function(Blob file):Promise<string> */
-export const readFile = (file, type = 'Text') => {
+/**@type { (file:Blob, type: 'ArrayBuffer' | 'DataURL' | 'Text')=>Promise<any> } */
+export const readFile = (file, type = 'ArrayBuffer') => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {

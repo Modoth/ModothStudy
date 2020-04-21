@@ -1,7 +1,7 @@
 import { Modal } from '../modal/index.js'
-import { readFile } from '../commons/readFile.js'
 import { TextRender } from './text-render.js'
 import { ResizeWatcher } from '../commons/resize-watcher.js'
+import { FileSelector } from '../commons/file-selector.js'
 
 export class App {
   constructor(window) {
@@ -23,14 +23,11 @@ export class App {
       if (this.isLoadingFile_) {
         return
       }
-      if (window.$localStorage) {
-        const res = await window.$localStorage.openFile('text/plain', 'Text')
+      this.fileSelector_.selectFile('text/plain', 'Text', async (res)=>{
         if (res) {
           await this.loadFile_(res.file, res.data)
         }
-      } else {
-        this.inputFile_.click()
-      }
+      })
     }
     this.keyBindings_ = {
       'C-O': this.tryOpenFile_,
@@ -44,13 +41,8 @@ export class App {
     this.readerContainer_ = document.getElementById('readerContainer')
     this.readerContainer_.onclick = (ev) => this.handleClicks_(ev)
     this.textRender_ = new TextRender(this.readerContainer_)
-    this.inputFile_ = document.getElementById('inputFile')
+    this.fileSelector_ = new FileSelector(this.root_)
     this.logoContainer_.addEventListener('click', this.tryOpenFile_)
-    this.inputFile_.addEventListener('change', () => {
-      if (this.inputFile_.files && this.inputFile_.files[0]) {
-        this.loadFile_(this.inputFile_.files[0])
-      }
-    })
     this.clickResions_ = [
       '11066666044',
       '11066666044',

@@ -2,8 +2,9 @@ import { DragMoveCanvas } from '../commons/drag-move-canvas.js'
 import { Modal } from '../modal/index.js'
 import { FlexBitmap } from '../commons/flex-bitmap.js'
 import { ColorPaletteFactory } from '../commons/color-palette-factory.js'
-import { readFile } from '../commons/readFile.js'
 import { loadImageData } from '../commons/load-imagedata.js'
+import { FileSelector } from '../commons/file-selector.js'
+import { sleep } from '../commons/sleep.js'
 
 class App {
   constructor() {
@@ -12,14 +13,8 @@ class App {
   }
   async initComponents() {
     const appStyle = /**@imports css */ './app.css'
-    const iptFile = document.createElement('input')
-    iptFile.type = 'file'
-    iptFile.accept = 'image/*'
-    iptFile.classList.add('hidden')
-    iptFile.onchange = this.loadFile_.bind(this)
-    this.root.appendChild(iptFile)
+    this.fileSelector_ = new FileSelector(this.root)
     this.root.appendChild(appStyle)
-    this.iptFile_ = iptFile
     const menuItems = [
       {
         name: '清空',
@@ -91,16 +86,6 @@ class App {
     this.redraw_()
   }
 
-  async loadFile_() {
-    const file = this.iptFile_.files[0]
-    if (!file) {
-      return
-    }
-    const fileContent = await readFile(file, 'DataURL')
-    const imgData = await loadImageData(fileContent)
-    await this.loadImageData_(imgData)
-  }
-
   async loadImageData_(/**@type ImageData */ imgData) {
     const scale = Math.max(
       1,
@@ -130,15 +115,12 @@ class App {
 
   async import_() {
     this.closePopup()
-    if (window.$localStorage) {
-      const res = await window.$localStorage.openFile('image/*', 'DataURL')
-      if (res) {
+    await this.fileSelector_.selectFile('image/*', 'DataURL', async (res) => {
+      if (res && res.data) {
         const imgData = await loadImageData(res.data)
         await this.loadImageData_(imgData)
       }
-    } else {
-      this.iptFile_.click()
-    }
+    })
   }
 
   getPreviewImage_(ppw, pph, dx, dy, sourceData) {
