@@ -238,9 +238,12 @@ export class TerminalReplayer {
 
   async printLine_(/**@type Context */ ctx) {
     while (ctx.currentLine.length) {
+      if (this.cancleToken_.cancled) {
+        return
+      }
       if (ctx.currentLine.startsWith(this.escapePrefix_)) {
         ctx.currentLine = ctx.currentLine.slice(this.escapePrefix_.length)
-        await this.escape_(ctx) 
+        await this.escape_(ctx)
         continue
       }
       const c = ctx.currentLine[0]
@@ -257,16 +260,20 @@ export class TerminalReplayer {
     }
   }
 
-  async replay(data, option) {
+  async replay(data, option, /**@type { {cancled : boolean} } */ cancleToken) {
     const { inputCharDelay = 100, outputCharDelay = 5 } = option || {}
     this.inputCharDelay_ = inputCharDelay
     this.outputCharDelay_ = outputCharDelay
+    this.cancleToken_ = cancleToken
     const ctx = new Context()
     ctx.lines = data
     this.screen_.innerHTML = ''
     this.printCaret_()
     this.rows_ = [[]]
     for (const line of ctx.lines) {
+      if (this.cancleToken_.cancled) {
+        return
+      }
       ctx.currentLine = line
       if (line.delay) {
         await sleep(line.delay)

@@ -45,7 +45,7 @@ export class HtmlViewerComponent
   set play(value) {
     this._play = value;
     if (value) {
-      this.startWatch();
+      this.tryStartWatch();
     } else {
       this.stopWatch();
     }
@@ -61,6 +61,9 @@ export class HtmlViewerComponent
     this._pause = value;
     if (!value) {
       this.setCurrent();
+      this.postMessageToClient("resume");
+    } else {
+      this.postMessageToClient("pause");
     }
   }
 
@@ -101,6 +104,26 @@ export class HtmlViewerComponent
   private htmlAppServiceSubScription: Subscription;
 
   private appId: string;
+
+  private clientWindow: Window;
+
+  private postMessageToClient(msg: "start" | "pause" | "resume" | "stop") {
+    if (!this.clientWindow || !this.mWatchContext) {
+      return;
+    }
+    const {
+      token,
+      taskTypes: { hostMessage },
+    } = this.mWatchContext;
+    this.clientWindow.postMessage(
+      {
+        token,
+        taskId: hostMessage,
+        taskResult: msg,
+      },
+      "*"
+    );
+  }
 
   setCurrent() {
     this.htmlAppService.setCurrentApp(this.appId);
@@ -215,11 +238,11 @@ export class HtmlViewerComponent
     }
   }
 
-  startWatch() {
-    this.stopWatch();
+  tryStartWatch() {
     if (!this.canPlay || !this.play) {
       return;
     }
+    this.initWatch();
     const ctx = Object.assign(
       {
         lastHeartBeatTime: Date.now(),
@@ -243,9 +266,10 @@ export class HtmlViewerComponent
     }
   }
 
-  getWatchedContent(content) {
+  initWatch() {
     if (!this.mWatchScript) {
       const taskTypes = {
+        hostMessage: Math.random().toString().slice(2, 34),
         heartBeat: Math.random().toString().slice(2, 34),
         sessionStorage_getItem: Math.random().toString().slice(2, 34),
         sessionStorage_setItem: Math.random().toString().slice(2, 34),
@@ -262,6 +286,12 @@ export class HtmlViewerComponent
           return
         }
         e.stopPropagation()
+        if(data.taskId === "${taskTypes.hostMessage}"){
+          if(window.app && window.app[data.taskResult] && window.app[data.taskResult] instanceof Function){
+            window.app[data.taskResult]()
+          }
+          return
+        }
         const resolve = data.taskId && tasks[data.taskId]
         if(resolve){
           resolve(data.taskResult)
@@ -294,14 +324,19 @@ export class HtmlViewerComponent
         setItem : (key, value) => postMessageAsync("${taskTypes.localStorage_setItem}", [key, value])
       }
       sleep = (timeout)=>new Promise(resolve=> setTimeout(resolve, timeout))
+      await postMessageAsync("${taskTypes.heartBeat}")
       while(${this.allowWatch}){
-        await postMessageAsync("${taskTypes.heartBeat}")
         await sleep(${this.mBitTime})
+        await postMessageAsync("${taskTypes.heartBeat}")
       }
     })(window)
   </script>`;
       this.mWatchContext = { token, taskTypes };
     }
+  }
+
+  getWatchedContent(content) {
+    this.initWatch();
     return this.canPlay ? this.mWatchScript + content : content;
   }
 
@@ -328,16 +363,21 @@ export class HtmlViewerComponent
           },
           "*"
         );
-      if (!this.play || this.pause) {
+      if (!this.play) {
         reply(null);
+        return;
+      }
+      if (ev.data.taskType === taskTypes.heartBeat) {
+        ctx.lastHeartBeatTime = Date.now();
+        this.clientWindow = w;
+        reply(null);
+        return;
+      }
+      if (this.pause) {
         return;
       }
       let res;
       switch (ev.data.taskType) {
-        case taskTypes.heartBeat:
-          ctx.lastHeartBeatTime = Date.now();
-          reply(null);
-          return;
         case taskTypes.sessionStorage_getItem:
           res =
             this.id &&
@@ -434,7 +474,7 @@ export class HtmlViewerComponent
       this.getDataUrl(noScriptContent)
     );
     this.mdSource = "```html\n" + this.content + "\n```";
-    this.startWatch();
+    this.tryStartWatch();
   }
 
   getPythonServiceHost = async (): Promise<HTMLIFrameElement> => {

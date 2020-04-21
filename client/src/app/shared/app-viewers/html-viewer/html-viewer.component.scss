@@ -19,19 +19,20 @@
 
         & > * {
           position: absolute;
-          transform: translate(-50%, -50%);
-          top: 48%;
+          transform: translate(-50%, -75%);
+          top: 50%;
           left: 50%;
           height: auto;
           width: auto;
           color: white;
           background: #0002;
-          border-radius: 1em;
+          border-radius: 0.3em;
           border: 1px solid #fff2;
-          font-size: 2rem;
-          padding: 0.25em;
+          font-size: 1.8rem;
+          padding: 0 0.3em;
+          backdrop-filter: blur(3px);
           mix-blend-mode: luminosity;
-          /* box-shadow: inset 0px 0px 10px 2px #fffc, 0px 0px 1px 1px #fffc; */
+          box-shadow: 0.5px 0.5px 1px #0008;
         }
       }
     }

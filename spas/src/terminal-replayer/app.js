@@ -12,26 +12,36 @@ class App {
     this.root.appendChild(this.replayer_.view)
     this.root.appendChild(this.replay_)
     this.root.appendChild(style)
-    this.replay_.onclick = () => !this.isReplay && this.play()
+    this.replay_.onclick = () => !this.isReplay && this.resume()
     this.testData_ = /**@imports txt */ './app-data.txt'
   }
 
   async start(data) {
     this.highlightedData_ = [highlight(data || this.testData_)]
     const option = { inputCharDelay: 1, outputCharDelay: 0 }
-    await this.play(option)
+    await this.resume(option)
   }
 
-  async play(option) {
-    if (this.isReplay) {
+  async pause() {
+    if (this.cancleToken_) {
+      this.this.cancleToken_.cancled = true
+    }
+  }
+
+  async resume(option) {
+    if (this.cancleToken_) {
       return
     }
-    this.isReplay = true
+    this.cancleToken_ = { cancled: false }
     this.replay_.classList.add('playing')
     this.replay_.innerText = 'PLAY...'
-    await this.replayer_.replay(this.highlightedData_, option)
+    await this.replayer_.replay(
+      this.highlightedData_,
+      option,
+      this.cancleToken_
+    )
     this.replay_.classList.remove('playing')
     this.replay_.innerText = 'REPLAY'
-    this.isReplay = false
+    this.cancleToken_ = null
   }
 }

@@ -12,5 +12,5 @@ window.onload = async () => {
     current.__proto__ = base
   }
   window.app = app
-  await app.launch(window.document.getElementById('app'), window.appData)
+  await app.init(window.document.getElementById('app'), window.appData)
 }
