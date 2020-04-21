@@ -242,6 +242,9 @@ export class HtmlViewerComponent
     if (!this.canPlay || !this.play) {
       return;
     }
+    if (this.mCurrentIframeMessageListener) {
+      return;
+    }
     this.initWatch();
     const ctx = Object.assign(
       {
@@ -400,6 +403,7 @@ export class HtmlViewerComponent
           reply(res);
           return;
         case taskTypes.localStorage_openFile:
+          console.log("openfile");
           res = await this.htmlAppService.openFileForApp(
             this.id,
             ev.data.taskData[0],
