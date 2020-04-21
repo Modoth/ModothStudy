@@ -213,11 +213,10 @@ class TextImporter {
       .map((a) => ImporterUtils.getModuleInfos(content, a.reg, a.convert))
       .reduce((r, i) => r.concat(i), [])
       .sort((a, b) => a.startIdx - b.startIdx)
-
-    moduleInfos.forEach((i) => {
+    for (let i of moduleInfos) {
       i.filepath = path.resolve(filepath, '..', i.filename)
-      context.toImport(i.filepath, filepath)
-    })
+      i.filepath = await context.toImport(i.filepath, filepath)
+    }
     return {
       lazyGetResult: async (ctx) => {
         let startIdx = 0
@@ -272,7 +271,7 @@ class BufferImporter {
 }
 
 class ImportContext {
-  constructor(workdir) {
+  constructor(workdir, { replceSurfix = '' }) {
     /**@type string[] */
     this.modules = []
     /**@type string[] */
@@ -282,9 +281,22 @@ class ImportContext {
     this.addedModules = new Set()
     this.workdir = workdir
     this.dependentedBys = {}
+    this.replaceFile_ = replceSurfix
+      ? async (filepath) => {
+          const replaceFile = path.join(
+            path.dirname(filepath),
+            replceSurfix + path.basename(filepath)
+          )
+          if (await FileUtils.exists(replaceFile)) {
+            return replaceFile
+          }
+          return filepath
+        }
+      : (filepath) => filepath
   }
 
-  toImport(filename, dependentedBy) {
+  async toImport(filename, dependentedBy) {
+    filename = await this.replaceFile_(filename)
     this.dependentedBys[filename] =
       this.dependentedBys[filename] || new Set([filename])
     if (dependentedBy) {
@@ -295,10 +307,11 @@ class ImportContext {
       }
     }
     if (this.addedModules.has(filename)) {
-      return
+      return filename
     }
     this.addedModules.add(filename)
     this.modules.push(filename)
+    return filename
   }
 
   async getResult(filename) {
@@ -347,7 +360,7 @@ class Packer {
     return outputTemplate.replace('[name]', meta.name)
   }
 
-  async packOnce(workdir, entries, outputTemplate) {
+  async packOnce(workdir, entries, outputTemplate, options) {
     const entryModules = []
     for (let name in entries) {
       entryModules.push({
@@ -359,12 +372,14 @@ class Packer {
       })
     }
     const results = {}
-    const context = new ImportContext(workdir)
+    const context = new ImportContext(workdir, options)
     const { modules } = context
-    entryModules.forEach((m) => {
-      context.toImport(m.path)
-      m.templatePath && context.toImport(m.templatePath, m.path)
-    })
+    for (const m of entryModules) {
+      m.path = await context.toImport(m.path)
+      if (m.templatePath) {
+        m.templatePath = await context.toImport(m.templatePath, m.path)
+      }
+    }
     while (modules.length > 0) {
       const m = modules.shift()
       const importer = this.getLoader(m)
@@ -390,11 +405,12 @@ class Packer {
     return false
   }
 
-  async pack(workdir, entries, outputTemplate, onchange = null) {
+  async pack(workdir, entries, outputTemplate, onchange = null, options = {}) {
     const { results, dependentedBys } = await this.packOnce(
       workdir,
       entries,
-      outputTemplate
+      outputTemplate,
+      options
     )
     const watchers = new Map()
     const contentChangedDeps = new Set()
@@ -872,7 +888,8 @@ const main = async () => {
           workdir,
           config.entries,
           config.output.filename,
-          watch && server.updateResult.bind(server)
+          watch && server.updateResult.bind(server),
+          { replceSurfix: '.local.' }
         )
       )
       return

@@ -13,7 +13,7 @@ class App {
     this.root.appendChild(this.replay_)
     this.root.appendChild(style)
     this.replay_.onclick = () => !this.isReplay && this.play()
-    this.testData_ = /**@imports txt */ './test-data.txt'
+    this.testData_ = /**@imports txt */ './app-data.txt'
   }
 
   async start(data) {
