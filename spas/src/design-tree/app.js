@@ -4,31 +4,31 @@ import { sleep } from '../commons/sleep.js'
 
 export class Basket {
   constructor(/**@type Tree*/ tree) {
-    this.mTree = tree
+    this.tree_ = tree
     /**@type Map<string, NodeSource> */
-    this.mIdentifyNodes = new Map()
+    this.identifyNodes_ = new Map()
     /**@type Map<string, function(Node):any> */
-    this.mProperGetters = new Map()
-    this.mPreProcessNodes(tree.root)
+    this.properGetters_ = new Map()
+    this.preProcessNodes_(tree.root)
     /**@type Node */
-    this.mCurrent
-    this.mModal = new Modal()
+    this.current_
+    this.modal_ = new Modal()
     /**@type Node */
-    this.mUpdatingNode
+    this.updatingNode_
   }
 
-  mProxyObject(obj, onDirect) {
+  proxyObject_(obj, onDirect) {
     const props = Object.keys(obj)
     for (const prop of props) {
       const value = obj[prop]
       if (typeof value === 'string' && ~value.indexOf('${')) {
         Object.defineProperty(obj, prop, {
           get: () => {
-            const getter = this.mNodePropGetter(value)
-            if (this.mUpdatingNode) {
-              return getter(this.mUpdatingNode)
+            const getter = this.nodePropGetter_(value)
+            if (this.updatingNode_) {
+              return getter(this.updatingNode_)
             }
-            throw 'Set mUpdatingNode before get value'
+            throw 'Set updatingNode_ before get value'
           },
         })
       } else {
@@ -37,21 +37,21 @@ export class Basket {
     }
   }
 
-  mPreProcessNodes(/**@type NodeSource */ node) {
-    node.id && this.mIdentifyNodes.set(node.id, node)
+  preProcessNodes_(/**@type NodeSource */ node) {
+    node.id && this.identifyNodes_.set(node.id, node)
     node.options &&
-      this.mProxyObject(node.options, (value, _) =>
-        this.mPreProcessNodes(value)
+      this.proxyObject_(node.options, (value, _) =>
+        this.preProcessNodes_(value)
       )
-    node.results && this.mProxyObject(node.results)
-    this.mProxyObject(node)
+    node.results && this.proxyObject_(node.results)
+    this.proxyObject_(node)
   }
 
   current() {
-    return this.mCurrent
+    return this.current_
   }
 
-  mSplit(str, reg, onMatch) {
+  split_(str, reg, onMatch) {
     const expSlices = []
     let curIdx = 0
     for (const { '0': expOuter, '1': exp, index } of str.matchAll(reg)) {
@@ -65,8 +65,8 @@ export class Basket {
     return expSlices
   }
 
-  mEvaluateExp(exp) {
-    const expSlices = this.mSplit(exp, /\$((-?\d+)|(\w+))/g, (m) => {
+  evaluateExp_(exp) {
+    const expSlices = this.split_(exp, /\$((-?\d+)|(\w+))/g, (m) => {
       const idx = parseInt(m)
       return {
         exec: (values, results) => {
@@ -91,30 +91,30 @@ export class Basket {
   }
 
   /**@returns {function(NodeSource):any} */
-  mNodePropGetter(/**@type string */ propValue) {
-    if (!this.mProperGetters.has(propValue)) {
+  nodePropGetter_(/**@type string */ propValue) {
+    if (!this.properGetters_.has(propValue)) {
       const ids = {}
       let idCount = 0
-      propValue = this.mSplit(propValue, /(\$\{#.+\})/g, (m) => {
+      propValue = this.split_(propValue, /(\$\{#.+\})/g, (m) => {
         const varName = `$id${idCount}`
         ids[varName] = m
         idCount++
         return varName
       }).join('')
 
-      const expSlices = this.mSplit(propValue, /\$\{(.*?)\}/g, (m) => {
+      const expSlices = this.split_(propValue, /\$\{(.*?)\}/g, (m) => {
         if (
           /^([-\$0-9~!$%^&*()_+=|:",<.>/?]|(Math\.[a-z0-9]*)|(\$(\w)+))+$/.test(
             m
           )
         ) {
-          return { exec: this.mEvaluateExp(m) }
+          return { exec: this.evaluateExp_(m) }
         } else {
           return `[ERROR(${m})]`
         }
       })
 
-      this.mProperGetters.set(propValue, (node) => {
+      this.properGetters_.set(propValue, (node) => {
         const values = [...node.selecteds.map((n) => n.value), node.value]
         const results = Object.create(
           node.selecteds[node.selecteds.length - 1].results
@@ -127,16 +127,16 @@ export class Basket {
         if (!idCount) {
           return expRes
         }
-        return this.mIdentifyNodes.get(expRes)
+        return this.identifyNodes_.get(expRes)
       })
     }
 
-    return this.mProperGetters.get(propValue)
+    return this.properGetters_.get(propValue)
   }
 
-  async mUpdateNode(/**@type Node */ node) {
-    const last = this.mUpdatingNode
-    this.mUpdatingNode = node
+  async updateNode_(/**@type Node */ node) {
+    const last = this.updatingNode_
+    this.updatingNode_ = node
     const { selecteds, source } = node
 
     //update value firstly
@@ -162,7 +162,7 @@ export class Basket {
     const sourceOptions = source.options
     const optNames = sourceOptions ? Object.keys(sourceOptions) : []
     if (!optNames.length) {
-      this.mUpdatingNode = last
+      this.updatingNode_ = last
       return node
     }
     const optSelecteds = [...selecteds, node]
@@ -177,31 +177,31 @@ export class Basket {
       }
       node.options.push(opt)
     }
-    this.mUpdatingNode = last
+    this.updatingNode_ = last
     return node
   }
 
   async select(/**@type Node */ node) {
-    if (!node && !this.mCurrent) {
+    if (!node && !this.current_) {
       const root = new Node()
       root.selecteds = []
-      root.source = this.mTree.root
-      this.mCurrent = await this.mUpdateNode(root)
+      root.source = this.tree_.root
+      this.current_ = await this.updateNode_(root)
       return
     }
-    if (!this.mCurrent) {
+    if (!this.current_) {
       throw 'Client Error'
     }
-    const optIdx = this.mCurrent.options
-      ? this.mCurrent.options.findIndex((b) => b == node)
+    const optIdx = this.current_.options
+      ? this.current_.options.findIndex((b) => b == node)
       : -1
     if (~optIdx) {
-      this.mCurrent = await this.mUpdateNode(node)
+      this.current_ = await this.updateNode_(node)
       return
     }
-    const selectedIdx = this.mCurrent.selecteds.findIndex((r) => r == node)
+    const selectedIdx = this.current_.selecteds.findIndex((r) => r == node)
     if (~selectedIdx) {
-      this.mCurrent = node
+      this.current_ = node
       return
     }
     throw 'Client Error'
@@ -210,13 +210,13 @@ export class Basket {
 
 export class App {
   constructor(window, appData) {
-    this.mWindow = window
-    this.mAppData = appData
-    this.mRootElement = document.getElementById('app')
-    this.mStyleTheme = document.getElementById('styleTheme')
-    let theme = this.mAppData.configs && this.mAppData.configs.theme
+    this.window_ = window
+    this.appData_ = appData
+    this.rootElement_ = document.getElementById('app')
+    this.styleTheme_ = document.getElementById('styleTheme')
+    let theme = this.appData_.configs && this.appData_.configs.theme
     if (theme) {
-      this.mStyleTheme.innerText = ` :root {
+      this.styleTheme_.innerText = ` :root {
         --background: ${theme.bg};
         --background-question:  ${theme.questionBg};
         --color-question:  ${theme.questionFg};
@@ -229,42 +229,42 @@ export class App {
       }`
     }
     /**@type Map<String, Map<Node, HTMLElement>> */
-    this.mElements = new Map()
+    this.elements_ = new Map()
     /**@type Map<HTMLElement, {node:Node, type:string}> */
-    this.mLastElements = new Map()
+    this.lastElements_ = new Map()
     /**@type Map<HTMLElement, {node:Node, type:string}> */
-    this.mCurrentElements = new Map()
+    this.currentElements_ = new Map()
   }
 
   async launch() {
-    const basket = new Basket(this.mAppData)
+    const basket = new Basket(this.appData_)
     let current
     while (true) {
       await basket.select(current)
-      current = await this.mSelect(basket.current())
+      current = await this.select_(basket.current())
     }
   }
 
-  async mClearUnusedElement() {
+  async clearUnusedElement_() {
     const removingTasks = []
-    for (const [e, { node, type }] of this.mLastElements) {
+    for (const [e, { node, type }] of this.lastElements_) {
       e.classList.add('removing')
-      this.mElements.get(type).delete(node)
+      this.elements_.get(type).delete(node)
       removingTasks.push(
         new Promise((resolve) => {
           setTimeout(() => {
-            this.mRootElement.removeChild(e)
+            this.rootElement_.removeChild(e)
             resolve()
           }, 500)
         })
       )
     }
-    this.mLastElements = this.mCurrentElements
-    this.mCurrentElements = new Map()
+    this.lastElements_ = this.currentElements_
+    this.currentElements_ = new Map()
     await Promise.all(removingTasks)
   }
 
-  mInsertElement(
+  insertElement_(
     node,
     /**@type string */ propType,
     value,
@@ -272,10 +272,10 @@ export class App {
     onclick = null,
     valueType = null
   ) {
-    if (!this.mElements.has(propType)) {
-      this.mElements.set(propType, new Map())
+    if (!this.elements_.has(propType)) {
+      this.elements_.set(propType, new Map())
     }
-    const elements = this.mElements.get(propType)
+    const elements = this.elements_.get(propType)
     if (!elements.has(node)) {
       let e
       switch (valueType) {
@@ -294,13 +294,13 @@ export class App {
       }
       e.classList.add(propType)
       elements.set(node, e)
-      this.mRootElement.appendChild(e)
+      this.rootElement_.appendChild(e)
     }
     const e = elements.get(node)
-    if (this.mLastElements.has(e)) {
-      this.mLastElements.delete(e)
+    if (this.lastElements_.has(e)) {
+      this.lastElements_.delete(e)
     }
-    this.mCurrentElements.set(e, { node, type: propType })
+    this.currentElements_.set(e, { node, type: propType })
     switch (valueType) {
       case 'code':
         e.firstElementChild.innerText = value
@@ -316,7 +316,7 @@ export class App {
     return e
   }
 
-  async mSelect(/**@type Node */ node) {
+  async select_(/**@type Node */ node) {
     return new Promise((resolve) => {
       let uiTask
       const tryResolve = (res) => {
@@ -329,7 +329,7 @@ export class App {
         const optionNode = node.selecteds[i] || node
         questionNode &&
           questionNode.question &&
-          this.mInsertElement(
+          this.insertElement_(
             questionNode,
             'question',
             questionNode.question,
@@ -337,7 +337,7 @@ export class App {
             () => tryResolve(questionNode)
           )
         optionNode.name &&
-          this.mInsertElement(
+          this.insertElement_(
             optionNode,
             'option',
             optionNode.name,
@@ -350,9 +350,9 @@ export class App {
       if (hasOptions) {
         centerEle =
           node.question &&
-          this.mInsertElement(node, 'question', node.question, 'current')
+          this.insertElement_(node, 'question', node.question, 'current')
       } else {
-        this.mInsertElement(
+        this.insertElement_(
           node,
           'value',
           node.value || '',
@@ -374,13 +374,13 @@ export class App {
 
       hasOptions &&
         options.forEach((b) => {
-          this.mInsertElement(b, 'option', b.name, 'current', () =>
+          this.insertElement_(b, 'option', b.name, 'current', () =>
             tryResolve(b)
           )
         })
-      uiTask = this.mClearUnusedElement()
+      uiTask = this.clearUnusedElement_()
       if (centerEle) {
-        this.mRootElement.scrollTop = centerEle.offsetTop - 6
+        this.rootElement_.scrollTop = centerEle.offsetTop - 6
       }
       uiTask.then(() => {
         uiTask = null

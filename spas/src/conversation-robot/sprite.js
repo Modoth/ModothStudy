@@ -14,7 +14,7 @@ import {
  */
 
 export class Sprite {
-    mNormalizeConfig( /**@type SpriteConfig */ config) {
+    normalizeConfig_( /**@type SpriteConfig */ config) {
         if (!config) {
             throw new Error('config can not be null');
         }
@@ -29,7 +29,7 @@ export class Sprite {
     }
 
     async load( /**@type SpriteConfig */ config) {
-        this.mNormalizeConfig(config);
+        this.normalizeConfig_(config);
         const imagDataProvider = await getImageDataProvider(config.url);
         const pWidth = imagDataProvider.width / config.width;
         const pHeight = imagDataProvider.height / config.height;

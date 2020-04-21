@@ -360,8 +360,8 @@
         if (toPiece) {
           throw new Error();
         }
-        let fromPiece = this.pieces[from[0]][from[1]];
-        if (fromPiece !== player) {
+        let fropiece_ = this.pieces[from[0]][from[1]];
+        if (fropiece_ !== player) {
           throw new Error();
         }
         if (Math.abs(from[0] - to[0]) + Math.abs(from[1] - to[1]) !== 1) {

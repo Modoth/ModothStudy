@@ -4,62 +4,62 @@ import { copy } from '../commons/copy.js'
 
 export class App {
   constructor(/**@type Window */ window) {
-    this.mWindow = window
-    this.mDocument = this.mWindow.document
+    this.window_ = window
+    this.document_ = this.window_.document
     /**@type HTMLInputElement */
-    this.mTxbFilter = this.mWindow.document.getElementById('txbFilter')
-    this.mTable = this.mWindow.document.getElementById('table')
-    this.mStyleFont = this.mWindow.document.getElementById('styleFont')
-    this.mTxbFilter.addEventListener('input', () => this.update())
-    this.mBtnExport = this.mWindow.document.getElementById('btnExport')
+    this.txbFilter_ = this.window_.document.getElementById('txbFilter')
+    this.table_ = this.window_.document.getElementById('table')
+    this.styleFont_ = this.window_.document.getElementById('styleFont')
+    this.txbFilter_.addEventListener('input', () => this.update())
+    this.btnExport_ = this.window_.document.getElementById('btnExport')
     this.modal = new Modal()
-    this.mData = new Config().appData
-    this.mCmdPrefix = '> '
-    this.mCmdObj = {
+    this.data_ = new Config().appData
+    this.cmdPrefix_ = '> '
+    this.cmdObj_ = {
       new: {
-        name: this.mCmdPrefix + 'new',
+        name: this.cmdPrefix_ + 'new',
         exec: async () => await this.generate(),
       },
       naming: {
-        name: this.mCmdPrefix + 'naming',
+        name: this.cmdPrefix_ + 'naming',
         needClick: true,
         exec: async (idx) => {
-          let newData = this.cloneAppData(this.mData)
+          let newData = this.cloneAppData(this.data_)
           await this.editNamesProp(newData, idx)
           return this.promptReload(newData)
         },
       },
       style: {
-        name: this.mCmdPrefix + 'style',
+        name: this.cmdPrefix_ + 'style',
         exec: async () => {
-          let style = await this.modal.prompt('样式:', this.mData.style)
+          let style = await this.modal.prompt('样式:', this.data_.style)
           if (style === undefined || style === null) {
             return false
           }
           style = style.trim()
-          let newData = this.cloneAppData(this.mData)
+          let newData = this.cloneAppData(this.data_)
           newData.style = style || undefined
           return await this.promptReload(newData)
         },
       },
       value: {
-        name: this.mCmdPrefix + 'value',
+        name: this.cmdPrefix_ + 'value',
         exec: async () => {
           let valueName = await this.modal.prompt(
             '值属性:',
-            this.mData.valueName
+            this.data_.valueName
           )
           if (valueName === undefined || valueName === null) {
             return false
           }
           valueName = valueName.trim()
-          let newData = this.cloneAppData(this.mData)
+          let newData = this.cloneAppData(this.data_)
           newData.valueName = valueName || undefined
           return await this.promptReload(newData)
         },
       },
       font: {
-        name: this.mCmdPrefix + 'font',
+        name: this.cmdPrefix_ + 'font',
         exec: async () => {
           let fontUrl = await this.modal.prompt('字体URL:')
           debugger
@@ -78,29 +78,29 @@ export class App {
           } else {
             font = undefined
           }
-          let newData = this.cloneAppData(this.mData)
+          let newData = this.cloneAppData(this.data_)
           newData.font = font
           return await this.promptReload(newData)
         },
       },
       exportData: {
-        name: this.mCmdPrefix + 'export',
+        name: this.cmdPrefix_ + 'export',
         exec: async () => {
-          await this.promptReload(this.mData)
+          await this.promptReload(this.data_)
           return false
         },
       },
       styling: {
-        name: this.mCmdPrefix + 'styling',
+        name: this.cmdPrefix_ + 'styling',
         needClick: true,
         exec: async (idx) => {
-          let newData = this.cloneAppData(this.mData)
+          let newData = this.cloneAppData(this.data_)
           await this.editStyleProp(newData, idx)
           return this.promptReload(newData)
         },
       },
     }
-    this.mCmds = Object.values(this.mCmdObj)
+    this.cmds_ = Object.values(this.cmdObj_)
   }
 
   async generate() {
@@ -208,7 +208,7 @@ export class App {
   async promptReload(data) {
     if (
       (await this.modal.prompt('加载？', JSON.stringify(data))) &&
-      data != this.mData
+      data != this.data_
     ) {
       await this.load(data)
       return true
@@ -225,24 +225,24 @@ export class App {
   }
 
   async update() {
-    let filter = this.mTxbFilter.value || ''
-    let cmd = this.mCmds.find((c) => c.name === filter)
+    let filter = this.txbFilter_.value || ''
+    let cmd = this.cmds_.find((c) => c.name === filter)
     if (cmd) {
       if (cmd.needClick) {
         filter = ''
       } else {
-        this.mTxbFilter.value = ''
-        this.mFilter = undefined
+        this.txbFilter_.value = ''
+        this.filter_ = undefined
         if (await cmd.exec()) {
           return
         }
         filter = ''
       }
     }
-    if (this.mFilter === filter) {
+    if (this.filter_ === filter) {
       return
     }
-    this.mFilter = filter
+    this.filter_ = filter
     if (this.updateTask) {
       await this.updateTask
       this.updateTask = null
@@ -261,25 +261,25 @@ export class App {
   }
 
   async updateInternal(filter) {
-    this.mTable.innerHTML = ''
+    this.table_.innerHTML = ''
     let taskCount = 100
     let taskDelay = 0
     let current = 0
-    while (current < this.mData.items.length) {
+    while (current < this.data_.items.length) {
       await this.sleep(taskDelay)
-      if (this.mFilter !== filter) {
+      if (this.filter_ !== filter) {
         return
       }
       let next = current + taskCount
       let items = filter
-        ? this.mData.items
+        ? this.data_.items
             .slice(current, next)
             .filter(
               (p) =>
                 this.like(p.key, filter) ||
                 (p.names && p.names.some((v) => this.like(v, filter)))
             )
-        : this.mData.items.slice(current, next)
+        : this.data_.items.slice(current, next)
       current = next
       for (let item of items) {
         let div = document.createElement('div')
@@ -288,15 +288,15 @@ export class App {
           textSpan.style = item.style
           textSpan.classList.add('trans-text')
         }
-        const useValueName = this.mData.valueName && item[this.mData.valueName]
+        const useValueName = this.data_.valueName && item[this.data_.valueName]
         textSpan.innerText = useValueName
-          ? item[this.mData.valueName]
+          ? item[this.data_.valueName]
           : item.key
         textSpan.onclick = async () => {
-          let filter = this.mTxbFilter.value || ''
-          let cmd = this.mCmds.find((c) => c.name === filter)
+          let filter = this.txbFilter_.value || ''
+          let cmd = this.cmds_.find((c) => c.name === filter)
           if (cmd && cmd.needClick) {
-            let idx = this.mData.items.indexOf(item)
+            let idx = this.data_.items.indexOf(item)
             if (idx >= 0) {
               await cmd.exec(idx)
             }
@@ -305,19 +305,19 @@ export class App {
           if (copy(textSpan.innerText)) {
             this.modal.toast(
               `已复制:${item.key}` +
-                (useValueName ? `的${this.mData.valueName}` : '')
+                (useValueName ? `的${this.data_.valueName}` : '')
             )
           }
         }
         div.appendChild(textSpan)
-        this.mTable.appendChild(div)
+        this.table_.appendChild(div)
       }
     }
   }
 
   async load(data) {
-    this.mData = data
-    this.mTxbFilter.value = ''
+    this.data_ = data
+    this.txbFilter_.value = ''
     let style =
       data.font && data.font.url
         ? `@font-face {
@@ -329,16 +329,16 @@ export class App {
         `
         : ''
     style += data.style || ''
-    this.mStyleFont.innerText = style
-    this.mFilter = undefined
+    this.styleFont_.innerText = style
+    this.filter_ = undefined
     await this.update()
   }
 
   async start() {
     let data =
-      this.mWindow.appData && this.mWindow.appData.items
-        ? this.mWindow.appData
-        : this.mData
+      this.window_.appData && this.window_.appData.items
+        ? this.window_.appData
+        : this.data_
     await this.load(data)
   }
 }

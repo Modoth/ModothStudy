@@ -636,7 +636,7 @@ class Server {
     Object.assign(this.results, results)
     for (const file in results) {
       /**@type Socket */
-      const socket = this.mWatchedSockets.get(file)
+      const socket = this.watchedSockets_.get(file)
       if (socket) {
         socket.write(this.encodeWsData('update'))
       }
@@ -737,10 +737,10 @@ class Server {
       const { opcode, payload } = this.decodeWsData(data)
       if (opcode === 0x8) {
         console.log('ws close by client')
-        const file = this.mWatchedFiles.get(socket)
+        const file = this.watchedFiles_.get(socket)
         if (file) {
-          this.mWatchedFiles.delete(socket)
-          this.mWatchedSockets.delete(file)
+          this.watchedFiles_.delete(socket)
+          this.watchedSockets_.delete(file)
         }
         res.end()
       }
@@ -760,8 +760,8 @@ class Server {
       switch (cmd) {
         case 'watch':
           console.log(`watch ${file}`)
-          this.mWatchedFiles.set(socket, file)
-          this.mWatchedSockets.set(file, socket)
+          this.watchedFiles_.set(socket, file)
+          this.watchedSockets_.set(file, socket)
           socket.write(this.encodeWsData(`watch ${file}`))
           return
         default:
@@ -790,8 +790,8 @@ Connection: Upgrade
     const hostname = 'localhost'
     this.results = results
     this.entries = entries
-    this.mWatchedFiles = new Map()
-    this.mWatchedSockets = new Map()
+    this.watchedFiles_ = new Map()
+    this.watchedSockets_ = new Map()
     this.getInjectScript = (name) => `
 <script>
   const ws = new WebSocket('ws://${hostname}:${port}')

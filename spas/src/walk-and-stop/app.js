@@ -1,15 +1,15 @@
 import { Modal } from '../modal/index.js'
 import { Game, Camera, Gbject, Rigid, Body, Session, Walker, Controller, ColorBodyProvider, MapBodyProvider, TextBodyProvider, ColorTranslator, GameContext, ImageLoader, ImageBodyProvider, AnimationController, Vector2, sleep } from '../game/game.js'
-import { MapGenerator } from './map_generator.js';
+import { MapGenerator } from './map-generator.js';
 export class App {
     constructor(/**@type HTMLElement */ root, appData) {
-        this.mRoot = root;
-        this.mAppData = appData;
-        this.mModal = new Modal();
-        this.mColorTranslator = new ColorTranslator();
+        this.root_ = root;
+        this.appData_ = appData;
+        this.modal_ = new Modal();
+        this.colorTranslator_ = new ColorTranslator();
     }
 
-    mGetBodyProvider(cache, type, size) {
+    getBodyProvider_(cache, type, size) {
         let provider;
         let imgData = cache.imgDatas.get(type);
         if (imgData) {
@@ -22,7 +22,7 @@ export class App {
         return new Body(provider);
     }
 
-    async mCalculate(props, rules, gamePauseToast) {
+    async calculate_(props, rules, gamePauseToast) {
         if (!rules) {
             return;
         }
@@ -34,21 +34,21 @@ export class App {
         }
     }
 
-    async mDoFight(objsProps, attacker, defender, gamePauseToast) {
+    async doFight_(objsProps, attacker, defender, gamePauseToast) {
         let attackerProps = objsProps.get(attacker);
         let defenderProps = objsProps.get(defender);
         if (attacker.attack) {
-            this.mCalculate(defenderProps, attacker.attack.other)
-            await this.mCalculate(attackerProps, attacker.attack.self, gamePauseToast)
+            this.calculate_(defenderProps, attacker.attack.other)
+            await this.calculate_(attackerProps, attacker.attack.self, gamePauseToast)
         }
         if (defender.attack) {
-            await this.mCalculate(attackerProps, defender.attack.other, gamePauseToast)
-            this.mCalculate(defenderProps, defender.attack.self)
+            await this.calculate_(attackerProps, defender.attack.other, gamePauseToast)
+            this.calculate_(defenderProps, defender.attack.self)
         }
     }
 
-    async mRunSession(appData, sessionData, cache) {
-        const game = new Game(this.mRoot, appData);
+    async runSession_(appData, sessionData, cache) {
+        const game = new Game(this.root_, appData);
         let sessionRet;
         const session = new Session();
         const mapHeight = sessionData.cells.length;
@@ -65,7 +65,7 @@ export class App {
             const type = appData.types[obj.type];
             let imgData = cache.imgDatas.get(type);
             let gbj = new Gbject('', obj.pos[1] * mapScale, obj.pos[0] * mapScale,
-                this.mGetBodyProvider(cache, type, obj.scale),
+                this.getBodyProvider_(cache, type, obj.scale),
                 ...(type.rigid ? [new Rigid(obj.scale, obj.scale)] : []),
                 ...(imgData && type.animations ? [new AnimationController(type.animations)] : [])
             )
@@ -82,7 +82,7 @@ export class App {
             if (!obj) {
                 let imgData = cache.imgDatas.get(type);
                 obj = new Gbject('', 0, 0,
-                    this.mGetBodyProvider(cache, type, mapScale),
+                    this.getBodyProvider_(cache, type, mapScale),
                     new Rigid(mapScale, mapScale),
                     ...(imgData && type.animations ? [new AnimationController(type.animations)] : [])
                 );
@@ -113,11 +113,11 @@ export class App {
         const directionElement = document.getElementById('direction');
         const distanceElement = document.getElementById('distance');
         document.getElementById('map').onclick = async () => {
-            const newSession = this.mCloneSession(sessionData);
+            const newSession = this.cloneSession_(sessionData);
             const newAppData = Object.assign({}, appData);
             newAppData.sessions = [newSession];
             newSession.objects[newSession.start].pos = [...playerPos]
-            const editor = new MapEditor(this.mModal);
+            const editor = new MapEditor(this.modal_);
             if (await editor.edit(newAppData, newSession)) {
                 game.stop();
                 sessionRet = newSession;
@@ -156,7 +156,7 @@ export class App {
         refreshProps(objsProps.get(attacker));
         let gamePauseToast = async (msg, timeout, wait_timeout = 0) => {
             game.pause();
-            await this.mModal.toast(msg, timeout);
+            await this.modal_.toast(msg, timeout);
             wait_timeout && await sleep(wait_timeout);
             game.resume();
         }
@@ -195,7 +195,7 @@ export class App {
                                     if (defender.attackCant) {
                                         await gamePauseToast(getCant(defender, defender.attackCant));
                                     }
-                                    await this.mDoFight(objsProps, attacker, defender, gamePauseToast);
+                                    await this.doFight_(objsProps, attacker, defender, gamePauseToast);
                                     refreshProps(objsProps.get(attacker));
                                     if (defender.failedCondition
                                         && objsProps.get(defender)[defender.failedCondition.prop] <= (defender.failedCondition.threshold || 0)) {
@@ -231,7 +231,7 @@ export class App {
                             }
                         }
                         if (defender.cant) {
-                            this.mModal.toast(getCant(defender, defender.cant));
+                            this.modal_.toast(getCant(defender, defender.cant));
                             return;
                         }
                     }
@@ -280,18 +280,18 @@ export class App {
                         distanceElement.innerText = `终点: ${lastDist}`;
                     }
                     playerPos = [Math.floor(player.position.y / mapScale), Math.floor(player.position.x / mapScale)]
-                    let mLeft = Math.max(Math.floor(ctx.wxmin / mapScale) - 1, 0);
-                    let mRight = Math.min(Math.ceil(ctx.wxmax / mapScale) + 1, mapWidth - 1);
-                    let mTop = Math.max(Math.floor(ctx.wymin / mapScale) - 1, 0);
-                    let mBottom = Math.min(Math.ceil(ctx.wymax / mapScale) + 1, mapHeight - 1);
-                    if (lastMapRegion.mLeft == mLeft && lastMapRegion.mRight == mRight
-                        && lastMapRegion.mTop == mTop && lastMapRegion.mBottom == mBottom) {
+                    let left_ = Math.max(Math.floor(ctx.wxmin / mapScale) - 1, 0);
+                    let right_ = Math.min(Math.ceil(ctx.wxmax / mapScale) + 1, mapWidth - 1);
+                    let top_ = Math.max(Math.floor(ctx.wymin / mapScale) - 1, 0);
+                    let bottom_ = Math.min(Math.ceil(ctx.wymax / mapScale) + 1, mapHeight - 1);
+                    if (lastMapRegion.left_ == left_ && lastMapRegion.right_ == right_
+                        && lastMapRegion.top_ == top_ && lastMapRegion.bottom_ == bottom_) {
                         return;
                     }
-                    lastMapRegion = { mLeft, mRight, mTop, mBottom }
+                    lastMapRegion = { left_, right_, top_, bottom_ }
                     let nextWallVisiableTable = new Map();
-                    for (let j = mTop; j <= mBottom; j++) {
-                        for (let i = mLeft; i <= mRight; i++) {
+                    for (let j = top_; j <= bottom_; j++) {
+                        for (let i = left_; i <= right_; i++) {
                             let idx = j * mapWidth + i;
                             if (wallVisiableTable.has(idx)) {
                                 nextWallVisiableTable.set(idx, wallVisiableTable.get(idx));
@@ -321,30 +321,30 @@ export class App {
     }
 
     async run() {
-        if (this.mAppData.background) {
+        if (this.appData_.background) {
             document.getElementById("styleBackground").innerText = `
                 #app {
-                    background:${this.mAppData.background}
+                    background:${this.appData_.background}
                 }`;
         }
         const cache = { rgbaColors: new Map(), imgDatas: new Map() };
         let imgLoader;
         let imgDatas = new Map();
-        if (this.mAppData.imgs && this.mAppData.imgs.length) {
+        if (this.appData_.imgs && this.appData_.imgs.length) {
             imgLoader = imgLoader || new ImageLoader();
-            for (let i = 0; i < this.mAppData.imgs.length; i++) {
-                imgDatas.set(i, await imgLoader.load(this.mAppData.imgs[i]))
+            for (let i = 0; i < this.appData_.imgs.length; i++) {
+                imgDatas.set(i, await imgLoader.load(this.appData_.imgs[i]))
             }
         }
-        for (const t of this.mAppData.types) {
+        for (const t of this.appData_.types) {
             if (t.color) {
-                cache.rgbaColors.set(t, this.mColorTranslator.translate(t.color))
+                cache.rgbaColors.set(t, this.colorTranslator_.translate(t.color))
             }
             if (t.img) {
                 cache.imgDatas.set(t, imgDatas.get(t.img.index));
             }
         };
-        for (let session of this.mAppData.sessions || []) {
+        for (let session of this.appData_.sessions || []) {
             session.scale = session.scale >>> 0 || 1;
             session.objects.forEach(obj => obj.scale = obj.scale >>> 0 || 1)
             for (let i = 0; i < session.cells.length; i++) {
@@ -353,18 +353,18 @@ export class App {
         }
         let sessionIdx = 0;
         let getSessionData = async () => {
-            if (this.mAppData.sessions) {
-                if (sessionIdx < this.mAppData.sessions.length) {
-                    return this.mAppData.sessions[sessionIdx];
+            if (this.appData_.sessions) {
+                if (sessionIdx < this.appData_.sessions.length) {
+                    return this.appData_.sessions[sessionIdx];
                 }
-                if (!this.mAppData.allowRandom) {
-                    while (await !this.mModal.confirm("重新开始?")) {
+                if (!this.appData_.allowRandom) {
+                    while (await !this.modal_.confirm("重新开始?")) {
                     }
                     sessionIdx = 0;
-                    return this.mAppData.sessions[sessionIdx];
+                    return this.appData_.sessions[sessionIdx];
                 }
             }
-            let templateSession = this.mAppData.sessions[0];
+            let templateSession = this.appData_.sessions[0];
             let mapGen = new MapGenerator();
             let mapData = mapGen.generate(100, 100);
             let startType, endType
@@ -372,7 +372,7 @@ export class App {
                 startType = templateSession.objects[templateSession.start].type
                 endType = templateSession.objects[templateSession.end].type
             } else {
-                let revTypes = [...this.mAppData.types].reverse();
+                let revTypes = [...this.appData_.types].reverse();
                 startType = revTypes.length - 1 - revTypes.findIndex(t => t.rigid);
                 endType = revTypes.length - 1 - revTypes.findIndex(t => !t.rigid);
             }
@@ -400,8 +400,8 @@ export class App {
         let toloadSession;
         while (true) {
             const sessionData = toloadSession || await getSessionData();
-            this.mModal.toast(`第 ${sessionIdx + 1} 关`);
-            const { sessionRet } = await this.mRunSession(this.mAppData, sessionData, cache);
+            this.modal_.toast(`第 ${sessionIdx + 1} 关`);
+            const { sessionRet } = await this.runSession_(this.appData_, sessionData, cache);
             toloadSession = sessionRet
             if (!sessionRet) {
                 sessionIdx++;
@@ -409,7 +409,7 @@ export class App {
         }
     }
 
-    mCloneSession(sessionData) {
+    cloneSession_(sessionData) {
         return Object.assign({}, sessionData, {
             cells: sessionData.cells.map(row => [...row]),
             objects: sessionData.objects.map(obj => ({
@@ -423,7 +423,7 @@ export class App {
 
 class MapEditor {
     constructor(/**@type Modal */ modal) {
-        this.mModal = modal;
+        this.modal_ = modal;
     }
 
     async edit(appData, sessionData) {
@@ -475,7 +475,7 @@ class MapEditor {
             name: '导出',
             onclick: async () => {
                 let strSession = Object.assign({}, sessionData, { cells: sessionData.cells.map(r => r.join("")) })
-                await this.mModal.prompt("请复制", JSON.stringify(Object.assign({}, appData, {
+                await this.modal_.prompt("请复制", JSON.stringify(Object.assign({}, appData, {
                     sessions: [strSession]
                 })));
             }
@@ -562,7 +562,7 @@ class MapEditor {
         }
         editorEle.appendChild(tableEle);
         editorEle.appendChild(btnGroup);
-        return await this.mModal.popup(editorEle, (close) => {
+        return await this.modal_.popup(editorEle, (close) => {
             closeModal = close;
         }, false);
     }

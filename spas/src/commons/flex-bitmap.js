@@ -6,57 +6,57 @@ export class FlexBitmap {
   constructor(width, height, bufferSize = 10) {
     assertPara(width >= 0, nameof({ width }))
     assertPara(height >= 0, nameof({ height }))
-    this.mBufferSize = parseInt(bufferSize)
-    assertPara(this.mBufferSize > 0, nameof({ bufferSize }))
+    this.bufferSize_ = parseInt(bufferSize)
+    assertPara(this.bufferSize_ > 0, nameof({ bufferSize }))
     /**@type [any]*/
-    this.mBuffers = []
-    this.mInterWidth = 0
-    this.mBufferPerRow = 0
+    this.buffers_ = []
+    this.interWidth_ = 0
+    this.bufferPerRow_ = 0
     this.width = 0
     this.height = 0
-    this.mGuaranteeSize(width - 1, height - 1)
+    this.guaranteeSize_(width - 1, height - 1)
   }
 
-  mGuaranteeSize(x, y) {
+  guaranteeSize_(x, y) {
     if (x < this.width && y < this.height) {
       return
     }
     if (x >= this.width) {
       this.width = x + 1
     }
-    if (this.width > this.mInterWidth) {
-      const bufferPerRow = Math.max(Math.ceil(this.width / this.mBufferSize), 1)
+    if (this.width > this.interWidth_) {
+      const bufferPerRow = Math.max(Math.ceil(this.width / this.bufferSize_), 1)
       const newBuffers = []
       for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.mBufferPerRow; i++) {
-          newBuffers.push(this.mBuffers[i + j * this.mBufferPerRow])
+        for (let i = 0; i < this.bufferPerRow_; i++) {
+          newBuffers.push(this.buffers_[i + j * this.bufferPerRow_])
         }
-        for (let i = this.mBufferPerRow; i < bufferPerRow; i++) {
-          newBuffers.push(new Uint32Array(this.mBufferSize))
+        for (let i = this.bufferPerRow_; i < bufferPerRow; i++) {
+          newBuffers.push(new Uint32Array(this.bufferSize_))
         }
       }
-      this.mBufferPerRow = bufferPerRow
-      this.mInterWidth = bufferPerRow * this.mBufferSize
-      this.mBuffers = newBuffers
+      this.bufferPerRow_ = bufferPerRow
+      this.interWidth_ = bufferPerRow * this.bufferSize_
+      this.buffers_ = newBuffers
     }
     if (y >= this.height) {
       const newHeight = y + 1
-      this.mBuffers.push(
+      this.buffers_.push(
         ...Array.from(
-          { length: (newHeight - this.height) * this.mBufferPerRow },
-          () => new Uint32Array(this.mBufferSize)
+          { length: (newHeight - this.height) * this.bufferPerRow_ },
+          () => new Uint32Array(this.bufferSize_)
         )
       )
       this.height = newHeight
     }
   }
 
-  mNonEmptyRow(scanInverse = false) {
+  nonEmptyRow_(scanInverse = false) {
     for (let j = 0; j < this.height; j++) {
       let fixJ = scanInverse ? this.height - 1 - j : j
-      for (let k = 0; k < this.mBufferPerRow; k++) {
-        const buffer = this.mBuffers[k + this.mBufferPerRow * fixJ]
-        for (let i = 0; i < this.mBufferSize; i++) {
+      for (let k = 0; k < this.bufferPerRow_; k++) {
+        const buffer = this.buffers_[k + this.bufferPerRow_ * fixJ]
+        for (let i = 0; i < this.bufferSize_; i++) {
           if (buffer[i] & 0xff) {
             return fixJ
           }
@@ -65,15 +65,15 @@ export class FlexBitmap {
     }
   }
 
-  mNonEmptyColumn(scanInverse = false) {
-    for (let k = 0; k < this.mBufferPerRow; k++) {
-      let fixK = scanInverse ? this.mBufferPerRow - 1 - k : k
-      for (let i = 0; i < this.mBufferSize; i++) {
-        let fixI = scanInverse ? this.mBufferSize - 1 - i : i
+  nonEmptyColumn_(scanInverse = false) {
+    for (let k = 0; k < this.bufferPerRow_; k++) {
+      let fixK = scanInverse ? this.bufferPerRow_ - 1 - k : k
+      for (let i = 0; i < this.bufferSize_; i++) {
+        let fixI = scanInverse ? this.bufferSize_ - 1 - i : i
         for (let j = 0; j < this.height; j++) {
-          const buffer = this.mBuffers[fixK + this.mBufferPerRow * j]
+          const buffer = this.buffers_[fixK + this.bufferPerRow_ * j]
           if (buffer[fixI] & 0xff) {
-            return fixK * this.mBufferSize + fixI
+            return fixK * this.bufferSize_ + fixI
           }
         }
       }
@@ -81,10 +81,10 @@ export class FlexBitmap {
   }
 
   getRegion() {
-    let top = this.mNonEmptyRow()
-    let bottom = this.mNonEmptyRow(true) + 1
-    let left = this.mNonEmptyColumn()
-    let right = this.mNonEmptyColumn(true) + 1
+    let top = this.nonEmptyRow_()
+    let bottom = this.nonEmptyRow_(true) + 1
+    let left = this.nonEmptyColumn_()
+    let right = this.nonEmptyColumn_(true) + 1
     return [top, right, bottom, left]
   }
 
@@ -92,24 +92,24 @@ export class FlexBitmap {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
       return undefined
     }
-    const [rowBufferIdx, offset] = remainDevide(x, this.mBufferSize)
-    return this.mBuffers[y * this.mBufferPerRow + rowBufferIdx][offset]
+    const [rowBufferIdx, offset] = remainDevide(x, this.bufferSize_)
+    return this.buffers_[y * this.bufferPerRow_ + rowBufferIdx][offset]
   }
 
   set(x, y, value) {
-    this.mGuaranteeSize(x, y)
-    const [rowBufferIdx, offset] = remainDevide(x, this.mBufferSize)
-    this.mBuffers[y * this.mBufferPerRow + rowBufferIdx][offset] = value
+    this.guaranteeSize_(x, y)
+    const [rowBufferIdx, offset] = remainDevide(x, this.bufferSize_)
+    this.buffers_[y * this.bufferPerRow_ + rowBufferIdx][offset] = value
   }
 
   toString() {
     const rows = []
     for (let j = 0; j < this.height; j++) {
       let row = []
-      for (let k = 0; k < this.mBufferPerRow; k++) {
-        const buffer = this.mBuffers[k + this.mBufferPerRow * j]
-        for (let i = 0; i < this.mBufferSize; i++) {
-          if (i + k * this.mBufferSize >= this.width) {
+      for (let k = 0; k < this.bufferPerRow_; k++) {
+        const buffer = this.buffers_[k + this.bufferPerRow_ * j]
+        for (let i = 0; i < this.bufferSize_; i++) {
+          if (i + k * this.bufferSize_ >= this.width) {
             row.push(''.padStart(8, 'x'))
           } else {
             row.push(buffer[i].toString('16').padStart(8, '0'))

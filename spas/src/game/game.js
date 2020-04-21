@@ -50,9 +50,9 @@ export class Component {
 export class AnimationController extends Component {
     constructor(animations) {
         super();
-        this.mAnimations = animations;
-        this.mAnimationStart;
-        this.animation = this.mAnimations[0];
+        this.animations_ = animations;
+        this.animationStart_;
+        this.animation = this.animations_[0];
         this.frame = 0;
         this.isPlaying = false;
     }
@@ -60,7 +60,7 @@ export class AnimationController extends Component {
         this.isPlaying = false;
     }
     play(name) {
-        let animation = this.mAnimations.find(a => a.name == name);
+        let animation = this.animations_.find(a => a.name == name);
         if (animation == this.animation) {
             this.isPlaying = true;
             return;
@@ -68,7 +68,7 @@ export class AnimationController extends Component {
         if (animation) {
             this.animation = animation;
             this.frame = 0;
-            this.mAnimationStart = undefined;
+            this.animationStart_ = undefined;
             this.isPlaying = true;
         } else {
             this.isPlaying = false;
@@ -78,13 +78,13 @@ export class AnimationController extends Component {
         if (!this.isPlaying || !this.animation) {
             return;
         }
-        if (!this.mAnimationStart) {
+        if (!this.animationStart_) {
             this.frame = 0;
-            this.mAnimationStart = ctx.current;
+            this.animationStart_ = ctx.current;
             return;
         }
         let animationLength = this.animation.frames.length;
-        this.frame = Math.floor(((ctx.current - this.mAnimationStart) / 1000 / (this.animation.time || 1))
+        this.frame = Math.floor(((ctx.current - this.animationStart_) / 1000 / (this.animation.time || 1))
             * animationLength) % animationLength;
     }
 }
@@ -106,7 +106,7 @@ export class Camera extends Component {
 
 export class ColorTranslator {
     constructor() {
-        this.mColorsDict = {
+        this.colorsDict_ = {
             "transparent": { r: 0, g: 0, b: 0, a: 0 },
             "yellow": { r: 128, g: 0, b: 36, a: 255 }
         };
@@ -114,14 +114,14 @@ export class ColorTranslator {
 
     translate( /**@type string */color) {
         if (!color) {
-            return this.mColorsDict.transparent;
+            return this.colorsDict_.transparent;
         }
         color = color.trim().toLowerCase()
-        if (this.mColorsDict[color]) {
-            return this.mColorsDict[color];
+        if (this.colorsDict_[color]) {
+            return this.colorsDict_[color];
         }
         if (!/^#[0-9a-f]+$/.test(color)) {
-            return this.mColorsDict.transparent;
+            return this.colorsDict_.transparent;
         }
         let colorLength = color.length > 4 ? 2 : 1;
         let scale = colorLength == 1 ? 0xF : 1;
@@ -133,8 +133,8 @@ export class ColorTranslator {
         let b = parseInt(color.slice(idx, idx + colorLength), 16) * scale || 0;
         idx += colorLength;
         let a = parseInt(color.slice(idx, idx + colorLength), 16) * scale || 255;
-        this.mColorsDict[color] = { r, g, b, a };
-        return this.mColorsDict[color];
+        this.colorsDict_[color] = { r, g, b, a };
+        return this.colorsDict_[color];
     }
 }
 
@@ -167,31 +167,31 @@ export class ImageBodyProvider {
     constructor(width, height, imgRegion,/**@type ImageData */ imageData, animations) {
         this.width = width;
         this.height = height;
-        this.mImageData = imageData;
-        this.mAnimations = animations;
-        this.mTheshod = 50;
-        this.mImgRegion = {
+        this.imageData_ = imageData;
+        this.animations_ = animations;
+        this.theshod_ = 50;
+        this.imgRegion_ = {
             left: imgRegion.left || 0,
             top: imgRegion.top || 0,
-            width: imgRegion.width || this.mImageData.width,
-            height: imgRegion.height || this.mImageData.height
+            width: imgRegion.width || this.imageData_.width,
+            height: imgRegion.height || this.imageData_.height
         };
-        this.mNextFrame;
+        this.nextFrame_;
     }
 
     bodyUpdated() {
-        if (!this.mAnimations) {
-            this.mNextFrame = null;
+        if (!this.animations_) {
+            this.nextFrame_ = null;
             return false;
         }
         const frame = this.getFrame();
-        this.mBodyUpdated = frame != this.mNextFrame;
-        this.mNextFrame = frame;
-        return this.mBodyUpdated;
+        this.bodyUpdated_ = frame != this.nextFrame_;
+        this.nextFrame_ = frame;
+        return this.bodyUpdated_;
     }
 
     getFrame() {
-        if (!this.mAnimations) {
+        if (!this.animations_) {
             return null;
         }
         const gbject = this.getGbject();
@@ -202,7 +202,7 @@ export class ImageBodyProvider {
         return controller.animation.frames[controller.frame];
     }
 
-    mGetImage(imgData) {
+    getImage_(imgData) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = imgData.width;
@@ -213,28 +213,28 @@ export class ImageBodyProvider {
         return img;
     }
 
-    async mGetFrameImage(frame, ppu) {
-        const key = frame || this.mImageData;
+    async getFrameImage_(frame, ppu) {
+        const key = frame || this.imageData_;
         if (ImageBodyProviderCache.ppu != ppu) {
             ImageBodyProviderCache.ppu = ppu;
             ImageBodyProviderCache.data = new Map();
         }
         if (!ImageBodyProviderCache.data.has(key)) {
-            let region = Object.assign({}, this.mImgRegion);
+            let region = Object.assign({}, this.imgRegion_);
             if (frame) {
                 region.top += frame[0] * region.height;
                 region.left += frame[1] * region.width;
             }
             let imgData = new ImageData(Math.floor(this.width * ppu), Math.floor(this.height * ppu));
             let bitmaps = imgData.data;
-            let toBitmaps = this.mImageData.data;
+            let toBitmaps = this.imageData_.data;
             let toHeight = Array.from({ length: imgData.height }, (_, j) => Math.floor(j * region.height / imgData.height) + region.top);
             let toWidth = Array.from({ length: imgData.width }, (_, i) => Math.floor(i * region.width / imgData.width) + region.left);
             for (let j = 0; j < imgData.height; j++) {
                 for (let i = 0; i < imgData.width; i++) {
                     let idx = (j * imgData.width + i) * 4;
-                    let toIdx = (toHeight[j] * this.mImageData.width + toWidth[i]) * 4;
-                    if (toBitmaps[toIdx + 3] < this.mTheshod) {
+                    let toIdx = (toHeight[j] * this.imageData_.width + toWidth[i]) * 4;
+                    if (toBitmaps[toIdx + 3] < this.theshod_) {
                         bitmaps[idx++] = 0;
                         bitmaps[idx++] = 0;
                         bitmaps[idx++] = 0;
@@ -246,13 +246,13 @@ export class ImageBodyProvider {
                     bitmaps[idx++] = toBitmaps[toIdx++];
                 }
             }
-            ImageBodyProviderCache.data.set(key, this.mGetImage(imgData))
+            ImageBodyProviderCache.data.set(key, this.getImage_(imgData))
         }
         return ImageBodyProviderCache.data.get(key);
     }
 
     async provide(_, { x, y, width, height }, { getDrawX, getDrawY }, addRendered, ppu) {
-        const img = await this.mGetFrameImage(this.mNextFrame, ppu);
+        const img = await this.getFrameImage_(this.nextFrame_, ppu);
         addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
             const startX = getDrawX(0);
             const startY = getDrawY(0);
@@ -267,15 +267,15 @@ export class ColorBodyProvider {
     constructor(width, height, { r, g, b, a }) {
         this.width = width;
         this.height = height;
-        this.mR = r;
-        this.mG = g;
-        this.mB = b;
-        this.mA = a;
-        this.mBodyUpdated = false;
+        this.r_ = r;
+        this.g_ = g;
+        this.b_ = b;
+        this.a_ = a;
+        this.bodyUpdated_ = false;
     }
 
     bodyUpdated() {
-        return this.mBodyUpdated;
+        return this.bodyUpdated_;
     }
     provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }) {
         let dx = getDrawX(x);
@@ -286,13 +286,13 @@ export class ColorBodyProvider {
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
                 let idx = ((j + dy) * imgData.width + i + dx) * 4;
-                bitmaps[idx++] = this.mR;
-                bitmaps[idx++] = this.mG;
-                bitmaps[idx++] = this.mB;
-                bitmaps[idx++] = this.mA;
+                bitmaps[idx++] = this.r_;
+                bitmaps[idx++] = this.g_;
+                bitmaps[idx++] = this.b_;
+                bitmaps[idx++] = this.a_;
             }
         }
-        this.mBodyUpdated = false;
+        this.bodyUpdated_ = false;
     }
 }
 
@@ -300,12 +300,12 @@ export class TextBodyProvider {
     constructor(width, height, text, style) {
         this.width = width;
         this.height = height;
-        this.mStyle = style;
-        this.mText = text;
-        this.mBodyUpdated = false;
+        this.style_ = style;
+        this.text_ = text;
+        this.bodyUpdated_ = false;
     }
     bodyUpdated() {
-        return this.mBodyUpdated;
+        return this.bodyUpdated_;
     }
     provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }, addRendered) {
         let dx = getDrawX(x);
@@ -313,13 +313,13 @@ export class TextBodyProvider {
         let imgWidth = getDrawX(x + width) - dx;
         let imgHeight = getDrawY(y + height) - dy;
         addRendered((/**@type CanvasRenderingContext2D*/ctx) => {
-            let fontCount = Math.floor(imgWidth * this.width / width / this.mText.length);
+            let fontCount = Math.floor(imgWidth * this.width / width / this.text_.length);
             ctx.font = `${fontCount}px serif`;
-            ctx.fillStyle = this.mStyle;
+            ctx.fillStyle = this.style_;
             ctx.textBaseline = "top"
-            ctx.fillText(this.mText, dx - x * imgWidth / width, dy - y * imgHeight / height);
+            ctx.fillText(this.text_, dx - x * imgWidth / width, dy - y * imgHeight / height);
         })
-        this.mBodyUpdated = false;
+        this.bodyUpdated_ = false;
     }
 }
 
@@ -327,14 +327,14 @@ export class MapBodyProvider {
     constructor(width, height, data, scale = 1) {
         this.dataWidth = width;
         this.dataHeight = height;
-        this.mData = data;
-        this.mScale = scale;
-        this.width = this.dataWidth * this.mScale;
-        this.height = this.dataHeight * this.mScale;
-        this.mBodyUpdated = false;
+        this.data_ = data;
+        this.scale_ = scale;
+        this.width = this.dataWidth * this.scale_;
+        this.height = this.dataHeight * this.scale_;
+        this.bodyUpdated_ = false;
     }
     bodyUpdated() {
-        return this.mBodyUpdated;
+        return this.bodyUpdated_;
     }
     provide(imgData, { x, y, width, height }, { getDrawX, getDrawY }, _, ppu) {
         let dx = getDrawX(x);
@@ -345,9 +345,9 @@ export class MapBodyProvider {
         for (let j = 0; j < imgHeight; j++) {
             for (let i = 0; i < imgWidth; i++) {
                 let idx = ((j + dy) * imgData.width + i + dx) * 4;
-                let mapI = Math.floor((x + i / ppu) / this.mScale);
-                let mapJ = Math.floor((y + j / ppu) / this.mScale);
-                let mapItem = this.mData[this.dataWidth * mapJ + mapI];
+                let mapI = Math.floor((x + i / ppu) / this.scale_);
+                let mapJ = Math.floor((y + j / ppu) / this.scale_);
+                let mapItem = this.data_[this.dataWidth * mapJ + mapI];
                 if (mapItem == null) {
                     continue;
                 }
@@ -357,7 +357,7 @@ export class MapBodyProvider {
                 bitmaps[idx++] = mapItem.a;
             }
         }
-        this.mBodyUpdated = false;
+        this.bodyUpdated_ = false;
     }
 }
 
@@ -383,38 +383,38 @@ export class Walker extends Component {
         super();
         this.speed = speed;
         /**@type Vector2[] */
-        this.mStepPoints = [];
-        this.mUseViewLimit = useViewLimit;
+        this.stepPoints_ = [];
+        this.useViewLimit_ = useViewLimit;
     }
 
     walkTo(/**@type Vector2 */ ...loc) {
-        if (!this.mTargets) {
-            this.mTargets = loc;
-            this.mStepPoints = [];
+        if (!this.targets_) {
+            this.targets_ = loc;
+            this.stepPoints_ = [];
         } else {
-            this.mNextTargets = loc;
+            this.nextTargets_ = loc;
         }
     }
 
-    mWalkStep(/**@type GameContext */ctx) {
+    walkStep_(/**@type GameContext */ctx) {
         const self = this.gbject;
         let s = this.speed * (ctx.current - ctx.last) / 1000;
         /**@type Vector2 */
         let pos = self.position;
-        let next = this.mStepPoints[0]
+        let next = this.stepPoints_[0]
         let dist = pos.distanceFrom(next);
         const opt = s / dist;
         if (opt > 1) {
             self.position = next;
             self.positionUpdated = true;
-            if (this.mNextTargets) {
-                this.mTargets = this.mNextTargets;
-                this.mNextTargets = null;
-                this.mStepPoints = [];
+            if (this.nextTargets_) {
+                this.targets_ = this.nextTargets_;
+                this.nextTargets_ = null;
+                this.stepPoints_ = [];
             } else {
-                this.mStepPoints.shift()
-                if (!this.mStepPoints.length) {
-                    this.mTargets = null;
+                this.stepPoints_.shift()
+                if (!this.stepPoints_.length) {
+                    this.targets_ = null;
                 }
             }
             return;
@@ -424,13 +424,13 @@ export class Walker extends Component {
         self.positionUpdated = true;
     }
 
-    mFindStepPoints(/**@type GameContext */ctx) {
+    findStepPoints_(/**@type GameContext */ctx) {
         if (!this.gbject[Rigid.name]) {
-            this.mStepPoints = [this.mTargets];
+            this.stepPoints_ = [this.targets_];
             return;
         }
         const { sIdx, sIdy, tIds, cWidth, cHeight, width, height, matrix }
-            = ctx.getAdjData(this.gbject, this.mTargets, this.mUseViewLimit);
+            = ctx.getAdjData(this.gbject, this.targets_, this.useViewLimit_);
         const allSet = [];
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
@@ -444,7 +444,7 @@ export class Walker extends Component {
         const closedSet = new Set();
         const traces = new Map();
         const scores = new Map();
-        scores.set(start, Math.max(...Array.from(goals.keys()).map(goal => this.mDistance(start, goal))));
+        scores.set(start, Math.max(...Array.from(goals.keys()).map(goal => this.distance_(start, goal))));
         let path;
         while (openSet.size) {
             let minScore = Number.MAX_VALUE;
@@ -458,7 +458,7 @@ export class Walker extends Component {
             }
             if (goals.has(current)) {
                 path = [];
-                this.mBuildPath(traces, current, path);
+                this.buildPath_(traces, current, path);
                 break;
             }
             if (!current) {
@@ -481,7 +481,7 @@ export class Walker extends Component {
                 if (next == undefined) {
                     debugger;
                 }
-                let yScore = scores.get(current) + this.mDistance(current, next);
+                let yScore = scores.get(current) + this.distance_(current, next);
                 if (!openSet.has(next) || yScore < scores.get(next)) {
                     traces.set(next, current);
                     scores.set(next, yScore);
@@ -490,7 +490,7 @@ export class Walker extends Component {
             }
         }
         if (!path || !path.length) {
-            this.mTargets = null;
+            this.targets_ = null;
         } else {
             // let str = '';
             // for (let j = 0; j < height; j++) {
@@ -501,21 +501,21 @@ export class Walker extends Component {
             // }
             // console.log(str, path);
             const pos = this.gbject.position;
-            this.mStepPoints = path.map(({ x, y }) =>
+            this.stepPoints_ = path.map(({ x, y }) =>
                 new Vector2((x - sIdx) * cWidth + pos.x, (y - sIdy) * cHeight + pos.y)
             );
         }
     }
 
-    mBuildPath(traces, current, path) {
+    buildPath_(traces, current, path) {
         if (traces.has(current)) {
             path.unshift(current);
-            this.mBuildPath(traces, traces.get(current), path);
+            this.buildPath_(traces, traces.get(current), path);
         }
     }
 
 
-    mDistance(p1, p2) {
+    distance_(p1, p2) {
         if (p2 == undefined) {
             debugger;
         }
@@ -523,12 +523,12 @@ export class Walker extends Component {
     }
 
     onframe(/**@type GameContext */ctx) {
-        if (this.mTargets && this.mStepPoints.length) {
-            this.mWalkStep(ctx);
+        if (this.targets_ && this.stepPoints_.length) {
+            this.walkStep_(ctx);
             return;
         }
-        if (this.mTargets && !this.mStepPoints.length) {
-            this.mFindStepPoints(ctx);
+        if (this.targets_ && !this.stepPoints_.length) {
+            this.findStepPoints_(ctx);
             return;
         }
     }
@@ -546,10 +546,10 @@ export class GameContext {
         this.last = 0;
         this.current = 0;
         /**@type Gbject[] */
-        this.mRigids = [];
+        this.rigids_ = [];
     }
 
-    mMathSide(value) {
+    mathSide_(value) {
         return value > 0 ? Math.ceil(value) : Math.floor(value);
     }
 
@@ -585,7 +585,7 @@ export class GameContext {
             return { tIdx, tIdy, fixX, fixY }
         })
         const rigidMatrix = Array.from({ length: width * height }, () => 0);
-        for (const r of this.mRigids) {
+        for (const r of this.rigids_) {
             if (r === gbj) {
                 continue;
             }
@@ -633,27 +633,27 @@ export const sleep = (/**@type number */timeout) => {
 
 export class Game {
     constructor(/**@type HTMLElement */ root, { canvasWidth, fps }) {
-        this.mRoot = root;
-        this.mContext = new GameContext();
-        this.mContext.state = GameStatus.Stop;
-        this.mCanvas = document.createElement("canvas");
-        this.mCanvas.classList.add("main-canvas")
-        this.mCanvas.addEventListener("click", (e) => this.mOnCanvasClick(e));
-        this.mRoot.appendChild(this.mCanvas);
-        this.mFps = fps * 1 || 60;
-        this.mMaxCanvasWidth = canvasWidth * 1 || Number.MAX_VALUE;
-        this.mFrameLength = 1000 / this.mFps;
+        this.root_ = root;
+        this.context_ = new GameContext();
+        this.context_.state = GameStatus.Stop;
+        this.canvas_ = document.createElement("canvas");
+        this.canvas_.classList.add("main-canvas")
+        this.canvas_.addEventListener("click", (e) => this.onCanvasClick_(e));
+        this.root_.appendChild(this.canvas_);
+        this.fps_ = fps * 1 || 60;
+        this.maxCanvasWidth_ = canvasWidth * 1 || Number.MAX_VALUE;
+        this.frameLength_ = 1000 / this.fps_;
     }
 
-    mGetWordLocation(/**@type number*/ screenX,/**@type number*/ screenY) {
-        const ppu = this.mContext.ppu;
-        const x = (screenX - this.mCanvas.width / 2) / ppu + this.mContext.currentCamera.position.x;
-        const y = (screenY - this.mCanvas.height / 2) / ppu + this.mContext.currentCamera.position.y;
+    getWordLocation_(/**@type number*/ screenX,/**@type number*/ screenY) {
+        const ppu = this.context_.ppu;
+        const x = (screenX - this.canvas_.width / 2) / ppu + this.context_.currentCamera.position.x;
+        const y = (screenY - this.canvas_.height / 2) / ppu + this.context_.currentCamera.position.y;
         return new Vector2(x, y);
     }
 
-    async mForEachComponents(func) {
-        for (const g of this.mSession.gbjects) {
+    async forEachComponents_(func) {
+        for (const g of this.session_.gbjects) {
             if (!g.enabled) {
                 continue;
             }
@@ -663,100 +663,100 @@ export class Game {
         }
     }
 
-    mOnCanvasClick(/**@type MouseEvent */e) {
-        if (this.mContext.state != GameStatus.Run || !this.mContext.currentCamera) {
+    onCanvasClick_(/**@type MouseEvent */e) {
+        if (this.context_.state != GameStatus.Run || !this.context_.currentCamera) {
             return;
         }
-        const loc = this.mGetWordLocation(e.x * this.mContext.canvasScale, e.y * this.mContext.canvasScale);
-        this.mForEachComponents((c) => {
+        const loc = this.getWordLocation_(e.x * this.context_.canvasScale, e.y * this.context_.canvasScale);
+        this.forEachComponents_((c) => {
             c.onclick && c.onclick(loc);
         });
     }
 
     pause() {
-        this.mContext.state = GameStatus.Pause;
+        this.context_.state = GameStatus.Pause;
     }
 
     resume() {
-        this.mContext.state = GameStatus.Resume;
+        this.context_.state = GameStatus.Resume;
     }
 
     stop() {
-        this.mContext.state = GameStatus.Stop;
+        this.context_.state = GameStatus.Stop;
     }
 
     async start(/**@type Session */session) {
-        this.mSession = session;
-        this.mContext.state = GameStatus.Run;
-        this.mContext.last = 0;
-        while (this.mContext.state != GameStatus.Stop) {
-            this.mContext.current = Date.now();
-            const remain = this.mFrameLength - (this.mContext.current - this.mContext.last);
+        this.session_ = session;
+        this.context_.state = GameStatus.Run;
+        this.context_.last = 0;
+        while (this.context_.state != GameStatus.Stop) {
+            this.context_.current = Date.now();
+            const remain = this.frameLength_ - (this.context_.current - this.context_.last);
             if (remain > 0) {
                 await sleep(remain);
             }
             try {
-                this.mContext.current = Date.now();
-                if (this.mContext.state != GameStatus.Run) {
+                this.context_.current = Date.now();
+                if (this.context_.state != GameStatus.Run) {
                     continue;
                 }
-                await this.mUpdateGbjects();
-                await this.mUpdateRigids();
-                await this.mRender();
+                await this.updateGbjects_();
+                await this.updateRigids_();
+                await this.render_();
             } finally {
-                this.mContext.last = this.mContext.current;
+                this.context_.last = this.context_.current;
             }
         }
-        this.mRoot.removeChild(this.mCanvas);
+        this.root_.removeChild(this.canvas_);
     }
 
-    async mUpdateRigids() {
-        this.mContext.mRigids = [];
-        for (const g of this.mSession.gbjects) {
+    async updateRigids_() {
+        this.context_.rigids_ = [];
+        for (const g of this.session_.gbjects) {
             if (g.enabled && g[Rigid.name]) {
-                this.mContext.mRigids.push(g);
+                this.context_.rigids_.push(g);
             }
         }
     }
 
-    async mUpdateGbjects() {
-        await this.mForEachComponents(async (c) => c.onframe && await c.onframe(this.mContext));
+    async updateGbjects_() {
+        await this.forEachComponents_(async (c) => c.onframe && await c.onframe(this.context_));
     }
 
-    async mRender() {
-        let camera = this.mSession.gbjects.find(g => g.enabled && g[Camera.name] && g[Camera.name].enable);
+    async render_() {
+        let camera = this.session_.gbjects.find(g => g.enabled && g[Camera.name] && g[Camera.name].enable);
         if (!camera) {
             return;
         }
-        this.mContext.currentCamera = camera;
-        const canvasOpt = this.mRoot.clientWidth / this.mRoot.clientHeight;
-        const nextCanvasWidth = Math.floor(Math.min(this.mRoot.clientWidth, this.mMaxCanvasWidth));
+        this.context_.currentCamera = camera;
+        const canvasOpt = this.root_.clientWidth / this.root_.clientHeight;
+        const nextCanvasWidth = Math.floor(Math.min(this.root_.clientWidth, this.maxCanvasWidth_));
         if (!nextCanvasWidth) {
             return
         }
         const nextCanvasHeight = Math.floor(nextCanvasWidth / canvasOpt);
-        if (this.mCanvas.width != nextCanvasWidth) {
-            this.mCanvas.width = nextCanvasWidth;
+        if (this.canvas_.width != nextCanvasWidth) {
+            this.canvas_.width = nextCanvasWidth;
         }
-        if (this.mCanvas.height != nextCanvasHeight) {
-            this.mCanvas.height = nextCanvasHeight;
+        if (this.canvas_.height != nextCanvasHeight) {
+            this.canvas_.height = nextCanvasHeight;
         }
-        this.mContext.canvasScale = this.mCanvas.width / this.mRoot.clientWidth;
-        const ctx = this.mCanvas.getContext('2d');
-        this.mContext.ppu = this.mContext.currentCamera[Camera.name].ppu;
-        const wwidth = this.mCanvas.width / this.mContext.ppu;
-        const wheight = this.mCanvas.height / this.mContext.ppu;
-        this.mContext.wxmax = this.mContext.currentCamera.position.x + wwidth / 2;
-        this.mContext.wxmin = this.mContext.currentCamera.position.x - wwidth / 2;
-        this.mContext.wymax = this.mContext.currentCamera.position.y + wheight / 2;
-        this.mContext.wymin = this.mContext.currentCamera.position.y - wheight / 2;
-        let needUpdate = !!this.mContext.currentCamera.positionUpdated;
-        if (!this.mImgDataCache || this.mCanvas.width != this.mImgDataCache.width
-            || this.mCanvas.height != this.mImgDataCache.height) {
+        this.context_.canvasScale = this.canvas_.width / this.root_.clientWidth;
+        const ctx = this.canvas_.getContext('2d');
+        this.context_.ppu = this.context_.currentCamera[Camera.name].ppu;
+        const wwidth = this.canvas_.width / this.context_.ppu;
+        const wheight = this.canvas_.height / this.context_.ppu;
+        this.context_.wxmax = this.context_.currentCamera.position.x + wwidth / 2;
+        this.context_.wxmin = this.context_.currentCamera.position.x - wwidth / 2;
+        this.context_.wymax = this.context_.currentCamera.position.y + wheight / 2;
+        this.context_.wymin = this.context_.currentCamera.position.y - wheight / 2;
+        let needUpdate = !!this.context_.currentCamera.positionUpdated;
+        if (!this.imgDataCache_ || this.canvas_.width != this.imgDataCache_.width
+            || this.canvas_.height != this.imgDataCache_.height) {
             needUpdate = true;
         }
 
-        for (const gbj of this.mSession.gbjects) {
+        for (const gbj of this.session_.gbjects) {
             if (!gbj.enabled) {
                 continue;
             }
@@ -771,8 +771,8 @@ export class Game {
         if (needUpdate) {
             let rendereds = [];
             const addRendered = (func) => func && rendereds.push(func);
-            this.mImgDataCache = new ImageData(this.mCanvas.width, this.mCanvas.height);
-            for (const gbj of this.mSession.gbjects) {
+            this.imgDataCache_ = new ImageData(this.canvas_.width, this.canvas_.height);
+            for (const gbj of this.session_.gbjects) {
                 if (!gbj.enabled) {
                     continue;
                 }
@@ -781,11 +781,11 @@ export class Game {
                     continue;
                 }
                 gbj.positionUpdated = false;
-                await this.mUpdateBodyImage(gbj, this.mContext.ppu, this.mContext.wxmax, this.mContext.wxmin, this.mContext.wymax, this.mContext.wymin, addRendered);
+                await this.updateBodyImage_(gbj, this.context_.ppu, this.context_.wxmax, this.context_.wxmin, this.context_.wymax, this.context_.wymin, addRendered);
             }
-            this.mContext.currentCamera.positionUpdated = false;
-            // ctx.clearRect(0, 0, this.mCanvas.width, this.mCanvas.height);
-            ctx.putImageData(this.mImgDataCache, 0, 0);
+            this.context_.currentCamera.positionUpdated = false;
+            // ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+            ctx.putImageData(this.imgDataCache_, 0, 0);
             if (rendereds && rendereds.length) {
                 for (const r of rendereds) {
                     await r(ctx)
@@ -794,7 +794,7 @@ export class Game {
         }
     }
 
-    async mUpdateBodyImage(
+    async updateBodyImage_(
         /**@type Gbject */ body,
         /**@type number */ ppu,
         /**@type number */ wxmax,
@@ -819,8 +819,8 @@ export class Game {
             return;
         }
         const local = { x: (dxmin - ex) + esx / 2, y: (dymin - ey) + esy / 2, width: dwidth, height: dheight };
-        const getDrawX = (x) => Math.floor((x - esx / 2 + ex - this.mContext.currentCamera.position.x) * ppu + this.mCanvas.width / 2)
-        const getDrawY = (y) => Math.floor((y - esy / 2 + ey - this.mContext.currentCamera.position.y) * ppu + this.mCanvas.height / 2)
+        const getDrawX = (x) => Math.floor((x - esx / 2 + ex - this.context_.currentCamera.position.x) * ppu + this.canvas_.width / 2)
+        const getDrawY = (y) => Math.floor((y - esy / 2 + ey - this.context_.currentCamera.position.y) * ppu + this.canvas_.height / 2)
         let dx = getDrawX(local.x);
         let dy = getDrawY(local.y);
         let imgWidth = getDrawX(local.x + local.width) - dx;
@@ -828,6 +828,6 @@ export class Game {
         if (imgWidth <= 0 || imgHeight <= 0) {
             return;
         }
-        await body[Body.name].updateImageData(this.mImgDataCache, local, { getDrawX, getDrawY }, addRendered, ppu);
+        await body[Body.name].updateImageData(this.imgDataCache_, local, { getDrawX, getDrawY }, addRendered, ppu);
     }
 }

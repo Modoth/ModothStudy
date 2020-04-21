@@ -5,53 +5,53 @@ import { ResizeWatcher } from '../commons/resize-watcher.js'
 
 export class App {
   constructor(window) {
-    this.mWindow = window
+    this.window_ = window
     try {
-      this.mStorage = window.$localStorage || window.localStorage
+      this.storage_ = window.$localStorage || window.localStorage
     } catch {
-      this.mStorage = {
+      this.storage_ = {
         getItem: () => '',
         setItem: () => true,
       }
     }
   }
   async launch() {
-    this.mRoot = document.getElementById('app')
-    document.addEventListener('keydown', (ev) => this.mHandlerKeys(ev))
-    this.mLogoContainer = document.getElementById('logoContainer')
-    this.mTryOpenFile = async () => {
-      if (this.mIsLoadingFile) {
+    this.root_ = document.getElementById('app')
+    document.addEventListener('keydown', (ev) => this.handlerKeys_(ev))
+    this.logoContainer_ = document.getElementById('logoContainer')
+    this.tryOpenFile_ = async () => {
+      if (this.isLoadingFile_) {
         return
       }
       if (window.$localStorage) {
         const res = await window.$localStorage.openFile('text/plain', 'Text')
         if (res) {
-          await this.mLoadFile(res.file, res.data)
+          await this.loadFile_(res.file, res.data)
         }
       } else {
-        this.mInputFile.click()
+        this.inputFile_.click()
       }
     }
-    this.mKeyBindings = {
-      'C-O': this.mTryOpenFile,
+    this.keyBindings_ = {
+      'C-O': this.tryOpenFile_,
       'C-R': () => window.location.reload(),
-      ARROWRIGHT: () => this.mPageDown(),
-      ARROWLEFT: () => this.mPageUp(),
+      ARROWRIGHT: () => this.pageDown_(),
+      ARROWLEFT: () => this.pageUp_(),
     }
     new ResizeWatcher(window).register(
-      () => this.mFileContent && this.mReload()
+      () => this.fileContent_ && this.reload_()
     )
-    this.mReaderContainer = document.getElementById('readerContainer')
-    this.mReaderContainer.onclick = (ev) => this.mHandleClicks(ev)
-    this.mTextRender = new TextRender(this.mReaderContainer)
-    this.mInputFile = document.getElementById('inputFile')
-    this.mLogoContainer.addEventListener('click', this.mTryOpenFile)
-    this.mInputFile.addEventListener('change', () => {
-      if (this.mInputFile.files && this.mInputFile.files[0]) {
-        this.mLoadFile(this.mInputFile.files[0])
+    this.readerContainer_ = document.getElementById('readerContainer')
+    this.readerContainer_.onclick = (ev) => this.handleClicks_(ev)
+    this.textRender_ = new TextRender(this.readerContainer_)
+    this.inputFile_ = document.getElementById('inputFile')
+    this.logoContainer_.addEventListener('click', this.tryOpenFile_)
+    this.inputFile_.addEventListener('change', () => {
+      if (this.inputFile_.files && this.inputFile_.files[0]) {
+        this.loadFile_(this.inputFile_.files[0])
       }
     })
-    this.mClickResions = [
+    this.clickResions_ = [
       '11066666044',
       '11066666044',
       '11000000022',
@@ -62,7 +62,7 @@ export class App {
       '22222222255',
       '22222222255',
     ]
-    this.mThemes = [
+    this.themes_ = [
       {
         fontSize: 18,
         color: 'darkslateblue',
@@ -78,47 +78,47 @@ export class App {
         background: '#333',
       },
     ]
-    this.mClickResionsHeight = this.mClickResions.length
-    this.mClickResionsWidth = this.mClickResions[0].length
+    this.clickResionsHeight_ = this.clickResions_.length
+    this.clickResionsWidth_ = this.clickResions_[0].length
     /**@type Map<number,number> */
-    this.mPages = new Map()
-    this.mModal = new Modal()
+    this.pages_ = new Map()
+    this.modal_ = new Modal()
   }
 
-  mHandleClicks({ x, y }) {
+  handleClicks_({ x, y }) {
     const px = Math.floor(
-      (x * this.mClickResionsWidth) / this.mReaderContainer.clientWidth
+      (x * this.clickResionsWidth_) / this.readerContainer_.clientWidth
     )
     const py = Math.floor(
-      (y * this.mClickResionsHeight) / this.mReaderContainer.clientHeight
+      (y * this.clickResionsHeight_) / this.readerContainer_.clientHeight
     )
-    let type = this.mClickResions[py][px] >>> 0
+    let type = this.clickResions_[py][px] >>> 0
     switch (type) {
       case 1:
-        this.mPageUp()
+        this.pageUp_()
         break
       case 2:
-        this.mPageDown()
+        this.pageDown_()
         break
       case 3:
-        this.mTryOpenFile()
+        this.tryOpenFile_()
         break
       case 4:
-        this.mChangeFullscreen()
+        this.changeFullscreen_()
         break
       case 5:
-        this.mChangeTheme()
+        this.changeTheme_()
         break
       case 6:
-        this.mGoto()
+        this.goto_()
         break
     }
   }
 
-  async mGoto() {
-    let res = await this.mModal.prompt(
+  async goto_() {
+    let res = await this.modal_.prompt(
       '转到',
-      Math.floor((this.mCurrentOffset * 100) / this.mFileContent.length),
+      Math.floor((this.currentOffset_ * 100) / this.fileContent_.length),
       {
         type: 'range',
         max: 100,
@@ -128,129 +128,129 @@ export class App {
     if (!res) {
       return
     }
-    this.mCurrentOffset = Math.floor(
-      (this.mFileContent.length * (res >>> 0)) / 100
+    this.currentOffset_ = Math.floor(
+      (this.fileContent_.length * (res >>> 0)) / 100
     )
-    await this.mReload()
+    await this.reload_()
   }
 
-  mChangeFullscreen() {
-    this.mRoot.requestFullscreen()
+  changeFullscreen_() {
+    this.root_.requestFullscreen()
   }
 
-  mHandlerKeys(/**@type KeyboardEvent */ ev) {
+  handlerKeys_(/**@type KeyboardEvent */ ev) {
     let keyStr = `${ev.ctrlKey ? 'C-' : ''}${ev.shiftKey ? 'S-' : ''}${
       ev.altKey ? 'A-' : ''
     }${ev.key.toUpperCase()}`
-    if (this.mKeyBindings[keyStr]) {
+    if (this.keyBindings_[keyStr]) {
       ev.stopPropagation()
       ev.preventDefault()
-      this.mKeyBindings[keyStr]()
+      this.keyBindings_[keyStr]()
     }
   }
 
-  async mPageUp() {
-    await this.mLoadPage(this.mCurrentPageIdx - 1)
+  async pageUp_() {
+    await this.loadPage_(this.currentPageIdx_ - 1)
   }
 
-  async mPageDown() {
-    await this.mLoadPage(this.mCurrentPageIdx + 1)
+  async pageDown_() {
+    await this.loadPage_(this.currentPageIdx_ + 1)
   }
 
-  async mPaging() {
-    if (this.mReloadCancleSource) {
-      this.mReloadCancleSource.cancled = true
+  async paging_() {
+    if (this.reloadCancleSource_) {
+      this.reloadCancleSource_.cancled = true
     }
     const cancleSource = {}
-    this.mReloadCancleSource = cancleSource
+    this.reloadCancleSource_ = cancleSource
     let firstPage = 0
     const onpage = (page, offset, nextOffset) => {
       if (page < firstPage) {
         firstPage = page
       }
-      this.mPages.set(page, { offset, nextOffset })
+      this.pages_.set(page, { offset, nextOffset })
     }
     let start = Date.now()
-    await this.mTextRender.page(
-      this.mFileContent,
-      this.mZeroPageOffset,
+    await this.textRender_.page(
+      this.fileContent_,
+      this.zeroPageOffset_,
       onpage,
       {
-        fontSize: this.mFontSize,
+        fontSize: this.fontSize_,
       },
       cancleSource
     )
     if (cancleSource.cancled) {
       return
     }
-    if (this.mZeroPageOffset > 0) {
+    if (this.zeroPageOffset_ > 0) {
       let newOffsets = new Map()
-      for (const [page, offset] of this.mPages) {
+      for (const [page, offset] of this.pages_) {
         newOffsets.set(page - firstPage, offset)
       }
-      this.mCurrentPageIdx -= firstPage
-      this.mPages = newOffsets
-      this.mZeroPageOffset = 0
+      this.currentPageIdx_ -= firstPage
+      this.pages_ = newOffsets
+      this.zeroPageOffset_ = 0
     }
     console.log(`Page Finished: ${(Date.now() - start) / 1000}s`)
   }
 
-  async mLoadPage(pageIdx) {
+  async loadPage_(pageIdx) {
     if (pageIdx < 0) {
       return
     }
-    if (this.mPages.has(pageIdx)) {
-      this.mCurrentPageIdx = pageIdx
-      const page = this.mPages.get(this.mCurrentPageIdx)
-      this.mCurrentOffset = page.offset
+    if (this.pages_.has(pageIdx)) {
+      this.currentPageIdx_ = pageIdx
+      const page = this.pages_.get(this.currentPageIdx_)
+      this.currentOffset_ = page.offset
       const nextOffset =
         page.offset +
-        this.mTextRender.rend(this.mFileContent, page.offset, page.nextOffset)
-      this.mStorage.setItem(`${this.mFileName}_offset`, this.mCurrentOffset)
+        this.textRender_.rend(this.fileContent_, page.offset, page.nextOffset)
+      this.storage_.setItem(`${this.fileName_}_offset`, this.currentOffset_)
       if (
-        this.mPages.has(this.mCurrentPageIdx + 1) &&
-        this.mPages.get(this.mCurrentPageIdx + 1).offset !== nextOffset &&
-        nextOffset != this.mFileContent.length
+        this.pages_.has(this.currentPageIdx_ + 1) &&
+        this.pages_.get(this.currentPageIdx_ + 1).offset !== nextOffset &&
+        nextOffset != this.fileContent_.length
       ) {
-        this.mPaging()
+        this.paging_()
         console.log(page, nextOffset)
       }
     }
   }
 
-  async mChangeTheme() {
-    let idx = this.mThemes.findIndex((t) => t === this.mCurrentTheme)
-    idx = (idx + 1) % this.mThemes.length
-    this.mCurrentTheme = this.mThemes[idx]
-    this.mFileContent && (await this.mReload())
-    this.mRoot.style.background = this.mCurrentTheme.background
+  async changeTheme_() {
+    let idx = this.themes_.findIndex((t) => t === this.currentTheme_)
+    idx = (idx + 1) % this.themes_.length
+    this.currentTheme_ = this.themes_[idx]
+    this.fileContent_ && (await this.reload_())
+    this.root_.style.background = this.currentTheme_.background
   }
 
-  async mReload() {
-    this.mPages = new Map()
-    this.mZeroPageOffset = this.mCurrentOffset
-    this.mPages.set(0, { offset: this.mCurrentOffset })
-    this.mTextRender.setStyle(this.mCurrentTheme)
-    this.mPaging()
-    await this.mLoadPage(0)
+  async reload_() {
+    this.pages_ = new Map()
+    this.zeroPageOffset_ = this.currentOffset_
+    this.pages_.set(0, { offset: this.currentOffset_ })
+    this.textRender_.setStyle(this.currentTheme_)
+    this.paging_()
+    await this.loadPage_(0)
   }
 
-  async mLoadFile(/**@type File*/ file, content) {
-    if (!this.mThemeInited) {
-      this.mChangeTheme()
-      this.mThemeInited = true
+  async loadFile_(/**@type File*/ file, content) {
+    if (!this.themeInited_) {
+      this.changeTheme_()
+      this.themeInited_ = true
     }
-    this.mIsLoadingFile = true
-    this.mLogoContainer.classList.add('hidden')
-    this.mReaderContainer.classList.remove('hidden')
-    this.mFileName = file.name
-    this.mFileContent = content || (await readFile(file))
-    const offset = await this.mStorage.getItem(`${this.mFileName}_offset`)
-    this.mCurrentOffset = Math.min(
+    this.isLoadingFile_ = true
+    this.logoContainer_.classList.add('hidden')
+    this.readerContainer_.classList.remove('hidden')
+    this.fileName_ = file.name
+    this.fileContent_ = content || (await readFile(file))
+    const offset = await this.storage_.getItem(`${this.fileName_}_offset`)
+    this.currentOffset_ = Math.min(
       parseInt(offset) || 0,
-      this.mFileContent.length
+      this.fileContent_.length
     )
-    await this.mReload()
-    this.mIsLoadingFile = false
+    await this.reload_()
+    this.isLoadingFile_ = false
   }
 }

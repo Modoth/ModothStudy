@@ -22,75 +22,75 @@ class LineInfo {
 
 export class TextRender {
   constructor(/**@type HTMLElement*/ root) {
-    this.mRoot = root
-    this.mCanvas = document.createElement('canvas')
-    this.mMeasureCanvas = document.createElement('canvas')
-    this.mCanvas.onclick = (ev) => this.mOnMouseClick(ev)
-    this.mCanvas.onmousedown = (ev) => this.mOnMouseDown(ev)
-    this.mCanvas.onmousemove = (ev) => this.mOnMouseMove(ev)
-    this.mCanvas.onmouseup = (ev) => this.mOnMouseUp(ev)
-    this.mCanvas.onmouseleave = (ev) => this.mOnMouseUp(ev)
-    this.mRoot.appendChild(this.mCanvas)
+    this.root_ = root
+    this.canvas_ = document.createElement('canvas')
+    this.measureCanvas_ = document.createElement('canvas')
+    this.canvas_.onclick = (ev) => this.onMouseClick_(ev)
+    this.canvas_.onmousedown = (ev) => this.onMouseDown_(ev)
+    this.canvas_.onmousemove = (ev) => this.onMouseMove_(ev)
+    this.canvas_.onmouseup = (ev) => this.onMouseUp_(ev)
+    this.canvas_.onmouseleave = (ev) => this.onMouseUp_(ev)
+    this.root_.appendChild(this.canvas_)
     /**@type LineInfo[] */
-    this.mLineInfos = []
-    this.mMovingCheckPeriod = 200
+    this.lineInfos_ = []
+    this.movingCheckPeriod_ = 200
   }
 
-  mOnMouseClick() {
-    if (this.mAllowCancleSelection) {
-      this.mSelect(null, null)
+  onMouseClick_() {
+    if (this.allowCancleSelection_) {
+      this.select_(null, null)
     }
   }
 
-  mOnMouseDown(ev) {
-    this.mIsMouseDown = true
+  onMouseDown_(ev) {
+    this.isMouseDown_ = true
     setTimeout(() => {
-      if (!this.mIsMouseDown) {
+      if (!this.isMouseDown_) {
         return
       }
-      this.mIsSelecting = true
-      this.mAllowCancleSelection = false
-      this.mLastMovingCheck = 0
-      this.mMouseDownChar = { toGetFrom: ev }
+      this.isSelecting_ = true
+      this.allowCancleSelection_ = false
+      this.lastMovingCheck_ = 0
+      this.mouseDownChar_ = { toGetFrom: ev }
     }, 300)
   }
 
-  mOnMouseMove(ev) {
-    if (!this.mIsSelecting || !this.mMouseDownChar) {
+  onMouseMove_(ev) {
+    if (!this.isSelecting_ || !this.mouseDownChar_) {
       return
     }
     const now = Date.now()
-    if (now - this.mLastMovingCheck < this.mMovingCheckPeriod) {
+    if (now - this.lastMovingCheck_ < this.movingCheckPeriod_) {
       return
     }
-    this.mLastMovingCheck = now
-    if (this.mMouseDownChar.toGetFrom) {
-      this.mMouseDownChar = this.mFindCharAt(this.mMouseDownChar.toGetFrom)
+    this.lastMovingCheck_ = now
+    if (this.mouseDownChar_.toGetFrom) {
+      this.mouseDownChar_ = this.findCharAt_(this.mouseDownChar_.toGetFrom)
       return
     }
-    this.mMouseChar = this.mFindCharAt(ev)
-    this.mMouseChar && this.mSelect(this.mMouseDownChar, this.mMouseChar)
+    this.mouseChar_ = this.findCharAt_(ev)
+    this.mouseChar_ && this.select_(this.mouseDownChar_, this.mouseChar_)
   }
 
-  mOnMouseUp(/**@type MouseEvent */ ev) {
-    this.mIsMouseDown = false
-    this.mMouseDownChar = null
-    if (this.mIsSelecting) {
-      this.mIsSelecting = false
-      this.mSelection = this.mGetSelection(
-        this.mHightlightStartChar,
-        this.mHightlightEndChar
+  onMouseUp_(/**@type MouseEvent */ ev) {
+    this.isMouseDown_ = false
+    this.mouseDownChar_ = null
+    if (this.isSelecting_) {
+      this.isSelecting_ = false
+      this.selection_ = this.getSelection_(
+        this.hightlightStartChar_,
+        this.hightlightEndChar_
       )
       setTimeout(() => {
-        this.mAllowCancleSelection = true
+        this.allowCancleSelection_ = true
         if (this.onSelectChange) {
-          this.onSelectChange(this.mSelection)
+          this.onSelectChange(this.selection_)
         }
       }, 0)
     }
   }
 
-  mGetHighlightSlices(start, end) {
+  getHighlightSlices_(start, end) {
     const redraws = []
     if (start.y === end.y) {
       const left = Math.min(start.x, end.x)
@@ -156,42 +156,42 @@ export class TextRender {
     return redraws
   }
 
-  mResetHighlight(start, end, clearOnly) {
+  resetHighlight_(start, end, clearOnly) {
     let top = start.y
     let bottom = end.y
-    this.mContext.clearRect(
-      this.mLineInfos[top].x,
-      this.mLineInfos[top].ymin,
-      this.mCanvas.width,
-      this.mLineInfos[bottom].yRealMax - this.mLineInfos[top].ymin
+    this.context_.clearRect(
+      this.lineInfos_[top].x,
+      this.lineInfos_[top].ymin,
+      this.canvas_.width,
+      this.lineInfos_[bottom].yRealMax - this.lineInfos_[top].ymin
     )
     if (clearOnly) {
       return
     }
     for (let i = top; i <= bottom; i++) {
-      const line = this.mLineInfos[i]
-      this.mContext.fillText(line.text, line.x, line.y)
+      const line = this.lineInfos_[i]
+      this.context_.fillText(line.text, line.x, line.y)
     }
   }
 
-  mHightlight(start, end) {
-    this.mResetHighlight(start, end, true)
-    const slices = this.mGetHighlightSlices(start, end)
-    const style = this.mContext.fillStyle
-    const hightlightStyle = this.mHightlightColor
+  hightlight_(start, end) {
+    this.resetHighlight_(start, end, true)
+    const slices = this.getHighlightSlices_(start, end)
+    const style = this.context_.fillStyle
+    const hightlightStyle = this.hightlightColor_
 
     for (const i of slices) {
-      this.mContext.fillStyle = i.hightlight ? hightlightStyle : style
-      const line = this.mLineInfos[i.y]
+      this.context_.fillStyle = i.hightlight ? hightlightStyle : style
+      const line = this.lineInfos_[i.y]
       const offset =
-        line.x + this.mContext.measureText(line.text.slice(0, i.x)).width
-      this.mContext.fillText(line.text.slice(i.x, i.xend), offset, line.y)
+        line.x + this.context_.measureText(line.text.slice(0, i.x)).width
+      this.context_.fillText(line.text.slice(i.x, i.xend), offset, line.y)
     }
 
-    this.mContext.fillStyle = style
+    this.context_.fillStyle = style
   }
 
-  mSort(start, end) {
+  sort_(start, end) {
     if (!start || !end) {
       return [null, null]
     }
@@ -209,15 +209,15 @@ export class TextRender {
     }
   }
 
-  mGetSelection(start, end) {
+  getSelection_(start, end) {
     if (!start || !end) {
       return null
     }
-    const startLine = this.mLineInfos[start.y]
-    const endLine = this.mLineInfos[end.y]
+    const startLine = this.lineInfos_[start.y]
+    const endLine = this.lineInfos_[end.y]
     const offset = startLine.offset + start.x
     const endOffset = endLine.offset + end.x + 1
-    const text = this.mContent.slice(offset, endOffset)
+    const text = this.content_.slice(offset, endOffset)
     const length = text.length
     return {
       offset,
@@ -226,52 +226,52 @@ export class TextRender {
     }
   }
 
-  mSelect(start, end) {
-    ;[start, end] = this.mSort(start, end)
+  select_(start, end) {
+    ;[start, end] = this.sort_(start, end)
     if (
       start &&
       end &&
-      this.mHightlightStartChar &&
-      this.mHightlightStartChar.x == start.x &&
-      this.mHightlightStartChar.y == start.y &&
-      this.mHightlightEndChar &&
-      this.mHightlightEndChar.x === end.x &&
-      this.mHightlightEndChar.y === end.y
+      this.hightlightStartChar_ &&
+      this.hightlightStartChar_.x == start.x &&
+      this.hightlightStartChar_.y == start.y &&
+      this.hightlightEndChar_ &&
+      this.hightlightEndChar_.x === end.x &&
+      this.hightlightEndChar_.y === end.y
     ) {
       return
     }
 
-    this.mHightlightStartChar &&
-      this.mHightlightEndChar &&
-      this.mResetHighlight(this.mHightlightStartChar, this.mHightlightEndChar)
+    this.hightlightStartChar_ &&
+      this.hightlightEndChar_ &&
+      this.resetHighlight_(this.hightlightStartChar_, this.hightlightEndChar_)
 
-    this.mHightlightStartChar = start
-    this.mHightlightEndChar = end
-    this.mHightlightStartChar &&
-      this.mHightlightEndChar &&
-      this.mHightlight(this.mHightlightStartChar, this.mHightlightEndChar)
+    this.hightlightStartChar_ = start
+    this.hightlightEndChar_ = end
+    this.hightlightStartChar_ &&
+      this.hightlightEndChar_ &&
+      this.hightlight_(this.hightlightStartChar_, this.hightlightEndChar_)
   }
 
-  mFindCharAt({ x: canvasX, y: canvasY }) {
-    const y = this.mLineInfos.findIndex(
+  findCharAt_({ x: canvasX, y: canvasY }) {
+    const y = this.lineInfos_.findIndex(
       (l) => l.yRealMax > canvasY && l.yRealMin < canvasY
     )
-    const line = this.mLineInfos[y]
+    const line = this.lineInfos_[y]
     if (!line) {
       return null
     }
-    const char = this.mGetLength(
-      this.mContext,
+    const char = this.getLength_(
+      this.context_,
       line.text,
       canvasX,
-      this.mFullLineLength,
-      this.mPerWidth
+      this.fullLineLength_,
+      this.perWidth_
     )
     let x = char.length - 1
     return { x, y }
   }
 
-  mGetOneLine(/**@type string */ content, /**@type number */ offset) {
+  getOneLine_(/**@type string */ content, /**@type number */ offset) {
     let end = offset
     while (content[end] && content[end] !== '\n') {
       end++
@@ -282,8 +282,8 @@ export class TextRender {
     ]
   }
 
-  mGetLength(ctx, p, pageWidth, fullLineLength, perWidth) {
-    let res = this.mFindMax(
+  getLength_(ctx, p, pageWidth, fullLineLength, perWidth) {
+    let res = this.findMax_(
       0,
       p.length,
       fullLineLength,
@@ -306,7 +306,7 @@ export class TextRender {
     }
   }
 
-  mFindMax(
+  findMax_(
     xmin,
     xmax,
     xinit,
@@ -318,8 +318,8 @@ export class TextRender {
     let x = 0
     let y = 0
     let [min, max] = [xmin, xmax]
-    let comfirmMax = false
-    let comfirmMin = false
+    let comfirmax_ = false
+    let comfirmin_ = false
     let remainTimes = 1000
     let checkMax = false
     while (true) {
@@ -348,7 +348,7 @@ export class TextRender {
           break
         }
         min = Math.max(min, x)
-        comfirmMin = true
+        comfirmin_ = true
         dx = Math.ceil(dy / k)
       } else {
         if (dx == 1) {
@@ -356,7 +356,7 @@ export class TextRender {
           xinit = x
           break
         }
-        comfirmMax = true
+        comfirmax_ = true
         max = Math.min(max, x)
         dx = Math.floor(dy / k)
       }
@@ -370,7 +370,7 @@ export class TextRender {
         xinit = x
         break
       }
-      if (comfirmMax && comfirmMin) {
+      if (comfirmax_ && comfirmin_) {
         dx = Math.floor((max + min) / 2) - x
       } else {
         dx = Math.min(max - x, dx)
@@ -380,7 +380,7 @@ export class TextRender {
     return { x, xinit, y, k }
   }
 
-  mMeasurePage(
+  measurePage_(
     /**@tye HTMLCanvasElement */ canvas,
     /**@type string */ content,
     /**@type number */ offset,
@@ -409,9 +409,9 @@ export class TextRender {
     let perWidth = xLength
     while (true) {
       offset = pOffset
-      ;[p, pOffset] = this.mGetOneLine(content, pOffset)
+      ;[p, pOffset] = this.getOneLine_(content, pOffset)
       while (p.length) {
-        const info = this.mGetLength(
+        const info = this.getLength_(
           ctx,
           p,
           pageWidth,
@@ -454,19 +454,19 @@ export class TextRender {
     cancleToken = {}
   ) {
     return new Promise(async (resolve) => {
-      this.mMeasureCanvas.width = this.mRoot.clientWidth * this.mRatio
-      this.mMeasureCanvas.height = this.mRoot.clientHeight * this.mRatio
+      this.measureCanvas_.width = this.root_.clientWidth * this.ratio_
+      this.measureCanvas_.height = this.root_.clientHeight * this.ratio_
       let pageWidth =
-        this.mMeasureCanvas.width - this.mPadding.left - this.mPadding.right
+        this.measureCanvas_.width - this.padding_.left - this.padding_.right
       let pageHeight =
-        this.mMeasureCanvas.height - this.mPadding.top - this.mPadding.bottom
-      const ctx = this.mMeasureCanvas.getContext('2d')
-      ctx.font = `${this.mFontSize}px ${this.mFontFamily}`
+        this.measureCanvas_.height - this.padding_.top - this.padding_.bottom
+      const ctx = this.measureCanvas_.getContext('2d')
+      ctx.font = `${this.fontSize_}px ${this.fontFamily_}`
       let perWidth = ctx.measureText('x').width
       let fullLineLength = Math.floor(pageWidth / perWidth)
-      let lineCount = Math.floor(pageHeight / this.mLineHeight)
-      this.mFullPageLength = fullLineLength * lineCount
-      if (this.mFullPageLength == 0) {
+      let lineCount = Math.floor(pageHeight / this.lineHeight_)
+      this.fullPageLength_ = fullLineLength * lineCount
+      if (this.fullPageLength_ == 0) {
         return
       }
       const offset_bk = offset
@@ -477,16 +477,16 @@ export class TextRender {
           resolve()
           return
         }
-        const pageRes = this.mMeasurePage(
-          this.mMeasureCanvas,
+        const pageRes = this.measurePage_(
+          this.measureCanvas_,
           content,
           offset,
-          this.mFontSize,
-          this.mFontFamily,
-          this.mMeasureCanvas.width,
-          this.mMeasureCanvas.height,
-          this.mLineHeight,
-          this.mPadding,
+          this.fontSize_,
+          this.fontFamily_,
+          this.measureCanvas_.width,
+          this.measureCanvas_.height,
+          this.lineHeight_,
+          this.padding_,
           false,
           true
         )
@@ -503,38 +503,38 @@ export class TextRender {
           resolve()
           return
         }
-        const maxOffset = this.mMeasurePage(
-          this.mMeasureCanvas,
+        const maxOffset = this.measurePage_(
+          this.measureCanvas_,
           content,
           offset,
-          this.mFontSize,
-          this.mFontFamily,
-          this.mMeasureCanvas.width,
-          this.mMeasureCanvas.height,
-          this.mLineHeight,
-          this.mPadding,
+          this.fontSize_,
+          this.fontFamily_,
+          this.measureCanvas_.width,
+          this.measureCanvas_.height,
+          this.lineHeight_,
+          this.padding_,
           false,
           true
         ).offset
 
-        const res = this.mFindMax(
+        const res = this.findMax_(
           0,
           offset,
-          this.mFullPageLength,
+          this.fullPageLength_,
           maxOffset - offset,
-          maxOffset / this.mFullPageLength,
+          maxOffset / this.fullPageLength_,
           (x, _, dx) => {
             x += dx
-            const pageRes = this.mMeasurePage(
-              this.mMeasureCanvas,
+            const pageRes = this.measurePage_(
+              this.measureCanvas_,
               content,
               offset - x,
-              this.mFontSize,
-              this.mFontFamily,
-              this.mMeasureCanvas.width,
-              this.mMeasureCanvas.height,
-              this.mLineHeight,
-              this.mPadding,
+              this.fontSize_,
+              this.fontFamily_,
+              this.measureCanvas_.width,
+              this.measureCanvas_.height,
+              this.lineHeight_,
+              this.padding_,
               false,
               true
             )
@@ -544,7 +544,7 @@ export class TextRender {
             }
           }
         )
-        this.mFullPageLength = Math.floor(maxOffset / res.xinit)
+        this.fullPageLength_ = Math.floor(maxOffset / res.xinit)
         const nextOffset = offset
         offset -= res.x
         page--
@@ -562,7 +562,7 @@ export class TextRender {
     /**@type string */ hightcolor,
   }) {
     const devicePixelRatio = window.devicePixelRatio || 1
-    const ctx = this.mCanvas.getContext('2d')
+    const ctx = this.canvas_.getContext('2d')
     const backingStoreRatio =
       ctx.webkitBackingStorePixelRatio ||
       ctx.mozBackingStorePixelRatio ||
@@ -570,19 +570,19 @@ export class TextRender {
       ctx.oBackingStorePixelRatio ||
       ctx.backingStorePixelRatio ||
       1
-    this.mRatio = devicePixelRatio / backingStoreRatio
-    this.mColor = color
-    this.mHightlightColor = hightcolor
-    fontSize *= this.mRatio
-    this.mFontSize = fontSize
-    this.mFontFamily = fontFamily
-    this.mLineHeight = fontSize * 1.2
-    this.mPadding = {
+    this.ratio_ = devicePixelRatio / backingStoreRatio
+    this.color_ = color
+    this.hightlightColor_ = hightcolor
+    fontSize *= this.ratio_
+    this.fontSize_ = fontSize
+    this.fontFamily_ = fontFamily
+    this.lineHeight_ = fontSize * 1.2
+    this.padding_ = {
       left: 10,
       top: 10,
       right: 10,
       bottom: 10,
-      para: 0.4 * this.mLineHeight,
+      para: 0.4 * this.lineHeight_,
     }
   }
 
@@ -591,34 +591,34 @@ export class TextRender {
     /**@type number */ offset,
     /**@type number */ nextOffset
   ) {
-    this.mContent = content.slice(offset, nextOffset)
-    this.mNextOffset = nextOffset
-    this.mCanvas.width = this.mRoot.clientWidth * this.mRatio
-    this.mCanvas.height = this.mRoot.clientHeight * this.mRatio
-    this.mContext = this.mCanvas.getContext('2d')
-    this.mContext.font = `${this.mFontSize}px ${this.mFontFamily}`
+    this.content_ = content.slice(offset, nextOffset)
+    this.nextOffset_ = nextOffset
+    this.canvas_.width = this.root_.clientWidth * this.ratio_
+    this.canvas_.height = this.root_.clientHeight * this.ratio_
+    this.context_ = this.canvas_.getContext('2d')
+    this.context_.font = `${this.fontSize_}px ${this.fontFamily_}`
     const {
       offset: newOffset,
       lineInfos,
       fullLineLength,
       perWidth,
-    } = this.mMeasurePage(
-      this.mMeasureCanvas,
-      this.mContent,
+    } = this.measurePage_(
+      this.measureCanvas_,
+      this.content_,
       0,
-      this.mFontSize,
-      this.mFontFamily,
-      this.mCanvas.width,
-      this.mCanvas.height,
-      this.mLineHeight,
-      this.mPadding
+      this.fontSize_,
+      this.fontFamily_,
+      this.canvas_.width,
+      this.canvas_.height,
+      this.lineHeight_,
+      this.padding_
     )
-    this.mFullLineLength = fullLineLength
-    this.mPerWidth = perWidth
-    this.mLineInfos = lineInfos
-    this.mContext.fillStyle = this.mColor
-    for (const info of this.mLineInfos) {
-      this.mContext.fillText(info.text, info.x, info.y)
+    this.fullLineLength_ = fullLineLength
+    this.perWidth_ = perWidth
+    this.lineInfos_ = lineInfos
+    this.context_.fillStyle = this.color_
+    for (const info of this.lineInfos_) {
+      this.context_.fillText(info.text, info.x, info.y)
     }
     return newOffset
   }

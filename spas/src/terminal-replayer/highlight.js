@@ -8,9 +8,9 @@ export const highlight = (/**@type string */ content) => {
       results.push(line)
       continue
     }
-    prefix = `\\033[34m${match[1]}\\033[0m${match[2]}\\033[5m`
-    line = `${prefix}\\033[32m${match[3] || ''}\\033[0m${match[4]}\\033[25m`
-    line = line.replace(/(\$\w*)/g, (s) => `\\033[31m${s}\\033[0m`)
+    prefix = `\u{1b}[34m${match[1]}\u{1b}[0m${match[2]}\u{1b}[5m`
+    line = `${prefix}\u{1b}[32m${match[3] || ''}\u{1b}[0m${match[4]}\u{1b}[25m`
+    line = line.replace(/(\$\w*)/g, (s) => `\u{1b}[31m${s}\u{1b}[0m`)
     results.push(line)
   }
   prefix && results.push(prefix)

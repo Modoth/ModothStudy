@@ -1,9 +1,13 @@
-# ls $HOME
-..
-.
-# python
-Python 3.6.9 (default, Nov  7 2019, 10:44:02)
-[GCC 8.3.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> help
-Type help() for interactive help, or help(object) for help about object.
+# ls -al --color=tty
+total 44
+drwxrwxr-x  6 dev dev 4096 Apr 21 05:57 [0m[01;34m.[0m
+drwxrwxr-x  7 dev dev 4096 Apr  4 06:35 [01;34m..[0m
+-rw-rw-r--  1 dev dev  829 Apr 20 15:52 .local.spack.config.modoth.js
+-rw-rw-r--  1 dev dev  242 Apr 15 11:52 .local.spack.config.zxq.js
+drwxrwxr-x  2 dev dev 4096 Apr  7 18:01 [01;34m.vscode[0m
+drwxrwxr-x  3 dev dev 4096 Apr 21 05:57 [01;34massets[0m
+-rw-rw-r--  1 dev dev   67 Apr 21 05:57 package-lock.json
+-rw-rw-r--  1 dev dev  194 Apr 21 05:57 package.json
+-rw-rw-r--  1 dev dev 1652 Apr 21 05:57 spack.config.js
+drwxrwxr-x 18 dev dev 4096 Apr 20 06:34 [01;34msrc[0m
+drwxrwxr-x  3 dev dev 4096 Apr  4 20:28 [01;34mtools[0m

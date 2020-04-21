@@ -1,33 +1,33 @@
 export class AnimationController {
     constructor( /**@type HTMLElement */ element, /**@type Sprite */ sprite) {
-        this.mElement = element;
-        this.mSprite = sprite;
-        this.mSetAnimation(sprite.animas.keys().next().value);
+        this.element_ = element;
+        this.sprite_ = sprite;
+        this.setAnimation_(sprite.animas.keys().next().value);
     }
 
-    mSetAnimation( /**@type */ name) {
+    setAnimation_( /**@type */ name) {
         this.stopAnimation();
-        this.mCurrentAnima = this.mSprite.animas.get(name);
-        this.mElement.style.backgroundImage = `url("${this.mCurrentAnima.url}")`;
-        this.mElement.style.backgroundSize = `${this.mCurrentAnima.count}00% 100%`;
-        this.mFps = 20;
+        this.currentAnima_ = this.sprite_.animas.get(name);
+        this.element_.style.backgroundImage = `url("${this.currentAnima_.url}")`;
+        this.element_.style.backgroundSize = `${this.currentAnima_.count}00% 100%`;
+        this.fps_ = 20;
     }
 
     playAnimation( /**@type */ name) {
-        if (name !== this.mCurrentAnima.name) {
-            this.mSetAnimation(name);
+        if (name !== this.currentAnima_.name) {
+            this.setAnimation_(name);
         }
-        if (!this.mElementAnimation) {
-            const count = this.mCurrentAnima.count;
-            this.mElementAnimation = `${count/this.mFps}s steps(${count-1}, end) infinite sprite`;
-            this.mElement.style.animation = this.mElementAnimation;
+        if (!this.elementAnimation_) {
+            const count = this.currentAnima_.count;
+            this.elementAnimation_ = `${count/this.fps_}s steps(${count-1}, end) infinite sprite`;
+            this.element_.style.animation = this.elementAnimation_;
         }
     }
 
     stopAnimation() {
-        if (this.mElementAnimation) {
-            this.mElementAnimation = null;
-            this.mElement.style.animation = null;
+        if (this.elementAnimation_) {
+            this.elementAnimation_ = null;
+            this.element_.style.animation = null;
         }
     }
 

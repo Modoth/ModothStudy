@@ -3,46 +3,46 @@ import { registerDragMove } from './register-drag-move.js'
 
 export class DragMoveCanvas {
   constructor(bufferX, bufferY, getRgba, root, ratio) {
-    this.mBufferX = bufferX
-    this.mBufferY = bufferY
-    this.mGetRgba = getRgba
-    this.mRoot = root
-    this.mRatio = ratio
+    this.bufferX_ = bufferX
+    this.bufferY_ = bufferY
+    this.getRgba_ = getRgba
+    this.root_ = root
+    this.ratio_ = ratio
     const backgroundCanvas = document.createElement('canvas')
-    this.mRoot.appendChild(backgroundCanvas)
-    this.mBackgroundCanvas = backgroundCanvas
-    this.mBackgroundCanvas.style.position = 'absolute'
+    this.root_.appendChild(backgroundCanvas)
+    this.backgroundCanvas_ = backgroundCanvas
+    this.backgroundCanvas_.style.position = 'absolute'
     const canvas = document.createElement('canvas')
-    this.mRoot.appendChild(canvas)
-    this.mRoot.style.overflow = 'hidden'
-    this.mCanvas = canvas
-    this.mUpdateCanvasSize()
-    new ResizeWatcher(window).register(this.mUpdateCanvasSize.bind(this))
-    this.mCanvasContext = this.mCanvas.getContext('2d')
-    this.mBackgroundCanvasContext = this.mBackgroundCanvas.getContext('2d')
-    this.mRegisterCanvasDrag()
+    this.root_.appendChild(canvas)
+    this.root_.style.overflow = 'hidden'
+    this.canvas_ = canvas
+    this.updateCanvasSize_()
+    new ResizeWatcher(window).register(this.updateCanvasSize_.bind(this))
+    this.canvasContext_ = this.canvas_.getContext('2d')
+    this.backgroundCanvasContext_ = this.backgroundCanvas_.getContext('2d')
+    this.registerCanvasDrag_()
   }
 
-  mRegisterCanvasDrag() {
+  registerCanvasDrag_() {
     let start
     let dx = 0
     let dy = 0
     let threshold = 1
-    this.mCanvas.onclick = (ev) =>
+    this.canvas_.onclick = (ev) =>
       this.onClick && this.onClick(ev.clientX, ev.clientY)
     registerDragMove(
       document,
-      this.mCanvas,
+      this.canvas_,
       (pos) => (start = pos),
       (pos) => {
         dx = pos.screenX - start.screenX
         dy = pos.screenY - start.screenY
-        this.mCanvas.style.transform = `translate(${dx - this.mOffsetX}px,${
-          dy - this.mOffsetY
+        this.canvas_.style.transform = `translate(${dx - this.offsetX_}px,${
+          dy - this.offsetY_
         }px)`
-        this.mBackgroundCanvas.style.transform = `translate(${
-          dx - this.mOffsetX
-        }px,${dy - this.mOffsetY}px)`
+        this.backgroundCanvas_.style.transform = `translate(${
+          dx - this.offsetX_
+        }px,${dy - this.offsetY_}px)`
       },
       () => {
         if (Math.abs(dx) + Math.abs(dy) > threshold && this.onMoved) {
@@ -54,85 +54,85 @@ export class DragMoveCanvas {
     )
   }
 
-  mUpdateCanvasSize() {
-    this.width = this.mRoot.clientWidth
-    this.height = this.mRoot.clientHeight
-    this.mOffsetX = Math.floor(this.width * this.mBufferX)
-    this.mOffsetY = Math.floor(this.height * this.mBufferY)
-    this.mCanvasWidth = this.width + 2 * this.mOffsetX
-    this.mCanvas.width = this.mCanvasWidth * this.mRatio
-    this.mCanvasHeight = this.height + 2 * this.mOffsetY
-    this.mCanvas.height = this.mCanvasHeight * this.mRatio
-    this.mCanvas.style.width = this.mCanvasWidth
-    this.mCanvas.style.height = this.mCanvasHeight
-    this.mBackgroundCanvas.width = this.mCanvas.width
-    this.mBackgroundCanvas.style.width = this.mCanvas.style.width
-    this.mBackgroundCanvas.height = this.mCanvas.height
-    this.mBackgroundCanvas.style.height = this.mCanvas.style.height
+  updateCanvasSize_() {
+    this.width = this.root_.clientWidth
+    this.height = this.root_.clientHeight
+    this.offsetX_ = Math.floor(this.width * this.bufferX_)
+    this.offsetY_ = Math.floor(this.height * this.bufferY_)
+    this.canvasWidth_ = this.width + 2 * this.offsetX_
+    this.canvas_.width = this.canvasWidth_ * this.ratio_
+    this.canvasHeight_ = this.height + 2 * this.offsetY_
+    this.canvas_.height = this.canvasHeight_ * this.ratio_
+    this.canvas_.style.width = this.canvasWidth_
+    this.canvas_.style.height = this.canvasHeight_
+    this.backgroundCanvas_.width = this.canvas_.width
+    this.backgroundCanvas_.style.width = this.canvas_.style.width
+    this.backgroundCanvas_.height = this.canvas_.height
+    this.backgroundCanvas_.style.height = this.canvas_.style.height
     if (this.onSizeChange) {
       this.onSizeChange(this.width, this.height)
     }
   }
 
-  mDrawGrid({ x, y, width, height }) {
-    this.mBackgroundCanvasContext.clearRect(
+  drawGrid_({ x, y, width, height }) {
+    this.backgroundCanvasContext_.clearRect(
       0,
       0,
-      this.mBackgroundCanvas.width,
-      this.mBackgroundCanvas.height
+      this.backgroundCanvas_.width,
+      this.backgroundCanvas_.height
     )
-    this.mBackgroundCanvasContext.strokeStyle = '#8884'
-    const dx = (this.mOffsetX - x) % width
-    const dy = (this.mOffsetY - y) % height
-    this.mBackgroundCanvasContext.beginPath()
+    this.backgroundCanvasContext_.strokeStyle = '#8884'
+    const dx = (this.offsetX_ - x) % width
+    const dy = (this.offsetY_ - y) % height
+    this.backgroundCanvasContext_.beginPath()
 
     for (
-      let y = dy * this.mRatio;
-      y < this.mBackgroundCanvas.height;
-      y += height * this.mRatio
+      let y = dy * this.ratio_;
+      y < this.backgroundCanvas_.height;
+      y += height * this.ratio_
     ) {
-      this.mBackgroundCanvasContext.moveTo(0, y)
-      this.mBackgroundCanvasContext.lineTo(this.mBackgroundCanvas.width, y)
+      this.backgroundCanvasContext_.moveTo(0, y)
+      this.backgroundCanvasContext_.lineTo(this.backgroundCanvas_.width, y)
     }
     for (
-      let x = dx * this.mRatio;
-      x < this.mBackgroundCanvas.width;
-      x += width * this.mRatio
+      let x = dx * this.ratio_;
+      x < this.backgroundCanvas_.width;
+      x += width * this.ratio_
     ) {
-      this.mBackgroundCanvasContext.moveTo(x, 0)
-      this.mBackgroundCanvasContext.lineTo(x, this.mBackgroundCanvas.height)
+      this.backgroundCanvasContext_.moveTo(x, 0)
+      this.backgroundCanvasContext_.lineTo(x, this.backgroundCanvas_.height)
     }
-    this.mBackgroundCanvasContext.stroke()
+    this.backgroundCanvasContext_.stroke()
   }
 
   redraw(grid) {
     console.log('redraw')
     if (grid) {
-      this.mDrawGrid(grid)
+      this.drawGrid_(grid)
     }
-    this.mCanvas.style.transform = `translate(${-this.mOffsetX}px,${-this
-      .mOffsetY}px)`
-    this.mBackgroundCanvas.style.transform = `translate(${-this
-      .mOffsetX}px,${-this.mOffsetY}px)`
+    this.canvas_.style.transform = `translate(${-this.offsetX_}px,${-this
+      .offsetY_}px)`
+    this.backgroundCanvas_.style.transform = `translate(${-this
+      .offsetX_}px,${-this.offsetY_}px)`
     this.draw(
-      -this.mOffsetX,
-      -this.mOffsetY,
-      this.mCanvasWidth,
-      this.mCanvasHeight
+      -this.offsetX_,
+      -this.offsetY_,
+      this.canvasWidth_,
+      this.canvasHeight_
     )
   }
 
   draw(x, y, width, height) {
-    const px = Math.floor(x * this.mRatio)
-    const py = Math.floor(y * this.mRatio)
-    const pwidth = Math.floor((x + width) * this.mRatio) - px
-    const pheight = Math.floor((y + height) * this.mRatio) - py
+    const px = Math.floor(x * this.ratio_)
+    const py = Math.floor(y * this.ratio_)
+    const pwidth = Math.floor((x + width) * this.ratio_) - px
+    const pheight = Math.floor((y + height) * this.ratio_) - py
     const imgData = new ImageData(pwidth, pheight)
     for (let j = 0; j < pheight; j++) {
       for (let i = 0; i < pwidth; i++) {
-        const bits = this.mGetRgba(
-          Math.floor((px + i) / this.mRatio),
-          Math.floor((py + j) / this.mRatio)
+        const bits = this.getRgba_(
+          Math.floor((px + i) / this.ratio_),
+          Math.floor((py + j) / this.ratio_)
         )
         let idx = (i + j * pwidth) * 4
         imgData.data[idx] = bits[0]
@@ -141,10 +141,10 @@ export class DragMoveCanvas {
         imgData.data[idx + 3] = bits[3]
       }
     }
-    this.mCanvasContext.putImageData(
+    this.canvasContext_.putImageData(
       imgData,
-      Math.floor((x + this.mOffsetX) * this.mRatio),
-      Math.floor((y + this.mOffsetY) * this.mRatio)
+      Math.floor((x + this.offsetX_) * this.ratio_),
+      Math.floor((y + this.offsetY_) * this.ratio_)
     )
   }
 }

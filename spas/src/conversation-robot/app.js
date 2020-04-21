@@ -8,15 +8,15 @@ import {
 
 export class App {
     constructor( /**@type Window */ window) {
-        this.mWindow = window;
-        this.mDocument = this.mWindow.document;
-        this.mBackground = this.mWindow.document.getElementById('background');
-        this.mVoiceSwitch = this.mWindow.document.getElementById('voiceSwitch');
-        this.mVoiceSwitch.onclick = () => {
+        this.window_ = window;
+        this.document_ = this.window_.document;
+        this.background_ = this.window_.document.getElementById('background');
+        this.voiceSwitch_ = this.window_.document.getElementById('voiceSwitch');
+        this.voiceSwitch_.onclick = () => {
             this.setVoice(!this.voiceOn);
         }
     }
-    async mInitComponents() {
+    async initComponents_() {
         const spriteConfigs = {
             '大摩': {
                 url: /**@imports image */ '../../assets/man.png',
@@ -36,38 +36,38 @@ export class App {
             }
         };
         /** @type Map<string, Sprite> */
-        this.mSprites = new Map();
+        this.sprites_ = new Map();
         for (let name in spriteConfigs) {
             const sprite = new Sprite();
             await sprite.load(spriteConfigs[name]);
-            this.mSprites.set(name, sprite);
+            this.sprites_.set(name, sprite);
         }
     }
 
     setVoice(on) {
         this.voiceOn = on;
         if (on) {
-            this.mVoiceSwitch.classList.add('on');
+            this.voiceSwitch_.classList.add('on');
         } else {
-            this.mVoiceSwitch.classList.remove('on');
+            this.voiceSwitch_.classList.remove('on');
         }
     }
 
     createRole(actor, name) {
-        const sprite = this.mSprites.get(actor);
+        const sprite = this.sprites_.get(actor);
         const role = new Role(sprite, this);
         role['说'] = role.say;
-        this.mBackground.appendChild(role.element);
+        this.background_.appendChild(role.element);
         return role;
     }
 
     newSession() {
-        this.mBackground.innerHTML = '';
+        this.background_.innerHTML = '';
     }
 
     async start() {
-        await this.mInitComponents();
-        this.mWindow.apis = {
+        await this.initComponents_();
+        this.window_.apis = {
             newSession: this.newSession.bind(this),
             '开始场景': this.newSession.bind(this),
             createRole: this.createRole.bind(this),

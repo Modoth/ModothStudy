@@ -1,13 +1,13 @@
 export class Modal {
   constructor() {
-    this.mContainer = document.body
+    this.container_ = document.body
   }
 
   showModal(msg, onclose, input = null) {
     let panel = document.createElement('div')
     panel.className = 'modal-panel'
     let closeModal = (ok) => {
-      this.mContainer.removeChild(panel)
+      this.container_.removeChild(panel)
       onclose(ok)
     }
     panel.onclick = () => closeModal(false)
@@ -45,7 +45,7 @@ export class Modal {
     btnGroups.appendChild(btnOk)
     btnGroups.appendChild(btnCancle)
     panel.appendChild(div)
-    this.mContainer.appendChild(panel)
+    this.container_.appendChild(panel)
     let focusEle = input || btnOk || btnCancle
     focusEle.focus()
   }
@@ -91,7 +91,7 @@ export class Modal {
       panel.className = 'popup-panel'
       let closeModal = (ok) => {
         try {
-          this.mContainer.removeChild(panel)
+          this.container_.removeChild(panel)
         } catch {}
         resolve(ok)
       }
@@ -103,7 +103,7 @@ export class Modal {
         panel.appendChild(btnClose)
       }
       panel.appendChild(ele)
-      this.mContainer.appendChild(panel)
+      this.container_.appendChild(panel)
       if (callback) {
         callback(closeModal)
       }
@@ -119,9 +119,9 @@ export class Modal {
       let span = document.createElement('span')
       span.innerText = msg
       div.appendChild(span)
-      this.mContainer.appendChild(panel)
+      this.container_.appendChild(panel)
       setTimeout(() => {
-        this.mContainer.removeChild(panel)
+        this.container_.removeChild(panel)
         resolve()
       }, timeout)
     })

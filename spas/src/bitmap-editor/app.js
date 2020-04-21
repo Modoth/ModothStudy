@@ -16,22 +16,22 @@ class App {
     iptFile.type = 'file'
     iptFile.accept = 'image/*'
     iptFile.classList.add('hidden')
-    iptFile.onchange = this.mLoadFile.bind(this)
+    iptFile.onchange = this.loadFile_.bind(this)
     this.root.appendChild(iptFile)
     this.root.appendChild(appStyle)
-    this.mIptFile = iptFile
+    this.iptFile_ = iptFile
     const menuItems = [
       {
         name: '清空',
-        onclick: this.mClear.bind(this),
+        onclick: this.clear_.bind(this),
       },
       {
         name: '预览',
-        onclick: this.mExport.bind(this),
+        onclick: this.export_.bind(this),
       },
       {
         name: '导入',
-        onclick: this.mImport.bind(this),
+        onclick: this.import_.bind(this),
       },
     ]
     const menu = document.createElement('div')
@@ -47,7 +47,7 @@ class App {
       menu.appendChild(item)
     })
     const paletteStyle = /**@imports css */ './palette.css'
-    this.mColors = [
+    this.colors_ = [
       '#00000000',
       '#ccccccff',
       '#99cc66ff',
@@ -60,9 +60,9 @@ class App {
       '#cc9999ff',
     ]
     const palette = new ColorPaletteFactory().create(
-      this.mColors,
+      this.colors_,
       '#00000000',
-      this.mSelectColor.bind(this)
+      this.selectColor_.bind(this)
     )
     palette.classList.add('palette')
     const popupRoot = document.createElement('div')
@@ -71,41 +71,41 @@ class App {
     popupRoot.appendChild(palette)
     popupRoot.appendChild(menu)
     popupRoot.appendChild(paletteStyle)
-    this.mPopupRoot = popupRoot
-    this.mModal = new Modal()
-    this.mRatio = Math.min(window.devicePixelRatio, 2)
-    this.mMaxWidth = 2048
-    this.mMaxHeight = 2048
-    this.mDragMoveCanvas = new DragMoveCanvas(
+    this.popupRoot_ = popupRoot
+    this.modal_ = new Modal()
+    this.ratio_ = Math.min(window.devicePixelRatio, 2)
+    this.maxWidth_ = 2048
+    this.maxHeight_ = 2048
+    this.dragMoveCanvas_ = new DragMoveCanvas(
       0.5,
       0.5,
-      this.mGetRgba.bind(this),
+      this.getRgba_.bind(this),
       this.root,
-      this.mRatio
+      this.ratio_
     )
   }
 
-  mClear() {
+  clear_() {
     this.closePopup()
-    this.mNewImage()
-    this.mRedraw()
+    this.newImage_()
+    this.redraw_()
   }
 
-  async mLoadFile() {
-    const file = this.mIptFile.files[0]
+  async loadFile_() {
+    const file = this.iptFile_.files[0]
     if (!file) {
       return
     }
     const fileContent = await readFile(file, 'DataURL')
     const imgData = await loadImageData(fileContent)
-    await this.mLoadImageData(imgData)
+    await this.loadImageData_(imgData)
   }
 
-  async mLoadImageData(/**@type ImageData */ imgData) {
+  async loadImageData_(/**@type ImageData */ imgData) {
     const scale = Math.max(
       1,
-      imgData.width / this.mMaxWidth,
-      imgData.height / this.mMaxHeight
+      imgData.width / this.maxWidth_,
+      imgData.height / this.maxHeight_
     )
     const width = Math.floor(imgData.width / scale)
     const height = Math.floor(imgData.height / scale)
@@ -125,29 +125,29 @@ class App {
       }
     }
     this.bitmaps = newBitmaps
-    this.mRedraw()
+    this.redraw_()
   }
 
-  async mImport() {
+  async import_() {
     this.closePopup()
     if (window.$localStorage) {
       const res = await window.$localStorage.openFile('image/*', 'DataURL')
       if (res) {
         const imgData = await loadImageData(res.data)
-        await this.mLoadImageData(imgData)
+        await this.loadImageData_(imgData)
       }
     } else {
-      this.mIptFile.click()
+      this.iptFile_.click()
     }
   }
 
-  mGetPreviewImage(ppw, pph, dx, dy, sourceData) {
+  getPreviewImage_(ppw, pph, dx, dy, sourceData) {
     if (ppw < 1 || pph < 1 || dx < 0 || dy < 0) {
       return null
     }
     const width = sourceData.width * ppw + 2 * dx
     const height = sourceData.height * pph + 2 * dy
-    if (width >= this.mMaxWidth || height > this.mMaxHeight) {
+    if (width >= this.maxWidth_ || height > this.maxHeight_) {
       return null
     }
     const imageData = new ImageData(width, height)
@@ -178,7 +178,7 @@ class App {
     return { width, height, imgUrl }
   }
 
-  mGetPreviewImageData() {
+  getPreviewImageData_() {
     const [top, right, bottom, left] = this.bitmaps.getRegion()
     const width = right - left
     const height = bottom - top
@@ -204,7 +204,7 @@ class App {
     return imageData
   }
 
-  mCreatePreviewPanel(imageData, onclose) {
+  createPreviewPanel_(imageData, onclose) {
     const root = document.createElement('div')
     root.onclick = onclose
     const shadow = root.attachShadow({ mode: 'closed' })
@@ -226,14 +226,14 @@ class App {
     let imgUrl = ''
     const configsStack = []
     const changeImg = (ppw, pph, dx, dy) => {
-      const img = this.mGetPreviewImage(ppw, pph, dx, dy, imageData)
+      const img = this.getPreviewImage_(ppw, pph, dx, dy, imageData)
       if (!img) {
         return false
       }
       config = { ppw, pph, dx, dy }
       ;({ width, height, imgUrl } = img)
-      previewImg.width = width / this.mRatio
-      previewImg.height = height / this.mRatio
+      previewImg.width = width / this.ratio_
+      previewImg.height = height / this.ratio_
       previewImg.src = imgUrl
       a.href = previewImg.src
       return true
@@ -297,30 +297,30 @@ class App {
     return root
   }
 
-  async mExport() {
+  async export_() {
     this.closePopup()
-    const img = this.mGetPreviewImageData()
+    const img = this.getPreviewImageData_()
     if (!img || img.width == 0 || img.height === 0) {
       return
     }
     let resolve
-    const root = this.mCreatePreviewPanel(img, () => resolve())
-    await this.mModal.popup(root, (r) => (resolve = r), false)
+    const root = this.createPreviewPanel_(img, () => resolve())
+    await this.modal_.popup(root, (r) => (resolve = r), false)
   }
 
-  mResizeCanvas(width, height) {
+  resizeCanvas_(width, height) {
     this.displayWidth = Math.ceil(width / this.ppw)
     this.displayHeight = Math.ceil(height / this.pph)
-    this.mRedraw()
+    this.redraw_()
   }
 
-  mMoveCanvasBy(dpx, dpy) {
+  moveCanvasBy_(dpx, dpy) {
     this.offsetPx += dpx
     this.offsetPy += dpy
-    this.mRedraw()
+    this.redraw_()
   }
 
-  mSelectColor(selectedColor) {
+  selectColor_(selectedColor) {
     if (!selectedColor) {
       this.closePopup()
       return
@@ -328,7 +328,7 @@ class App {
     const { x, y } = this
     const newColor = parseInt(selectedColor.replace(/^#/, ''), 16)
     this.bitmaps.set(x, y, newColor)
-    this.mDragMoveCanvas.draw(
+    this.dragMoveCanvas_.draw(
       x * this.ppw - this.offsetPx,
       y * this.pph - this.offsetPy,
       this.ppw,
@@ -337,38 +337,38 @@ class App {
     this.closePopup()
   }
 
-  async mChangeCurrentPosition(px, py) {
-    const [x, y] = this.mGetMapPosition(px, py)
+  async changeCurrentPosition_(px, py) {
+    const [x, y] = this.getMapPosition_(px, py)
     this.x = x
     this.y = y
     if (x < 0 || y < 0) {
       return
     }
-    await this.mModal.popup(
-      this.mPopupRoot,
+    await this.modal_.popup(
+      this.popupRoot_,
       (closeModal) => (this.closePopup = closeModal),
       false
     )
   }
 
-  mGetRgbaFromUint32(color) {
+  getRgbaFromUint32_(color) {
     return [24, 16, 8, 0].map((offset) => (color >> offset) & 0xff)
   }
 
-  mGetMapPosition(px, py) {
+  getMapPosition_(px, py) {
     const x = Math.floor((px + this.offsetPx) / this.ppw)
     const y = Math.floor((py + this.offsetPy) / this.pph)
     return [x, y]
   }
 
-  mGetRgba(px, py) {
-    const [x, y] = this.mGetMapPosition(px, py)
+  getRgba_(px, py) {
+    const [x, y] = this.getMapPosition_(px, py)
     const color = this.bitmaps.get(x, y)
-    return this.mGetRgbaFromUint32(color)
+    return this.getRgbaFromUint32_(color)
   }
 
-  mRedraw() {
-    this.mDragMoveCanvas.redraw({
+  redraw_() {
+    this.dragMoveCanvas_.redraw({
       x: this.offsetPx,
       y: this.offsetPy,
       width: this.ppw,
@@ -376,19 +376,19 @@ class App {
     })
   }
 
-  async mNewImage() {
+  async newImage_() {
     this.bitmaps = new FlexBitmap(90, 90, 100)
   }
 
   async start() {
-    this.mDragMoveCanvas.onMoved = this.mMoveCanvasBy.bind(this)
-    this.mDragMoveCanvas.onSizeChange = this.mResizeCanvas.bind(this)
-    this.mDragMoveCanvas.onClick = this.mChangeCurrentPosition.bind(this)
+    this.dragMoveCanvas_.onMoved = this.moveCanvasBy_.bind(this)
+    this.dragMoveCanvas_.onSizeChange = this.resizeCanvas_.bind(this)
+    this.dragMoveCanvas_.onClick = this.changeCurrentPosition_.bind(this)
     this.offsetPx = 0
     this.offsetPy = 0
     this.ppw = 24
     this.pph = 24
-    this.mNewImage()
-    this.mResizeCanvas(this.mDragMoveCanvas.width, this.mDragMoveCanvas.height)
+    this.newImage_()
+    this.resizeCanvas_(this.dragMoveCanvas_.width, this.dragMoveCanvas_.height)
   }
 }

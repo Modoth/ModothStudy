@@ -1,20 +1,20 @@
 export class ResizeWatcher {
   constructor(target) {
     /**@type Window & typeof globalThis*/
-    this.mTarget = target
-    this.mTarget.onresize = (ev) => this.mOnResize(ev)
-    this.mResizeThreshold = 10
-    this.mCallbacks = []
-    this.mIsWatching = false
-    this.mCheckThreshold = 200
+    this.target_ = target
+    this.target_.onresize = (ev) => this.onResize_(ev)
+    this.resizeThreshold_ = 10
+    this.callbacks_ = []
+    this.isWatching_ = false
+    this.checkThreshold_ = 200
   }
   register(callback) {
-    callback && this.mCallbacks.push(callback)
-    if (!this.mIsWatching) {
-      this.mIsWatching = true
-      this.mLastCheckTime = 0
-      this.mLastW = this.mTarget.innerWidth
-      this.mLastH = this.mTarget.innerHeight
+    callback && this.callbacks_.push(callback)
+    if (!this.isWatching_) {
+      this.isWatching_ = true
+      this.lastCheckTime_ = 0
+      this.lastW_ = this.target_.innerWidth
+      this.lastH_ = this.target_.innerHeight
     }
   }
 
@@ -22,37 +22,37 @@ export class ResizeWatcher {
     if (!callback) {
       return
     }
-    const idx = this.mCallbacks.findIndex((c) => c === callback)
+    const idx = this.callbacks_.findIndex((c) => c === callback)
     if (idx < 0) {
       return
     }
-    this.mCallbacks.splice(idx, 1)
-    if (this.mCallbacks.length === 0) {
-      this.mIsWatching = false
+    this.callbacks_.splice(idx, 1)
+    if (this.callbacks_.length === 0) {
+      this.isWatching_ = false
     }
   }
 
-  mOnResize(/**@type UIEvent*/ ev) {
-    if (!this.mIsWatching) {
+  onResize_(/**@type UIEvent*/ ev) {
+    if (!this.isWatching_) {
       return
     }
     const now = Date.now()
-    if (now - this.mLastCheckTime < this.mCheckThreshold) {
+    if (now - this.lastCheckTime_ < this.checkThreshold_) {
       return
     }
-    this.mLastCheckTime = now
-    let w = this.mTarget.innerWidth
-    let h = this.mTarget.innerHeight
+    this.lastCheckTime_ = now
+    let w = this.target_.innerWidth
+    let h = this.target_.innerHeight
 
     if (
-      Math.abs(this.mLastW - w) < this.mResizeThreshold &&
-      Math.abs(this.mLastH - h) < this.mResizeThreshold
+      Math.abs(this.lastW_ - w) < this.resizeThreshold_ &&
+      Math.abs(this.lastH_ - h) < this.resizeThreshold_
     ) {
       return
     }
-    this.mLastW = w
-    this.mLastH = h
-    for (const callback of this.mCallbacks) {
+    this.lastW_ = w
+    this.lastH_ = h
+    for (const callback of this.callbacks_) {
       callback(w, h)
     }
   }

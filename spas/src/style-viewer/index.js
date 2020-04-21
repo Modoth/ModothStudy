@@ -546,8 +546,8 @@ import { copy } from '../commons/copy.js'
   }
 
   function App(window) {
-    this.mWindow = window
-    this.mUIStyleContent = `
+    this.window_ = window
+    this.uIStyleContent_ = `
   @keyframes black-white{
     0%{
       color:lightblue;
@@ -663,9 +663,9 @@ import { copy } from '../commons/copy.js'
     background:lightgray;
   }
   `
-    this.mHightlightClass = 'm_style_viewer_highlight_class'
-    this.mInjectStyleContent = `
-    @keyframes ${this.mHightlightClass}-black-white{
+    this.hightlightClass_ = 'm_style_viewer_highlight_class'
+    this.injectStyleContent_ = `
+    @keyframes ${this.hightlightClass_}-black-white{
       0%{
         outline-color:lightblue;
       }
@@ -685,49 +685,49 @@ import { copy } from '../commons/copy.js'
         outline-color:lightblue;
       }
     }
-  .${this.mHightlightClass}{
+  .${this.hightlightClass_}{
     outline: black solid;
-    animation: ${this.mHightlightClass}-black-white 2s ease-in-out infinite alternate;
+    animation: ${this.hightlightClass_}-black-white 2s ease-in-out infinite alternate;
   }
   `
-    this.mSelect = (ele, displayProps) => {
-      if (this.mSelectedElement === ele) {
+    this.select_ = (ele, displayProps) => {
+      if (this.selectedElement_ === ele) {
         return
       }
-      if (this.mSelectedElement) {
-        this.mSelectedElement.classList.remove(this.mHightlightClass)
+      if (this.selectedElement_) {
+        this.selectedElement_.classList.remove(this.hightlightClass_)
       }
-      this.mSelectedElement = ele
-      this.mSelectedElement.classList.add(this.mHightlightClass)
+      this.selectedElement_ = ele
+      this.selectedElement_.classList.add(this.hightlightClass_)
       console.log(consoleLogType, `选中${ele.nodeName}`)
-      this.mRefreshStyleDisplay(ele, displayProps)
+      this.refreshStyleDisplay_(ele, displayProps)
     }
-    this.mUpdateSelections = (start, end) => {
+    this.updateSelections_ = (start, end) => {
       const region = getRegion(start, end)
       const { left, top, right, bottom, beginX, beginY, endX, endY } = region
-      const filter = (e) => e !== this.mShadow
+      const filter = (e) => e !== this.shadow_
       const atBegins = new Set(
-        document.elementsFromPoint(beginX, beginY).filter(filter)
+        document.elementsFropoint_(beginX, beginY).filter(filter)
       )
 
       const elements = document
-        .elementsFromPoint(endX, endY)
+        .elementsFropoint_(endX, endY)
         .filter((e) => filter(e) && atBegins.has(e))
-      this.mRefreshSelections(elements)
+      this.refreshSelections_(elements)
     }
-    this.mRefreshSelections = (elements) => {
-      this.mSelections = elements
-      this.mSelectionStyles = getAffectedStyles(
+    this.refreshSelections_ = (elements) => {
+      this.selections_ = elements
+      this.selectionStyles_ = getAffectedStyles(
         Array.from(document.styleSheets).filter(
-          (s) => s.ownerNode != this.mInjectStyle
+          (s) => s.ownerNode != this.injectStyle_
         ),
         PropMetas,
         elements
       )
-      this.mSelect(elements[0], PropMetas)
+      this.select_(elements[0], PropMetas)
     }
 
-    this.mRebuildStyles = (eleStyles, displayProps) => {
+    this.rebuildStyles_ = (eleStyles, displayProps) => {
       //StylePropertyMap
       const sources = new Map()
       for (const [eleProp, values] of eleStyles) {
@@ -759,13 +759,13 @@ import { copy } from '../commons/copy.js'
           styles: s[1].styles,
         }))
     }
-    this.mRefreshStyleDisplay = (ele, displayProps) => {
-      const styles = this.mRebuildStyles(
-        this.mSelectionStyles.get(ele),
+    this.refreshStyleDisplay_ = (ele, displayProps) => {
+      const styles = this.rebuildStyles_(
+        this.selectionStyles_.get(ele),
         displayProps
       ).reverse()
-      this.mStylesPanel.innerHTML = ''
-      this.mStylesPanel.scrollTo(0,0)
+      this.stylesPanel_.innerHTML = ''
+      this.stylesPanel_.scrollTo(0,0)
       for (const style of styles) {
         const group = document.createElement('div')
         group.classList.add('style-group')
@@ -800,11 +800,11 @@ import { copy } from '../commons/copy.js'
           }
           group.appendChild(groupItem)
         }
-        this.mStylesPanel.appendChild(group)
+        this.stylesPanel_.appendChild(group)
       }
     }
-    this.mInitComponents = () => {
-      if (this.mShadow) {
+    this.initComponents_ = () => {
+      if (this.shadow_) {
         return
       }
       const { shadowElement, shadow } = createShadow()
@@ -814,15 +814,15 @@ import { copy } from '../commons/copy.js'
       const end = document.createElement('span')
       end.innerText = '⊗'
       end.classList.add('end')
-      attachDragMove(this.mWindow.document, start, () => {
+      attachDragMove(this.window_.document, start, () => {
         end.style.left = start.offsetLeft + start.offsetWidth + 'px'
         end.style.top = start.offsetTop + 'px'
         end.classList.remove('enabled')
-        this.mUpdateSelections(start, start)
+        this.updateSelections_(start, start)
       })
-      attachDragMove(this.mWindow.document, end, () => {
+      attachDragMove(this.window_.document, end, () => {
         end.classList.add('enabled')
-        this.mUpdateSelections(end, start)
+        this.updateSelections_(end, start)
       })
       const root = document.createElement('div')
       root.classList.add('root')
@@ -832,34 +832,34 @@ import { copy } from '../commons/copy.js'
         {
           name: '微调',
           onclick: (e) => {
-            this.mShowController = !this.mShowController
-            if (this.mShowController) {
+            this.showController_ = !this.showController_
+            if (this.showController_) {
               e.classList.add('enable')
-              this.mController.classList.add('enable')
+              this.controller_.classList.add('enable')
             } else {
               e.classList.remove('enable')
-              this.mController.classList.remove('enable')
+              this.controller_.classList.remove('enable')
             }
           },
         },
         {
           name: '取样',
           onclick: (e) => {
-            this.mUpdateSelections(start, end)
+            this.updateSelections_(start, end)
           },
         },
         {
           name: '控制台',
           onclick: (e) => {
-            this.mLogConsole = !this.mLogConsole
-            if (this.mLogConsole) {
+            this.logConsole_ = !this.logConsole_
+            if (this.logConsole_) {
               e.classList.add('enable')
-              this.mConsole.classList.add('enable')
+              this.console_.classList.add('enable')
             } else {
               e.classList.remove('enable')
-              this.mConsole.classList.remove('enable')
-              this.mLastConsoleLine &&
-                setTimeout(() => this.mLastConsoleLine.scrollIntoView(), 0)
+              this.console_.classList.remove('enable')
+              this.lastConsoleLine_ &&
+                setTimeout(() => this.lastConsoleLine_.scrollIntoView(), 0)
             }
           },
         },
@@ -884,13 +884,13 @@ import { copy } from '../commons/copy.js'
       const controller = document.createElement('div')
       controller.classList.add('controller')
       attachDragMove(
-        this.mWindow.document,
+        this.window_.document,
         start,
         () => {
           end.style.left = start.offsetLeft + start.offsetWidth + 'px'
           end.style.top = start.offsetTop + 'px'
           end.classList.remove('enabled')
-          this.mUpdateSelections(start, start)
+          this.updateSelections_(start, start)
         },
         controller,
         0.1
@@ -902,60 +902,60 @@ import { copy } from '../commons/copy.js'
       root.appendChild(end)
       root.appendChild(start)
       const uiStyle = document.createElement('style')
-      uiStyle.innerText = this.mUIStyleContent
+      uiStyle.innerText = this.uIStyleContent_
       shadow.appendChild(root)
       shadow.appendChild(uiStyle)
-      this.mShadow = shadowElement
-      this.mStart = start
-      this.mConsole = cons
-      this.mEnd = end
-      this.mStylesPanel = stylesPanel
-      this.mController = controller
+      this.shadow_ = shadowElement
+      this.start_ = start
+      this.console_ = cons
+      this.end_ = end
+      this.stylesPanel_ = stylesPanel
+      this.controller_ = controller
       const injectStyle = document.createElement('style')
-      injectStyle.innerText = this.mInjectStyleContent
-      this.mInjectStyle = injectStyle
-      this.mWindow.document.body.appendChild(shadowElement)
-      this.mWindow.document.body.appendChild(this.mInjectStyle)
+      injectStyle.innerText = this.injectStyleContent_
+      this.injectStyle_ = injectStyle
+      this.window_.document.body.appendChild(shadowElement)
+      this.window_.document.body.appendChild(this.injectStyle_)
     }
-    this.mMaxConsoleLines = 200
-    this.mLog = (...args) => {
-      if (!this.mLogConsole && args[0] !== consoleLogType) {
+    this.maxConsoleLines_ = 200
+    this.log_ = (...args) => {
+      if (!this.logConsole_ && args[0] !== consoleLogType) {
         return
       }
-      this.mConsoleLines = this.mConsoleLines || []
+      this.consoleLines_ = this.consoleLines_ || []
       const ne = document.createElement('div')
       ne.classList.add('console-line')
-      this.mConsole.appendChild(ne)
+      this.console_.appendChild(ne)
       ne.innerText = args.join('')
-      this.mConsoleLines.push(ne)
-      if (this.mConsoleLines > this.mMaxConsoleLines) {
-        const e = this.mConsoleLines.shift()
-        this.mConsole.removeChild(e)
+      this.consoleLines_.push(ne)
+      if (this.consoleLines_ > this.maxConsoleLines_) {
+        const e = this.consoleLines_.shift()
+        this.console_.removeChild(e)
       }
-      this.mLastConsoleLine = ne
+      this.lastConsoleLine_ = ne
       setTimeout(() => ne.scrollIntoView(), 0)
     }
     this.exit = () => {
-      this.mWindow.document.body.removeChild(this.mShadow)
-      this.mWindow.document.body.removeChild(this.mInjectStyle)
-      this.mResolve()
+      this.window_.document.body.removeChild(this.shadow_)
+      this.window_.document.body.removeChild(this.injectStyle_)
+      this.resolve_()
     }
     this.launch = async () => {
-      this.mLunchTask =
-        this.mLunchTask ||
+      this.lunchTask_ =
+        this.lunchTask_ ||
         new Promise((resolve) => {
-          const savedLog = this.mWindow.console.log
+          const savedLog = this.window_.console.log
           let log = (...args) => {
-            this.mLog(...args)
+            this.log_(...args)
             args = args[0] === consoleLogType ? args.slice(1) : args
-            savedLog.call(this.mWindow.console, ...args)
+            savedLog.call(this.window_.console, ...args)
           }
-          this.mWindow.console.log = log
-          this.mInitComponents()
+          this.window_.console.log = log
+          this.initComponents_()
           console.log(consoleLogType, '移动光标选取样式')
-          this.mResolve = resolve
+          this.resolve_ = resolve
         })
-      return this.mLunchTask
+      return this.lunchTask_
     }
   }
 
