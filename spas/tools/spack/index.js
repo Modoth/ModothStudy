@@ -140,9 +140,9 @@ class JsHtmlAdaper {
   convert(content) {
     return `(()=>{
       const root = document.createElement('div')
-      const shadow = root.attachShadow({mode:"closed"})
-      shadow.innerHTML = ${JSON.stringify(content)}
-      return root
+      // const shadow = root.attachShadow({mode:"closed"})
+      root.innerHTML = ${JSON.stringify(content)}
+      return root.children
     })()`
   }
 }
@@ -316,7 +316,7 @@ class ImportContext {
 
   async getResult(filename) {
     const result = this.results[filename]
-    if (!result.data) {
+    if (result.data === undefined) {
       if (this.dealingmodules.has(filename)) {
         throw new Error('Cyclic dependencies')
       }
@@ -461,7 +461,12 @@ class Packer {
           const {
             results,
             dependentedBys: newDependentedBys,
-          } = await this.packOnce(workdir, toUpdateEntries, outputTemplate, options)
+          } = await this.packOnce(
+            workdir,
+            toUpdateEntries,
+            outputTemplate,
+            options
+          )
           console.log('============\nend\n')
           onchange(results)
           for (const dep in newDependentedBys) {
