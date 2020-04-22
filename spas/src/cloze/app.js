@@ -32,8 +32,8 @@ class App {
     new ResizeWatcher(window).register(() => {
       this.startCloze_(true)
     })
-    this.fontSizes_ = Array.from({ length: 10 }, (_, i) => 8 + i * 2)
-    this.cellSizes_ = Array.from({ length: 6 }, (_, i) => 48 - i * 6)
+    this.fontSizes_ = Array.from({ length: 20 }, (_, i) => 8 + i * 2)
+    this.cellSizes_ = Array.from({ length: 12 }, (_, i) => 78 - i * 6)
     this.recommendSize = 50
     this.margin_ = 10
     this.menu_ = [
@@ -88,8 +88,11 @@ class App {
   }
 
   /**@private */
-  async startCloze_(checkModify = false) {
-    if (checkModify) {
+  async startCloze_(resizeOnly = false) {
+    if (resizeOnly) {
+      if (this.cloze_) {
+        this.calculateSizeAndUpdate()
+      }
       return
     }
     if (this.currentClozeTask_) {
@@ -98,15 +101,19 @@ class App {
     let [width, height, cellSize] = this.fitWidth_()
     return new Promise(async (resolve) => {
       this.currentClozeTask_ = resolve
-      const cloze = this.generator_.generate(width, height)
-      cellSize = this.fitSize_(cloze.width, cloze.height)
-      this.components.selectBoardPanel.classList.add('hidden')
-      this.components.root.onclick = () => {
-        this.components.selectBoardPanel.classList.add('hidden')
-        this.checkFinish_(cloze)
-      }
-      this.updateBoardCells_(cloze, cellSize)
+      this.cloze_ = this.generator_.generate(width, height)
+      this.calculateSizeAndUpdate()
     })
+  }
+
+  calculateSizeAndUpdate() {
+    const cellSize = this.fitSize_(this.cloze_.width, this.cloze_.height)
+    this.components.selectBoardPanel.classList.add('hidden')
+    this.components.root.onclick = () => {
+      this.components.selectBoardPanel.classList.add('hidden')
+      this.checkFinish_(this.cloze_)
+    }
+    this.updateBoardCells_(this.cloze_, cellSize)
   }
 
   checkFinish_(cloze) {
