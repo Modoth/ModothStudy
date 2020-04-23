@@ -4,7 +4,7 @@ import { WordsClozeGenerator } from './words-cloze-generator.js'
 import { DistinctClozeGenerator } from './distinct-cloze-generator.js'
 
 class App {
-  buildComponents() {
+  view() {
     const components = ['board', 'select-board', 'select-board-panel']
     return [
       components,

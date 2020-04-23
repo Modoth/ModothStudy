@@ -4,7 +4,7 @@ export class AppBase {
     this.data = await this.validateData(data)
     await this.initComponents(this.root)
     this.components = { root }
-    let elements = this.buildComponents(this.root)
+    let elements = this.view(this.root)
     if (elements && elements) {
       let componentNames
       if (elements[0] instanceof Array) {
@@ -31,7 +31,7 @@ export class AppBase {
 
   async initComponents() {}
 
-  buildComponents() {}
+  view() {}
 
   async start() {
     console.log('start')
