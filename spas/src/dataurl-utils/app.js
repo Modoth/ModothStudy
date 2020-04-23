@@ -16,14 +16,18 @@ export class App {
     this.previews_ = [this.previewImage_, this.previewFont_]
     this.btnCopy_ = document.getElementById('btnCopy')
     this.fileSelector_ = new FileSelector(document.getElementById('app'))
-    this.logoContainer_.addEventListener('click', () => {
+    const toSelectFile = () => {
       if (this.isLoadingFile_) {
         return
       }
       this.fileSelector_.selectFile('*', 'DataURL', (res) => {
         this.loadFile_(res)
       })
-    })
+    }
+    this.logoContainer_.addEventListener('click', toSelectFile)
+    document
+      .getElementById('btnInputFile')
+      .addEventListener('click', toSelectFile)
     this.dataUrl_.addEventListener('click', () => this.copyUrl_())
     this.btnCopy_.addEventListener('click', () => this.copyUrl_())
   }
