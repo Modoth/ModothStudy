@@ -324,14 +324,14 @@ class FactoryView {
     this.color_ = this.randomColor(randomColors)
   }
   changeLevel(perfDesc) {
-    const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
-    if (this.shadowSize_ != shadowSize) {
-      this.shadowSize_ = shadowSize
-      this.view_.style.filter = `drop-shadow(0 0 ${Math.max(
-        1,
-        this.shadowSize_
-      )}px ${this.color_})`
-    }
+    // const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
+    // if (this.shadowSize_ != shadowSize) {
+    //   this.shadowSize_ = shadowSize
+    //   this.view_.style.filter = `drop-shadow(0 0 ${Math.max(
+    //     1,
+    //     this.shadowSize_
+    //   )}px ${this.color_})`
+    // }
     if (this.backgroundClassName_) {
       this.view_.classList.remove(this.backgroundClassName_)
     }
