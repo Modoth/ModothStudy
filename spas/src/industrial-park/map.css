@@ -1,6 +1,6 @@
 #map {
   overflow: auto;
-  margin: 10px;
+  margin: 0;
   position: relative;
 }
 
@@ -56,6 +56,7 @@
   left: 10%;
   right: 10%;
   display: flex;
+  opacity: 0;
   animation: product 2s;
   color: #fff;
   background-color: gold;

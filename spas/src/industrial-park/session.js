@@ -134,7 +134,7 @@ class Factory {
     }
     this.view_ = value
     if (this.view_) {
-      this.view_.changePerformance(this.desc_.levels[this.level_])
+      this.view_.changeLevel(this.desc_.levels[this.level_])
       this.view_.open()
     }
   }
@@ -192,7 +192,7 @@ class Factory {
         this.resourceCells_.push(cell)
       }
     })
-    this.view_ && this.view_.changePerformance(levelDesc)
+    this.view_ && this.view_.changeLevel(levelDesc)
   }
 
   produce(/**@type number */ time) {
@@ -323,14 +323,14 @@ class FactoryView {
     this.shadowSize_ = 0
     this.color_ = this.randomColor(randomColors)
   }
-  changePerformance(perfDesc) {
+  changeLevel(perfDesc) {
     const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
     if (this.shadowSize_ != shadowSize) {
       this.shadowSize_ = shadowSize
-      this.view_.style.filter =
-        this.shadowSize_ > 0
-          ? `drop-shadow(0 0 ${this.shadowSize_}px ${this.color_})`
-          : ''
+      this.view_.style.filter = `drop-shadow(0 0 ${Math.max(
+        1,
+        this.shadowSize_
+      )}px ${this.color_})`
     }
     if (this.backgroundClassName_) {
       this.view_.classList.remove(this.backgroundClassName_)
@@ -353,7 +353,6 @@ class FactoryView {
     setTimeout(() => {
       productView.remove()
     }, 1500)
-    console.log(product.price)
   }
   updateprogress(/**@type { {type:any, progress:number}[] } */ progresses) {
     /**@type Map<any, HTMLElement> */
@@ -615,6 +614,11 @@ export class Session {
     this.components_.terrians.innerHTML = ''
     this.components_.svgDefs.innerHTML = ''
     this.components_.sessionName.innerText = this.sessionData_.name
+    for (const prop in this.sessionData_.style || []) {
+      if (prop.startsWith('background')) {
+        document.body.style[prop] = this.sessionData_.style[prop]
+      }
+    }
     this.renderMap_(this.handleMapClick_.bind(this))
     this.clock_.start()
     while (true) {

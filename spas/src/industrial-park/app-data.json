@@ -126,10 +126,6 @@
     {
       "type": "沙土",
       "canPlace": true,
-      "style": {
-        "backgroundImage": "repeating-radial-gradient( circle at 0.5em 0.05em, transparent, transparent 0.2em, #EDE8D5 0.21em, #EDE8D5 0.3em, transparent 0.31em), repeating-radial-gradient( circle at 0.5em 0.95em, transparent, transparent 0.2em, #EDE8D5 0.21em, #EDE8D5 0.3em, transparent 0.31em)",
-        "backgroundSize": "1em 1em;"
-      },
       "resources": [
         {
           "type": "硅",
@@ -137,7 +133,7 @@
         },
         {
           "type": "水",
-          "speed": 0
+          "speed": 1
         }
       ]
     }
@@ -150,6 +146,10 @@
       "cellSize": 5,
       "initCurrency": 10000,
       "completeCurrency": 12000,
+      "style": {
+        "backgroundImage": "repeating-radial-gradient(circle at 0.5em 0.05em, transparent, transparent 0.2em, rgb(237, 232, 213) 0.21em, rgb(237, 232, 213) 0.3em, transparent 0.31em), repeating-radial-gradient(circle at 0.5em 0.95em, transparent, transparent 0.2em, rgb(237, 232, 213) 0.21em, rgb(237, 232, 213) 0.3em, transparent 0.31em)",
+        "backgroundSize": "1em 1em"
+      },
       "factories": [{ "type": "APPLE" }],
       "terrians": [
         {
