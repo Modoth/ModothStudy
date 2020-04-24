@@ -143,7 +143,7 @@ class Factory {
   }
 
   get maxLevel() {
-    return this.desc_.levels.length
+    return this.desc_.levels.length - 1
   }
 
   get upgradeCosts() {
@@ -300,12 +300,15 @@ class FactoryView {
     this.cellSize_ = cellSize
     this.viewSize_ = ((range || 1) * 2 - 1) * this.cellSize_
     const randomColors = [
-      '#ff0000',
-      '#ffff00',
-      '#00ff00',
-      '#00ffff',
-      '#0000ff',
-      '#ff00ff',
+      '#cccccc',
+      '#99cc66',
+      '#ccccff',
+      '#cccc99',
+      '#ffcccc',
+      '#99cccc',
+      '#ffffcc',
+      '#e9ae6a',
+      '#cc9999',
     ]
     this.parent_ = parent
     this.range_ = range
@@ -322,16 +325,17 @@ class FactoryView {
     this.view_.style.height = this.viewSize_
     this.shadowSize_ = 0
     this.color_ = this.randomColor(randomColors)
+    this.colorInside_ = this.color_ + '40'
   }
   changeLevel(perfDesc) {
-    // const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
-    // if (this.shadowSize_ != shadowSize) {
-    //   this.shadowSize_ = shadowSize
-    //   this.view_.style.filter = `drop-shadow(0 0 ${Math.max(
-    //     1,
-    //     this.shadowSize_
-    //   )}px ${this.color_})`
-    // }
+    const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
+    if (this.shadowSize_ != shadowSize) {
+      this.shadowSize_ = shadowSize
+      this.view_.style.boxShadow = `0 0 ${Math.max(1, this.shadowSize_)}px ${
+        this.color_
+      }`
+      this.view_.style.backgroundColor = this.colorInside_
+    }
     if (this.backgroundClassName_) {
       this.view_.classList.remove(this.backgroundClassName_)
     }
