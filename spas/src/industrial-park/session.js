@@ -91,22 +91,40 @@ class ProductLine {
 }
 
 class Factory {
-  constructor(
-    desc,
-    /**@type number */ x,
-    /**@type number */ y,
-    /**@type Cell */ cell
-  ) {
+  constructor(desc) {
     this.desc_ = desc
-    this.x_ = x
-    this.y_ = y
-    this.cell_ = cell
-    this.cell_.factory = this
     /**@type number */
     this.level_ = -1
     /**@type FactoryView */
     this.view_ = null
+    this.range_ = this.desc_.range || 1
   }
+  checkPlace(
+    /**@type number */ x,
+    /**@type number */ y,
+    /**@type {(x:number, y:number)=>Cell} */ cellsProvider
+  ) {
+    this.x_ = x
+    this.y_ = y
+    /**@type Cell[] */
+    const placeCells = []
+    const canPlace = this.visitNeighbors_(this.range_, (i, j) => {
+      const cell = cellsProvider(i, j)
+      if (cell) {
+        if (!cell.canPlace || cell.factory) {
+          return true
+        }
+        placeCells.push(cell)
+      }
+    })
+    return canPlace ? placeCells : null
+  }
+
+  placeWith(placeCells) {
+    this.placeCells_ = placeCells
+    this.placeCells_.forEach((cell) => (cell.factory = this))
+  }
+
   get view() {
     return this.view_
   }
@@ -136,11 +154,22 @@ class Factory {
   }
 
   destory() {
-    this.cell_.factory = null
     for (const cell of this.resourceCells_) {
       cell.shareFactories.delete(this)
     }
+    this.placeCells_.forEach((cell) => (cell.factory = null))
     this.view.close()
+  }
+
+  visitNeighbors_(range, checkTime) {
+    for (let j = this.y_ - range + 1; j < this.y_ + range; j++) {
+      for (let i = this.x_ - range + 1; i < this.x_ + range; i++) {
+        if (checkTime(i, j)) {
+          return false
+        }
+      }
+    }
+    return true
   }
 
   setLevel(level, /**@type {(x:number, y:number)=>Cell} */ cellsProvider) {
@@ -156,24 +185,13 @@ class Factory {
     )
     /**@type Cell[] */
     this.resourceCells_ = []
-    for (
-      let j = this.y_ - this.resourceRange_;
-      j < this.y_ + this.resourceRange_;
-      j++
-    ) {
-      for (
-        let i = this.x_ - this.resourceRange_;
-        i < this.x_ + this.resourceRange_;
-        i++
-      ) {
-        const cell = cellsProvider(i, j)
-        if (!cell) {
-          continue
-        }
+    this.visitNeighbors_(this.resourceRange_, (i, j) => {
+      const cell = cellsProvider(i, j)
+      if (cell) {
         cell.shareFactories.add(this)
         this.resourceCells_.push(cell)
       }
-    }
+    })
     this.view_ && this.view_.changePerformance(levelDesc)
   }
 
@@ -275,8 +293,22 @@ class ResourceCollection {
 }
 
 class FactoryView {
-  constructor(/**@type HTMLElement */ parent, px, py, width, height) {
+  randomColor(colorPool) {
+    return colorPool[Math.floor(Math.random() * colorPool.length)]
+  }
+  constructor(/**@type HTMLElement */ parent, px, py, range, cellSize) {
+    this.cellSize_ = cellSize
+    this.viewSize_ = ((range || 1) * 2 - 1) * this.cellSize_
+    const randomColors = [
+      '#ff0000',
+      '#ffff00',
+      '#00ff00',
+      '#00ffff',
+      '#0000ff',
+      '#ff00ff',
+    ]
     this.parent_ = parent
+    this.range_ = range
     this.view_ = document.createElement('div')
     this.view_.classList.add('factory')
     this.progressPanel_ = document.createElement('div')
@@ -284,12 +316,22 @@ class FactoryView {
     /**@type Map<any, HTMLElement> */
     this.progressViews_ = new Map()
     this.view_.appendChild(this.progressPanel_)
-    this.view_.style.left = px
-    this.view_.style.top = py
-    this.view_.style.width = width
-    this.view_.style.height = height
+    this.view_.style.left = px - this.viewSize_ / 2
+    this.view_.style.top = py - this.viewSize_ / 2
+    this.view_.style.width = this.viewSize_
+    this.view_.style.height = this.viewSize_
+    this.shadowSize_ = 0
+    this.color_ = this.randomColor(randomColors)
   }
   changePerformance(perfDesc) {
+    const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
+    if (this.shadowSize_ != shadowSize) {
+      this.shadowSize_ = shadowSize
+      this.view_.style.filter =
+        this.shadowSize_ > 0
+          ? `drop-shadow(0 0 ${this.shadowSize_}px ${this.color_})`
+          : ''
+    }
     if (this.backgroundClassName_) {
       this.view_.classList.remove(this.backgroundClassName_)
     }
@@ -513,16 +555,26 @@ export class Session {
             return
           }
           const factoryDesc = i.type
-          const newFactory = new Factory(factoryDesc, x, y, cell)
+          const newFactory = new Factory(factoryDesc)
+          const placeCells = newFactory.checkPlace(
+            x,
+            y,
+            this.getCellAt_.bind(this)
+          )
+          if (!placeCells) {
+            this.showMessage('不能建在这里！')
+            return
+          }
           if (!this.upgradeFactory_(newFactory)) {
             return
           }
+          newFactory.placeWith(placeCells)
           const [px, py] = this.screenLocation_(x, y)
           const factoryView = new FactoryView(
             this.components_.units,
             px,
             py,
-            this.cellSize_,
+            factoryDesc.range,
             this.cellSize_
           )
           newFactory.view = factoryView

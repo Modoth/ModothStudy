@@ -22,24 +22,11 @@
   background-size: contain;
   background-position: center;
   position: relative;
-  animation: factory 3s infinite ease-in-out;
-}
-
-@keyframes factory {
-  0% {
-    filter: brightness(1) drop-shadow(2px 4px 6px black);
-  }
-  50% {
-    filter: brightness(1.1)drop-shadow(2px 4px 6px black);
-  }
-  100% {
-    filter: brightness(1) drop-shadow(2px 4px 6px black);
-  }
 }
 
 .factory .progress-panel {
-  width: 60%;
-  left: 20%;
+  width: 80%;
+  left: 10%;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -64,8 +51,7 @@
 }
 
 .product {
-  font-size: smaller;
-  color: red;
+  font-size: x-small;
   position: absolute;
   left: 10%;
   right: 10%;

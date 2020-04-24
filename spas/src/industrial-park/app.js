@@ -93,26 +93,28 @@ class App {
           }
         }
       }
-      for (const terrian of session.terrians) {
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const cell = cells[y][x]
-            const resourceId = parseInt(terrian.resources[y][x]) || 0
-            const ids = getResourceIds(resourceId)
-            if (ids.length) {
-              cell.canPlace = cell.canPlace || !!terrian.type.canPlace
-            }
-            for (const id of ids) {
-              const res = terrian.type.resources[id]
-              if (!cell.resources.has(res.type)) {
-                cell.resources.set(res.type, res.speed)
-              } else {
-                cell.resources.set(
-                  res.type,
-                  cell.resources.get(res.type) + res.speed
-                )
-              }
-            }
+      const canvas = document.createElement('canvas')
+      canvas.width = width * session.cellSize
+      canvas.height = height * session.cellSize
+      const ctx = canvas.getContext('2d')
+      for (let i = 0; i < session.terrians.length; i++) {
+        const terrian = session.terrians[i]
+        ctx.fillStyle = `rgb(${(i + 1.5) * 10},0,0)`
+        ctx.strokeStyle = 'transparent'
+        ctx.fill(new Path2D(terrian.path))
+      }
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const cell = cells[y][x]
+          const idx =
+            (x * session.cellSize + y * session.cellSize * canvas.width) * 4
+          const terrian = session.terrians[Math.floor(imgData[idx] / 10) - 1]
+          if (terrian) {
+            cell.canPlace = !!terrian.type.canPlace
+            cell.resources = new Map(
+              terrian.type.resources.map((r) => [r.type, r.speed])
+            )
           }
         }
       }

@@ -133,6 +133,15 @@ class JsPngAdaper {
   }
 }
 
+class JsonPngAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return `data:image/png;base64,${content.toString('base64')}`
+  }
+}
+
 class JsHtmlAdaper {
   constructor() {
     this.reg = /\/\*\*\s*@imports html\s*\*\/ '([^']*)'/gm
@@ -346,6 +355,7 @@ class Packer {
           new JsPngAdaper()
         )
       case '.json':
+        return new TextImporter(new JsonPngAdaper())
       case '.txt':
       case '.css':
         return new TextImporter()
