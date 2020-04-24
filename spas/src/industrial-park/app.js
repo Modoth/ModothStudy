@@ -12,7 +12,7 @@ class App {
         'terrians',
         'units',
         'svg-defs',
-        'imgStyles',
+        'styles',
         'session-name',
       ],
       .../**@imports html */ './map.html',
@@ -32,7 +32,7 @@ class App {
       'products',
       'factories',
       'terrians',
-      'images',
+      'styles',
     ]) {
       structureData[defName] =
         data[defName] && new Map(data[defName].map((i) => [i.type, i]))
@@ -49,8 +49,8 @@ class App {
       for (const level of factory.levels) {
         linkRef(level, 'resources')
         linkRef(level, 'products')
-        if (level.img) {
-          level.img = structureData['images'].get(level.img.type)
+        if (level.style) {
+          level.style = structureData['styles'].get(level.style.type)
         }
         for (const product of level.products) {
           linkRef(product.costs, 'resources')
@@ -123,16 +123,18 @@ class App {
   }
 
   async start() {
-    const imageStyles = []
-    const images = Array.from(this.data.images.values())
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i]
-      img.className = `img-${i}`
-      imageStyles.push(
-        `.${img.className}{ background-image: url("${img.url}") }`
+    const styleStrs = []
+    const styles = Array.from(this.data.styles.values())
+    for (let i = 0; i < styles.length; i++) {
+      const style = styles[i]
+      style.className = `style-${i}`
+      styleStrs.push(
+        `.${style.className}{ ${style.rules
+          .map(([prop, value]) => `${prop}: ${value};`)
+          .join('\n')} }`
       )
     }
-    this.components.imgStyles.innerHTML = imageStyles.join('\n')
+    this.components.styles.innerHTML = styleStrs.join('\n')
     while (true) {
       for (const session of this.data.sessions) {
         this.session_ = new Session(session, this.components)

@@ -23,7 +23,7 @@
       "range": 5,
       "levels": [
         {
-          "img": {
+          "style": {
             "type": "fac001"
           },
           "costs": 2000,
@@ -49,7 +49,7 @@
         },
         {
           "costs": 1000,
-          "img": {
+          "style": {
             "type": "fac001"
           },
           "products": [
@@ -86,7 +86,7 @@
               }
             }
           ],
-          "resourceRange": 10
+          "resourceRange": 20
         }
       ]
     }
@@ -96,7 +96,7 @@
       "type": "浅水",
       "canPlace": false,
       "style": {
-        "backgroundColor": "#758C92",
+        "backgroundColor": "lightgoldenrodyellow",
         "backgroundImage": "repeating-radial-gradient( circle at -0.75em -0.75em, transparent, transparent 0.4em, #B5D0E0 0.41em, #B5D0E0 0.6em, transparent 0.61em), repeating-radial-gradient( circle at 1.75em 1.75em, transparent, transparent 0.4em, #B5D0E0 0.41em, #B5D0E0 0.6em, transparent 0.61em)",
         "backgroundSize": "1em 1em"
       },
@@ -111,10 +111,10 @@
       "type": "山地",
       "canPlace": true,
       "style": {
-        "backgroundColor": "green",
-        "backgroundImage": "repeating-linear-gradient( -65deg, transparent, transparent 0.5em, #E8C9A1 0.5em, #E8C9A1 0.74em, transparent 0.74em, transparent 3em), repeating-linear-gradient( -55deg, #C28742, #C28742 0.3em, transparent 0.31em, transparent 3em), repeating-linear-gradient( 55deg, #C28742, #C28742 0.3em, transparent 0.31em, transparent 3em), repeating-linear-gradient( 45deg, #8F5D38, #8F5D38 0.38em, transparent 0.37em, transparent 3em)",
-        "backgroundSize": "1.2em 1em",
-        "backgroundPosition": "0.35em 0.8em"
+        "backgroundColor": "transparent",
+        "backgroundImage": "repeating-radial-gradient( circle at 1.4em 0.49em, #5ACB65, #5ACB65 0.54em, transparent 0.555em, transparent 2em), repeating-radial-gradient( circle at -0.4em 0.49em, #73D645, #73D645 0.54em, transparent 0.555em, transparent 2em)",
+        "backgroundSize": "1em 1.25em",
+        "backgroundPosition": "0.5em 0.15em"
       },
       "resources": [
         {
@@ -144,7 +144,7 @@
       "size": [300, 300],
       "cellSize": 5,
       "initCurrency": 10000,
-      "completeCurrency": 12000,
+      "completeCurrency": 100000,
       "style": {
         "backgroundImage": "repeating-radial-gradient(circle at 0.5em 0.05em, transparent, transparent 0.2em, rgb(237, 232, 213) 0.21em, rgb(237, 232, 213) 0.3em, transparent 0.31em), repeating-radial-gradient(circle at 0.5em 0.95em, transparent, transparent 0.2em, rgb(237, 232, 213) 0.21em, rgb(237, 232, 213) 0.3em, transparent 0.31em)",
         "backgroundSize": "1em 1em"
@@ -169,10 +169,12 @@
       ]
     }
   ],
-  "images": [
+  "styles": [
     {
       "type": "fac001",
-      "url": "/**@imports image */ './fac001.png'"
+      "rules": [
+        ["background-image", "url(\"/**@imports image */ './fac001.png'\")"]
+      ]
     }
   ]
 }

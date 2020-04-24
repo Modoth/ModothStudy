@@ -292,6 +292,10 @@ class ResourceCollection {
   }
 }
 
+const isSafari =
+  ~window.navigator.userAgent.indexOf('Safari') &&
+  !~window.navigator.userAgent.indexOf('Chrome')
+
 class FactoryView {
   randomColor(colorPool) {
     return colorPool[Math.floor(Math.random() * colorPool.length)]
@@ -300,15 +304,12 @@ class FactoryView {
     this.cellSize_ = cellSize
     this.viewSize_ = ((range || 1) * 2 - 1) * this.cellSize_
     const randomColors = [
-      '#cccccc',
-      '#99cc66',
-      '#ccccff',
-      '#cccc99',
-      '#ffcccc',
-      '#99cccc',
-      '#ffffcc',
-      '#e9ae6a',
-      '#cc9999',
+      '#ff0000',
+      '#00ff00',
+      '#0000ff',
+      '#ffff00',
+      '#ff00ff',
+      '#00ffff',
     ]
     this.parent_ = parent
     this.range_ = range
@@ -325,26 +326,31 @@ class FactoryView {
     this.view_.style.height = this.viewSize_
     this.shadowSize_ = 0
     this.color_ = this.randomColor(randomColors)
-    this.colorInside_ = this.color_ + '40'
   }
   changeLevel(perfDesc) {
     const shadowSize = Math.floor(this.cellSize_ * perfDesc.resourceRange)
     if (this.shadowSize_ != shadowSize) {
       this.shadowSize_ = shadowSize
-      this.view_.style.boxShadow = `0 0 ${Math.max(1, this.shadowSize_)}px ${
-        this.color_
-      }`
-      this.view_.style.backgroundColor = this.colorInside_
+      if (isSafari) {
+        this.view_.style.boxShadow = `0 0 ${Math.max(1, this.shadowSize_)}px ${
+          this.color_
+        }, 0 0 ${this.viewSize_}px ${this.color_}60 inset`
+        // this.view_.style.backgroundColor =
+        //   this.color_ +
+        //   Math.floor((100 * this.range_) / perfDesc.resourceRange).toString(16)
+      } else {
+        this.view_.style.filter = `drop-shadow(0 0 ${Math.max(
+          1,
+          this.shadowSize_
+        )}px ${this.color_})`
+      }
     }
     if (this.backgroundClassName_) {
       this.view_.classList.remove(this.backgroundClassName_)
     }
-    if (perfDesc.img && perfDesc.img.className) {
-      this.backgroundClassName_ = perfDesc.img.className
+    if (perfDesc.style && perfDesc.style.className) {
+      this.backgroundClassName_ = perfDesc.style.className
       this.view_.classList.add(this.backgroundClassName_)
-    } else {
-      this.backgroundClassName_ = null
-      this.view_.innerText = `${factoryDesc.type}`
     }
   }
   nodityProduct(/**@type Product */ product) {
