@@ -47,7 +47,7 @@ const getLocalConfigs = async () => {
       let file = path.join(srcFolder, subfolder, fileName)
       if (await FileUtils.exists(file)) {
         indexFile = file
-        if (file === 'app.js') {
+        if (fileName === 'app.js') {
           template = 'src/template/index.html'
         }
         break
@@ -58,12 +58,13 @@ const getLocalConfigs = async () => {
     }
     entries[subfolder] = Object.assign(
       { path: indexFile, template },
-      localCfg && localCfg.entries[subfolder]
+      localCfg && localCfg.entries && localCfg.entries[subfolder]
     )
   }
+  debugger
   return {
     cd: (localCfg && localCfg.cd) || {},
-    dist: localCfg.dist,
+    dist: localCfg && localCfg.dist,
     entries,
   }
 }

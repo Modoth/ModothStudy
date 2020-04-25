@@ -4,20 +4,25 @@ export class AppBase {
     this.data = await this.validateData(data)
     await this.initComponents(this.root)
     this.components = { root }
-    let elements = this.view(this.root)
-    if (elements && elements) {
-      let componentNames
-      if (elements[0] instanceof Array) {
-        componentNames = elements[0]
-        elements = elements.slice(1)
-      }
-      for (const c of elements) {
-        this.root.appendChild(c)
-      }
-      for (const n of componentNames) {
-        this.components[this.getElementName(n)] = document.getElementById(n)
+    const componentNames = []
+    const append = (item) => {
+      if (item instanceof Array || item instanceof HTMLCollection) {
+        for (const element of item) {
+          append(element)
+        }
+      } else if (item instanceof HTMLElement) {
+        this.root.appendChild(item)
+      } else if (typeof item === 'string') {
+        componentNames.push(item)
+      } else {
+        console.log(item)
       }
     }
+    let view = this.view(this.root)
+    append(view)
+    componentNames.forEach(item =>
+      this.components[this.getElementName(item)] = document.getElementById(item)
+    )
     await this.start(this.data)
   }
 
@@ -29,9 +34,9 @@ export class AppBase {
     return data
   }
 
-  async initComponents() {}
+  async initComponents() { }
 
-  view() {}
+  view() { }
 
   async start() {
     console.log('start')

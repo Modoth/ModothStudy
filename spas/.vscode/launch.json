@@ -9,9 +9,6 @@
       "request": "launch",
       "name": "Debug spack",
       "program": "${workspaceFolder}/tools/spack/index.js",
-      "env": {
-        "SPACK_CONFIG_FILE": "./.local.spack.config.modoth.js"
-      },
       "args": ["serve", "--watch"]
     }
   ]
