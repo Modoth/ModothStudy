@@ -151,7 +151,7 @@ class JsHtmlAdaper {
       const root = document.createElement('div')
       // const shadow = root.attachShadow({mode:"closed"})
       root.innerHTML = ${JSON.stringify(content)}
-      return root.children
+      return root.children.length === 1 ? root.children[0] : Array.from(root.children)
     })()`
   }
 }

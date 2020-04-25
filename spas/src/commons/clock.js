@@ -5,10 +5,10 @@ const ClockStatus = {
 }
 
 export class Clock {
-  constructor(tps) {
+  constructor(tps = 1) {
     this.now_ = -1
     this.interval_ = 0
-    this.tps_ = tps
+    this.tps_ = Math.min(1000, tps)
   }
   get now() {
     return this.now_
@@ -41,6 +41,10 @@ export class Clock {
   stop() {
     this.pause()
     this.status = ClockStatus.Stop
+  }
+
+  get tick() {
+    return this.tick_
   }
 
   wait(tick = 0) {

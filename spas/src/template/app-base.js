@@ -1,12 +1,13 @@
 export class AppBase {
   async init(/**@type HTMLElement */ root, data) {
+    this.storage = this.initStorage_()
     this.root = root
     this.data = await this.validateData(data)
     await this.initComponents(this.root)
     this.components = { root }
     const componentNames = []
     const append = (item) => {
-      if (item instanceof Array || item instanceof HTMLCollection) {
+      if (item instanceof Array) {
         for (const element of item) {
           append(element)
         }
@@ -20,10 +21,28 @@ export class AppBase {
     }
     let view = this.view(this.root)
     append(view)
-    componentNames.forEach(item =>
-      this.components[this.getElementName(item)] = document.getElementById(item)
+    componentNames.forEach(
+      (item) =>
+        (this.components[this.getElementName(item)] = document.getElementById(
+          item
+        ))
     )
     await this.start(this.data)
+  }
+
+  initStorage_() {
+    if (window.$storage) {
+      return window.$storage
+    }
+    try {
+      const s = window.localStorage
+      return s
+    } catch {
+      return {
+        getItem: () => '',
+        setItem: () => true,
+      }
+    }
   }
 
   getElementName(id) {
@@ -34,9 +53,9 @@ export class AppBase {
     return data
   }
 
-  async initComponents() { }
+  async initComponents() {}
 
-  view() { }
+  view() {}
 
   async start() {
     console.log('start')
