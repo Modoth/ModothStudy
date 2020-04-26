@@ -24,7 +24,7 @@ class App {
 
   async pause() {
     if (this.cancleToken_) {
-      this.this.cancleToken_.cancled = true
+      this.cancleToken_.cancled = true
     }
   }
 

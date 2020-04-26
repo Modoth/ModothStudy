@@ -1,3 +1,21 @@
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (orientation: landscape) {
+  #app {
+    flex-direction: row;
+  }
+  #msg {
+    transform: rotate(-90deg);
+  }
+
+  #statistaicPanel {
+    width: 3em;
+  }
+}
+
 #clock {
   position: absolute;
   left: 50%;
@@ -5,6 +23,33 @@
   transform: translate(-50%, -50%);
   width: 80vmin;
   height: 80vmin;
+}
+
+.clock-panel {
+  flex: 4;
+  position: relative;
+  background-color: #fffc;
+}
+
+#statistaicPanel {
+  box-shadow: 0 -3px 5px #0004;
+  color: #666;
+  flex: 1;
+  font-size: x-large;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 1px 1px 3px #fff8;
+  transition: flex 0.25s ease-in-out;
+  text-align: center;
+}
+
+#msg {
+  white-space: pre;
+}
+
+#statistaicPanel.open {
+  flex: 6;
 }
 
 .popup {
@@ -22,7 +67,8 @@
   background: white;
   padding: 10px;
   border-radius: 10px;
-  width: 80vw;
+  min-width: 20vw;
+  max-width: 80vw;
   max-height: 80vh;
   box-sizing: border-box;
   box-shadow: 1px 1px 3px#0008;

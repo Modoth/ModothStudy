@@ -5,11 +5,18 @@ export class HTMLClockElement extends HTMLElement {
   static get timeAttrName() {
     return 'time'
   }
+  static get stateAttrName() {
+    return 'state'
+  }
   static get handsAttrName() {
     return 'hands'
   }
   static get observedAttributes() {
-    return [HTMLClockElement.timeAttrName, HTMLClockElement.handsAttrName]
+    return [
+      HTMLClockElement.timeAttrName,
+      HTMLClockElement.handsAttrName,
+      HTMLClockElement.stateAttrName,
+    ]
   }
   constructor() {
     super()
@@ -23,10 +30,25 @@ export class HTMLClockElement extends HTMLElement {
     this.minuteHand_ = shadow.querySelector('.minute-hand')
     /**@type HTMLElement */
     this.secondHand_ = shadow.querySelector('.second-hand')
+    /**@type HTMLElement */
+    this.center_ = shadow.querySelector('.center')
+    this.center_.onclick = (ev) => {
+      ev.stopPropagation()
+      this.onstateclick && this.onstateclick(ev)
+    }
     this.updateTime_(this.getAttribute(HTMLClockElement.timeAttrName))
     this.updateHandsVisibility_(
       this.getAttribute(HTMLClockElement.handsAttrName)
     )
+  }
+
+  updateState_(state) {
+    this.state_ = state
+    if (this.state_) {
+      this.center_.classList.add('enabled')
+    } else {
+      this.center_.classList.remove('enabled')
+    }
   }
 
   getHandTransform(value, total) {
@@ -41,9 +63,9 @@ export class HTMLClockElement extends HTMLElement {
     let second = 0
     if (timeStr) {
       const tokens = timeStr.split(':')
-      hours = parseInt(tokens[0]) || 0
-      minute = parseInt(tokens[1]) || 0
       second = parseInt(tokens[2]) || 0
+      minute = parseInt(tokens[1]) || 0 + second / 60
+      hours = parseInt(tokens[0]) || 0 + minute / 60
     }
     this.hourHand_.style.transform = this.getHandTransform(hours, 12)
     this.minuteHand_.style.transform = this.getHandTransform(minute, 60)
@@ -72,6 +94,9 @@ export class HTMLClockElement extends HTMLElement {
         break
       case HTMLClockElement.handsAttrName:
         this.updateHandsVisibility_(newValue)
+        break
+      case HTMLClockElement.stateAttrName:
+        this.updateState_(newValue === 'true')
         break
     }
   }

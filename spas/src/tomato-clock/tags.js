@@ -50,8 +50,8 @@ export class HTMLTagsElement extends HTMLElement {
     )
     for (const tag of tags) {
       const e = document.createElement('div')
-      e.innerText = tag
       e.classList.add('tag')
+      e.style.backgroundColor = tag
       e.onclick = (ev) => {
         ev.stopPropagation()
         this.setAttribute(HTMLTagsElement.valueAttrName, tag)

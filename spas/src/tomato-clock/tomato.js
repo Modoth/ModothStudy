@@ -15,6 +15,14 @@ export class Tomato {
     this.canclingTask_ = null
   }
 
+  pause() {
+    this.clock_.pause()
+  }
+
+  resume() {
+    this.clock_.resume()
+  }
+
   async cancle() {
     if (this.status_ !== 'runing') {
       return
@@ -33,13 +41,13 @@ export class Tomato {
     const startTick = this.clock_.tick_
     const finishTick = startTick + this.remain_
     while (this.status_ === 'runing') {
-      await this.clock_.wait(1)
       this.remain_ = Math.max(0, finishTick - this.clock_.tick_)
       if (this.remain_ === 0) {
         this.status_ = 'finished'
         this.finishTime = Date.now()
       }
       ontick && ontick()
+      await this.clock_.wait(1)
     }
     this.clock_.stop()
   }

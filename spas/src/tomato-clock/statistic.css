@@ -1,0 +1,10 @@
+#statistaicPanel {
+  box-shadow: 0 -3px 5px #0004;
+  transition: flex 0.25s ease-in-out;
+}
+
+@media (orientation: landscape) {
+  #statistaicPanel {
+    box-shadow: -3px 0 5px #0004;
+  }
+}
