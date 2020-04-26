@@ -163,6 +163,10 @@ class App {
   }
 
   resume() {
+    if (this.currentTomato_.type === 'none') {
+      this.loopTomatos()
+      return
+    }
     if (this.currentTomato_.status !== 'runing') {
       return
     }
