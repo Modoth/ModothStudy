@@ -43,11 +43,11 @@ const getLocalConfigs = async () => {
   for (let subfolder of subfolders) {
     let indexFile
     let template
-    for (const fileName of ['index.html', 'app.js']) {
+    for (const fileName of ['index.html', 'app.js', 'app.html']) {
       let file = path.join(srcFolder, subfolder, fileName)
       if (await FileUtils.exists(file)) {
         indexFile = file
-        if (fileName === 'app.js') {
+        if (fileName !== 'index.html') {
           template = 'src/template/index.html'
         }
         break

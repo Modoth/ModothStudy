@@ -78,6 +78,8 @@ export class App {
     switch (type) {
       case 'image':
         return { type }
+      case 'audio':
+        return { type }
     }
     const fileExt = fileName
       .slice(fileName.lastIndexOf('.') + 1)

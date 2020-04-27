@@ -1,0 +1,26 @@
+<html>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
+  <script type="module">
+    window.onload = async () => {
+      const app = document.getElementsByTagName('m-app')[0].model
+      window.app = app
+      await app.launch(window.appData)
+    }
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+  <body>
+    <m-app></m-app>
+  </body>
+</html>

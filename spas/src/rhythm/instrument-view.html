@@ -1,0 +1,65 @@
+<template id="m-instruct">
+  <div>
+    <div class="title">
+      <img m-src="icon" /> <label m-inner-text$="name"></label>
+    </div>
+    <div class="beats">
+      <div
+        m-style-background-color$="color"
+        m-for="beat of beats"
+        m-value,class-enable="beat.enable"
+        m-onclick="toogleBeat(beat)"
+        m-class-current="beat.current"
+        class="beat"
+      >
+        <div></div>
+      </div>
+    </div>
+  </div>
+  <style>
+    :host {
+      display: block;
+      color: #eee;
+    }
+
+    .title {
+      padding: 10px 0;
+    }
+    .beats {
+      display: flex;
+      flex-wrap: wrap;
+      width: 96vw;
+      justify-content: center;
+    }
+    .beat {
+      width: 11%;
+      height: 32px;
+      border-radius: 4px;
+      margin: 2px;
+      display: inline-block;
+      /* background-color: hotpink; */
+      box-sizing: border-box;
+    }
+
+    .beat > div {
+      background: #0006;
+      width: 100%;
+      height: 100%;
+    }
+
+    .beat.enable > div {
+      background: radial-gradient(#fff4, transparent 60%);
+    }
+    .beat.current {
+      border: 2px solid white;
+    }
+    .beat.enable.current {
+      border-width: 4px;
+      transition: ease-in-out border-width;
+    }
+  </style>
+</template>
+<script>
+  class InstrumentView {}
+  registerElement('m-instruct', InstrumentView)
+</script>

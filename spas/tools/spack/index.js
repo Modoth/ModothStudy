@@ -124,6 +124,15 @@ class HtmlCssAdaper {
   }
 }
 
+class HtmlHTMLAdaper {
+  constructor() {
+    this.reg = /<imports src="([^"]*\.html)"><\/imports>/gm
+  }
+  convert(content) {
+    return `\n${content}\n`
+  }
+}
+
 class JsPngAdaper {
   constructor() {
     this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm
@@ -189,7 +198,7 @@ class JsCssAdaper {
 
 class JsJsAdaper {
   constructor() {
-    this.reg = /^import(?:.*\s*)*?.*from.*'(.*)'/gm
+    this.reg = /^\s*import(?:.*\s*)*?.*from.*'(.*)'/gm
   }
   convert(content) {
     content = content.replace(/^\s*export\s*/g, '\n')
@@ -344,7 +353,17 @@ class Packer {
     const ext = path.extname(filepath).toLocaleLowerCase()
     switch (ext) {
       case '.html':
-        return new TextImporter(new HtmlCssAdaper(), new HtmlScriptAdaper())
+        return new TextImporter(
+          new HtmlCssAdaper(),
+          new HtmlHTMLAdaper(),
+          new HtmlScriptAdaper(),
+          new JsJsAdaper(),
+          new JsHtmlAdaper(),
+          new JsCssAdaper(),
+          new JsJsonAdaper(),
+          new JsTextAdaper(),
+          new JsPngAdaper()
+        )
       case '.js':
         return new TextImporter(
           new JsJsAdaper(),
@@ -399,7 +418,11 @@ class Packer {
       const result = await context.getResult(m.path)
       if (m.templatePath) {
         const template = await context.getResult(m.templatePath)
-        result.data = `<script>\n${result.data}</script>\n${template.data}`
+        if (m.path.endsWith('.html')) {
+          result.data = `${result.data}\n${template.data}`
+        } else {
+          result.data = `<script>\n${result.data}</script>\n${template.data}`
+        }
         result.mtime = Math.max(result.mtime, template.mtime)
       }
       result.output =
