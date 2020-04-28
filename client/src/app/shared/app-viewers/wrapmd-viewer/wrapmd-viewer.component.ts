@@ -88,12 +88,21 @@ export class WrapmdViewerComponent implements OnInit {
           this.appContent = content;
           if (this.appContent) {
             this.mergedContent =
-              this.converter.toHtmlStr(this.content, this.type) +
-              this.appContent;
+              this.converter.toHtmlStr(
+                this.content,
+                this.getTrueContentType(this.type)
+              ) + this.appContent;
           }
         });
       }
     }
+  }
+
+  getTrueContentType(type) {
+    const map = {
+      h5: "html",
+    };
+    return map[type] || type;
   }
 
   markdownize() {
@@ -102,7 +111,8 @@ export class WrapmdViewerComponent implements OnInit {
       this.content && this.summary
         ? this.getSummary(this.content)
         : this.content || "";
-    this.markdownContent = "```" + this.type + "\n" + content + "\n```";
+    this.markdownContent =
+      "```" + this.getTrueContentType(this.type) + "\n" + content + "\n```";
   }
   getSummary(content: string) {
     let lineRemain = this.maxLine;

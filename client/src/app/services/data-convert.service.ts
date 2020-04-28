@@ -25,7 +25,7 @@ export class DataConvertService {
 
   toHtmlStr(content: string, type: string) {
     switch (type) {
-      case "h5":
+      case "html":
         return content;
       default:
         return `<script>window.appData=${this.toJsonStr(
