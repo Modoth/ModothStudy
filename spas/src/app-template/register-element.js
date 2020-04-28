@@ -229,7 +229,10 @@ export const registerElement =
       
       connectedCallback(){
         binding(this.shadow_)
-        this.model_.launch && this.model_.launch()
+        if(this.model_.launch){
+          this.model_.launch()
+          window.app = this.model_
+        } 
       }
     }
     customElements.define('${tagName}', ${elementClassName})

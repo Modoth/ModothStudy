@@ -11,7 +11,7 @@ class App {
     this.changeBeatsCount_(16)
   }
 
-  async play() {
+  async tooglePlay() {
     if (this.audioContext_ === undefined) {
       const AudioContext = window.AudioContext || window.webkitAudioContext
       if (AudioContext) {
@@ -62,6 +62,13 @@ class App {
 
   async start() {
     this.components.instruments.update()
+  }
+
+  pause() {
+    if (this.isPlaying) {
+      this.isPlaying = false
+      this.components.btnPlay.update()
+    }
   }
 }
 
