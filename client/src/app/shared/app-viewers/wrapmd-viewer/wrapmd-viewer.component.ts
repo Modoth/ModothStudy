@@ -88,10 +88,8 @@ export class WrapmdViewerComponent implements OnInit {
           this.appContent = content;
           if (this.appContent) {
             this.mergedContent =
-              `<script>window.appData=${this.converter.toJsonStr(
-                this.content,
-                this.type
-              )}</script>\n` + this.appContent;
+              this.converter.toHtmlStr(this.content, this.type) +
+              this.appContent;
           }
         });
       }

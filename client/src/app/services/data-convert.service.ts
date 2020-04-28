@@ -22,4 +22,16 @@ export class DataConvertService {
         return JSON.stringify(content);
     }
   }
+
+  toHtmlStr(content: string, type: string) {
+    switch (type) {
+      case "h5":
+        return content;
+      default:
+        return `<script>window.appData=${this.toJsonStr(
+          content,
+          type
+        )}</script>\n`;
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ConfigsService } from "./configs.service";
 import { Configs, NodeTag, NodesService as NodesApi } from "../apis";
-import { Observable, of, iif, empty } from "rxjs";
+import { Observable, of, iif, empty, forkJoin } from "rxjs";
 import { switchMap, map, tap } from "rxjs/operators";
 
 @Injectable({
@@ -44,10 +44,22 @@ export class ScriptAppService {
     context: { appTag: string; apps: Map<string, string> }
   ): Observable<string> => {
     if (!tagName) return empty();
-    return nodesApi.getBlogsByTag(tagName, type, 1).pipe(
-      map((apiRes) =>
-        apiRes ? apiRes.data.data[0] && apiRes.data.data[0].content : null
-      ),
+    const apps = type
+      .split(">")
+      .map((t) => t.trim())
+      .filter((t) => t);
+    return forkJoin(
+      ...apps.map((t) =>
+        nodesApi
+          .getBlogsByTag(tagName, t, 1)
+          .pipe(
+            map((apiRes) =>
+              apiRes ? apiRes.data.data[0] && apiRes.data.data[0].content : ""
+            )
+          )
+      )
+    ).pipe(
+      map((contents) => contents.join("")),
       tap((content) => content && context.apps.set(type, content as string))
     );
   };
