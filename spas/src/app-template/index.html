@@ -9,7 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
   <script>
     import { registerElement } from './register-element.js'
+    import { AppBase } from '../app-template/app-base.js'
     window.onload = async () => {
+      Object.setPrototypeOf(App.prototype, AppBase.prototype)
       for (const template of document.querySelectorAll(
         'template[id][code-behind]'
       )) {

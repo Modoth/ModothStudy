@@ -1,5 +1,69 @@
-import { AppBase } from '../app-template/app-base.js'
-import { Clock } from '../commons/clock.js'
+class App {
+  initData(data) {
+    /**@type { Instrument[] } */
+    this.instruments = data.instruments.map(
+      (desc) => new Instrument(desc, this.handleBeatChange_.bind(this))
+    )
+    this.timeSignature_ = [4, 4]
+    this.bpm_ = data.bpm || 30
+    this.title = data.title || '节奏器'
+    this.components.title.update()
+    this.changeBeatsCount_(16)
+  }
+
+  async play() {
+    if (this.audioContext_ === undefined) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      if (AudioContext) {
+        /**@type { AudioContext } */
+        this.audioContext_ = new AudioContext()
+        for (const instrument of this.instruments) {
+          await instrument.bindAudioContext(this.audioContext_)
+        }
+      } else {
+        this.audioContext_ = null
+      }
+    }
+    if (this.isPlaying) {
+      this.isPlaying = false
+      this.components.btnPlay.update()
+      return
+    }
+    this.isPlaying = true
+    this.components.btnPlay.update()
+    const clock = new Clock(this.bpm_ / 60)
+    let current = 0
+    clock.start()
+    while (this.isPlaying) {
+      for (const instrument of this.instruments) {
+        instrument.setCurrent(current)
+      }
+      this.components.instruments.update()
+      await clock.wait(1)
+      current = (current + 1) % this.beatsCount
+    }
+    clock.stop()
+    for (const instrument of this.instruments) {
+      instrument.setCurrent()
+    }
+    this.components.instruments.update()
+  }
+
+  handleBeatChange_() {
+    this.components.instruments.update()
+  }
+
+  changeBeatsCount_(length) {
+    this.beatsCount = length
+    for (const instrument of this.instruments) {
+      instrument.beatCount = this.beatsCount
+    }
+  }
+
+  async start() {
+    this.components.instruments.update()
+  }
+}
 
 class Beat {
   constructor() {
@@ -99,72 +163,4 @@ class Instrument {
   }
 }
 
-class App extends AppBase {
-  initData(data) {
-    data = data || this.defaultData
-    /**@type { Instrument[] } */
-    this.instruments = data.instruments.map(
-      (desc) => new Instrument(desc, this.handleBeatChange_.bind(this))
-    )
-    this.timeSignature_ = [4, 4]
-    this.bpm_ = data.bpm || 30
-    this.changeBeatsCount_(16)
-  }
-
-  async play() {
-    if (this.audioContext_ === undefined) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      if (AudioContext) {
-        /**@type { AudioContext } */
-        this.audioContext_ = new AudioContext()
-        for (const instrument of this.instruments) {
-          await instrument.bindAudioContext(this.audioContext_)
-        }
-      } else {
-        this.audioContext_ = null
-      }
-    }
-    if (this.isPlaying) {
-      this.isPlaying = false
-      this.components.btnPlay.update()
-      return
-    }
-    this.isPlaying = true
-    this.components.btnPlay.update()
-    const clock = new Clock(this.bpm_ / 60)
-    let current = 0
-    clock.start()
-    while (this.isPlaying) {
-      for (const instrument of this.instruments) {
-        instrument.setCurrent(current)
-      }
-      this.components.instruments.update()
-      await clock.wait(1)
-      current = (current + 1) % this.beatsCount
-    }
-    clock.stop()
-    for (const instrument of this.instruments) {
-      instrument.setCurrent()
-    }
-    this.components.instruments.update()
-  }
-
-  handleBeatChange_() {
-    this.components.instruments.update()
-  }
-
-  changeBeatsCount_(length) {
-    this.beatsCount = length
-    for (const instrument of this.instruments) {
-      instrument.beatCount = this.beatsCount
-    }
-  }
-
-  async start() {
-    this.components.instruments.update()
-  }
-
-  get defaultData() {
-    return /**@imports json */ './app-data.json'
-  }
-}
+import { Clock } from '../commons/clock.js'

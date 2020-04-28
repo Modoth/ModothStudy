@@ -1,7 +1,8 @@
 <template id="m-instruct" code-behind>
-  <div>
+  <div class="container">
     <div class="title">
-      <img m-src="icon" /> <label m-inner-text$="name"></label>
+      <!-- <img m-src="icon" /> -->
+      <label m-inner-text$="name"></label>
     </div>
     <div class="beats">
       <div
@@ -22,18 +23,24 @@
       color: #eee;
     }
 
+    .container {
+      display: flex;
+    }
+
     .title {
-      padding: 10px 0;
+      width: 2em;
+      text-align: center;
+      font-size: small;
     }
     .beats {
+      flex: 1;
       display: flex;
       flex-wrap: wrap;
-      width: 96vw;
       justify-content: center;
     }
     .beat {
       width: 11%;
-      height: 32px;
+      height: 24px;
       border-radius: 4px;
       margin: 2px;
       display: inline-block;
@@ -48,7 +55,7 @@
     }
 
     .beat.enable > div {
-      background: radial-gradient(#fff4, transparent 60%);
+      background: radial-gradient(#fff4, transparent);
     }
     .beat.current {
       border: 2px solid white;
