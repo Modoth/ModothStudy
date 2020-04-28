@@ -1,5 +1,5 @@
-import { Clock } from '../commons/clock.js'
 import { AppBase } from '../app-template/app-base.js'
+import { Clock } from '../commons/clock.js'
 
 class Beat {
   constructor() {
@@ -101,7 +101,7 @@ class Instrument {
 
 class App extends AppBase {
   initData(data) {
-    data = data || /**@imports json */ './app-data.json'
+    data = data || this.defaultData
     /**@type { Instrument[] } */
     this.instruments = data.instruments.map(
       (desc) => new Instrument(desc, this.handleBeatChange_.bind(this))
@@ -163,5 +163,8 @@ class App extends AppBase {
   async start() {
     this.components.instruments.update()
   }
+
+  get defaultData() {
+    return /**@imports json */ './app-data.json'
+  }
 }
-registerElement('m-app', App)

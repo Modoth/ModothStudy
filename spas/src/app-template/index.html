@@ -1,18 +1,28 @@
 <html>
   <meta charset="utf-8" />
+  <imports slot></imports>
   <meta
     name="viewport"
     content="width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1"
   />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
-  <script type="module">
+  <script>
+    import { registerElement } from './register-element.js'
     window.onload = async () => {
-      const app = document.getElementsByTagName('m-app')[0].model
-      window.app = app
-      await app.launch(window.appData)
+      for (const template of document.querySelectorAll(
+        'template[id][code-behind]'
+      )) {
+        const tagName = template.getAttribute('id')
+        if (!tagName) {
+          continue
+        }
+        const codeBehind = template.getAttribute('code-behind')
+        registerElement(tagName, codeBehind)
+      }
     }
   </script>
+
   <style>
     html,
     body {
@@ -22,5 +32,6 @@
   </style>
   <body>
     <m-app></m-app>
+    <imports src="../commons/play-button.html"></imports>
   </body>
 </html>

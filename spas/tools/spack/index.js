@@ -211,7 +211,7 @@ class JsJsAdaper {
   }
   convert(content) {
     content = content.replace(/^\s*export\s*/g, '\n')
-    content = content.replace(/\n\s*export\s*/g, '\n')
+    content = content.replace(/\n\s*export\s*/g, '\n\n')
     return content
   }
 }
@@ -430,7 +430,10 @@ class Packer {
       if (m.templatePath) {
         const template = await context.getResult(m.templatePath)
         if (m.path.endsWith('.html')) {
-          result.data = `${result.data}\n${template.data}`
+          result.data = template.data.replace(
+            /\s*<imports slot><\/imports>\s*/,
+            '\n\n' + result.data + '\n\n'
+          )
         } else {
           result.data = `<script>\n${result.data}</script>\n${template.data}`
         }

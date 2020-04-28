@@ -61,7 +61,6 @@ const getLocalConfigs = async () => {
       localCfg && localCfg.entries && localCfg.entries[subfolder]
     )
   }
-  debugger
   return {
     cd: (localCfg && localCfg.cd) || {},
     dist: localCfg && localCfg.dist,
