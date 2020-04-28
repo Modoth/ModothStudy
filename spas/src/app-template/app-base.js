@@ -1,3 +1,15 @@
+const evalInContext = (exp, context) => {
+  return function () {
+    with (this) {
+      try {
+        return eval(exp)
+      } catch (e) {
+        return
+      }
+    }
+  }.call(context)
+}
+
 const bindingForInstruction = (/**@type HTMLElement */ element) => {
   let forExp = element.getAttribute('m-for')
   const match = forExp.match(
@@ -100,17 +112,15 @@ const bindingAttrs = (/**@type HTMLElement */ element) => {
       if (effectedAttr.some((a) => a.startsWith('on'))) {
         value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
       } else {
-        value = function () {
-          with (this) {
-            try {
-              return eval($$exp)
-            } catch {
-              return
-            }
-          }
-        }.call(element.context)
+        value = evalInContext($$exp, element.context)
       }
       for (const ea of effectedAttr) {
+        if (ea === 'model') {
+          if (element.setModelAndUpdate) {
+            element.setModelAndUpdate(value)
+          }
+          continue
+        }
         if (ea.startsWith('class-')) {
           const className = ea.slice('class-'.length)
           if (value) {
@@ -170,7 +180,7 @@ export function registerElement(tagName, /**@type {Function} */ constructor) {
   class ${elementClassName} extends HTMLElement{
     constructor(){
       super()
-      const shadow = this.attachShadow({mode:'closed'})
+      const shadow = this.attachShadow({mode:'open'})
       const template = document.getElementById('${tagName}')
       if(!template || template.tagName !== 'TEMPLATE' ){
         throw new Error('Define Template')
@@ -180,7 +190,12 @@ export function registerElement(tagName, /**@type {Function} */ constructor) {
       this.shadow_ = shadow
       this.codeBehind_ = new ${constructor.name}()
       this.codeBehind_.components = { }
-      this.model = {}
+      if(this.context && this.hasAttribute('m-model')){
+        const modeExp = this.getAttribute('m-model')
+        this.model = evalInContext(modeExp, this.context)
+      }else{
+        this.model =  {}
+      }
     }
 
     get model(){
@@ -191,6 +206,11 @@ export function registerElement(tagName, /**@type {Function} */ constructor) {
       //combine code behind with model
       this.model_ = Object.assign(this.codeBehind_, value)
       this.shadow_.context = this.model_ 
+    }
+
+    setModelAndUpdate(value){
+      this.model = value
+      binding(this.shadow_)
     }
     
     connectedCallback(){

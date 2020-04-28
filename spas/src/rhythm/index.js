@@ -103,7 +103,7 @@ class App extends AppBase {
     }
     clock.stop()
     for (const instrument of this.instruments) {
-      // instrument.setCurrent()
+      instrument.setCurrent()
     }
     this.components.instruments.update()
   }

@@ -1,0 +1,32 @@
+<template id="m-play-button">
+  <span id="btnPlay" class="play-button" m-class-pause="isPlaying"></span>
+  <style>
+    :host {
+      display: block;
+    }
+    .play-button {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-color, hotpink);
+      clip-path: polygon(25% 10%, 25% 90%, 95% 50%, 25% 10%);
+      transition: 200ms all ease-in-out;
+    }
+    .play-button.pause {
+      clip-path: polygon(
+        60% 50%,
+        20% 20%,
+        20% 80%,
+        60% 50%,
+        60% 80%,
+        80% 80%,
+        80% 20%,
+        60% 20%
+      );
+    }
+  </style>
+</template>
+<script>
+  class PlayButtonView {}
+  registerElement('m-play-button', PlayButtonView)
+</script>
