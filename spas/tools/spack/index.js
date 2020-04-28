@@ -151,6 +151,15 @@ class JsonPngAdaper {
   }
 }
 
+class JsonAudioAdaper {
+  constructor() {
+    this.reg = /\/\*\*\s*@imports audio\s*\*\/ '([^']*)'/gm
+  }
+  convert(content) {
+    return `data:audio/mpeg;base64,${content.toString('base64')}`
+  }
+}
+
 class JsHtmlAdaper {
   constructor() {
     this.reg = /\/\*\*\s*@imports html\s*\*\/ '([^']*)'/gm
@@ -374,11 +383,13 @@ class Packer {
           new JsPngAdaper()
         )
       case '.json':
-        return new TextImporter(new JsonPngAdaper())
+        return new TextImporter(new JsonPngAdaper(), new JsonAudioAdaper())
       case '.txt':
       case '.css':
         return new TextImporter()
       case '.png':
+        return new BufferImporter()
+      case '.mp3':
         return new BufferImporter()
       default:
         throw new Error()

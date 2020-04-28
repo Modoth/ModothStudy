@@ -38,19 +38,49 @@ class Instrument {
     this.audioElement = document.createElement('audio')
     this.audioElement.src = this.audio
     this.audioElement.type = 'audio/mpeg'
+    /**@type { AudioContext} */
+    this.audioContext_ = null
+    /**@type { AudioBufferSourceNode } */
+    this.audioSource_ = null
+  }
+
+  async bindAudioContext(context) {
+    this.audioContext_ = context
+    if (this.audioContext_ && this.audio) {
+      this.audioSource_ = this.audioContext_.createBufferSource()
+      this.audioSource_.buffer = await this.audioContext_.decodeAudioData(
+        await (await fetch(this.audio)).arrayBuffer()
+      )
+    }
   }
 
   setCurrent(idx = -1) {
     if (this.current) {
       this.current.current = false
-      this.audioElement.pause()
+      if (this.audio && this.current.enable) {
+        if (this.audioSource_) {
+          console.log('stop')
+          this.audioSource_.disconnect()
+        } else {
+          this.audioElement.pause()
+        }
+      }
     }
     this.current = this.beats[idx]
     if (this.current) {
       this.current.current = true
       if (this.audio && this.current.enable) {
-        this.audioElement.currentTime = 0
-        this.audioElement.play()
+        if (this.audioSource_) {
+          const source = this.audioContext_.createBufferSource()
+          source.buffer = this.audioSource_.buffer
+          this.audioSource_ = source
+          this.audioSource_.connect(this.audioContext_.destination)
+          this.audioSource_.start(0, 0)
+          console.log('start')
+        } else {
+          this.audioElement.currentTime = 0
+          this.audioElement.play()
+        }
       }
     }
   }
@@ -72,17 +102,28 @@ class Instrument {
 class App extends AppBase {
   initData(data) {
     data = data || /**@imports json */ './app-data.json'
-
     /**@type { Instrument[] } */
     this.instruments = data.instruments.map(
       (desc) => new Instrument(desc, this.handleBeatChange_.bind(this))
     )
     this.timeSignature_ = [4, 4]
-    this.bpm_ = 120
+    this.bpm_ = data.bpm || 30
     this.changeBeatsCount_(16)
   }
 
   async play() {
+    if (this.audioContext_ === undefined) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      if (AudioContext) {
+        /**@type { AudioContext } */
+        this.audioContext_ = new AudioContext()
+        for (const instrument of this.instruments) {
+          await instrument.bindAudioContext(this.audioContext_)
+        }
+      } else {
+        this.audioContext_ = null
+      }
+    }
     if (this.isPlaying) {
       this.isPlaying = false
       this.components.btnPlay.update()
@@ -90,7 +131,7 @@ class App extends AppBase {
     }
     this.isPlaying = true
     this.components.btnPlay.update()
-    const clock = new Clock((this.bpm_ * this.timeSignature_[1]) / 60)
+    const clock = new Clock(this.bpm_ / 60)
     let current = 0
     clock.start()
     while (this.isPlaying) {
