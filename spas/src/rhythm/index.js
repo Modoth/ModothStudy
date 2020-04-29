@@ -1,13 +1,15 @@
 class App {
+  constructor() {
+    registerProperties(this, 'title', 'isPlaying', 'instruments')
+  }
   initData(data) {
     /**@type { Instrument[] } */
     this.instruments = data.instruments.map(
-      (desc) => new Instrument(desc, this.handleBeatChange_.bind(this))
+      (desc) => new Instrument(desc)
     )
     this.timeSignature_ = [4, 4]
     this.bpm_ = data.bpm || 30
     this.title = data.title || '节奏器'
-    this.components.title.update()
     this.changeBeatsCount_(16)
   }
 
@@ -26,11 +28,9 @@ class App {
     }
     if (this.isPlaying) {
       this.isPlaying = false
-      this.components.btnPlay.update()
       return
     }
     this.isPlaying = true
-    this.components.btnPlay.update()
     const clock = new Clock(this.bpm_ / 60)
     let current = 0
     clock.start()
@@ -38,7 +38,6 @@ class App {
       for (const instrument of this.instruments) {
         instrument.setCurrent(current)
       }
-      this.components.instruments.update()
       await clock.wait(1)
       current = (current + 1) % this.beatsCount
     }
@@ -46,11 +45,6 @@ class App {
     for (const instrument of this.instruments) {
       instrument.setCurrent()
     }
-    this.components.instruments.update()
-  }
-
-  handleBeatChange_() {
-    this.components.instruments.update()
   }
 
   changeBeatsCount_(length) {
@@ -61,19 +55,19 @@ class App {
   }
 
   async start() {
-    this.components.instruments.update()
+
   }
 
   pause() {
     if (this.isPlaying) {
       this.isPlaying = false
-      this.components.btnPlay.update()
     }
   }
 }
 
 class Beat {
   constructor() {
+    registerProperties(this, 'enable', 'current')
     this.enable = false
     this.current = false
   }
@@ -90,21 +84,19 @@ class Instrument {
       'lightsteelblue',
     ]
   }
-  constructor({ name = '', icon = '', audio = '' } = {}, onBeatChange) {
+  constructor({ name = '', icon = '', audio = '' } = {}) {
     this.name = name
     this.icon = icon
     this.audio = audio
     /**@type Beat[] */
     this.beats = []
     this.beatCount_ = 0
-    this.onBeatChange_ = onBeatChange
     /**@type Beat */
     this.current = null
     this.color =
       Instrument.colors[Math.floor(Math.random() * Instrument.colors.length)]
     this.toogleBeat = (/**@type Beat */ beat) => {
       beat.enable = !beat.enable
-      this.onBeatChange_ && this.onBeatChange_()
     }
     this.audioElement = document.createElement('audio')
     this.audioElement.src = this.audio

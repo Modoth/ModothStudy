@@ -8,18 +8,18 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
   <script>
-    import { registerElement } from './register-element.js'
+    import { registerElement, registerProperties } from './register-element.js'
     import { AppBase } from '../app-template/app-base.js'
     window.onload = async () => {
       Object.setPrototypeOf(App.prototype, AppBase.prototype)
       for (const template of document.querySelectorAll(
-        'template[id][code-behind]'
+        'template[id][view-model]'
       )) {
         const tagName = template.getAttribute('id')
         if (!tagName) {
           continue
         }
-        const codeBehind = template.getAttribute('code-behind')
+        const codeBehind = template.getAttribute('view-model')
         registerElement(tagName, codeBehind)
       }
     }
@@ -33,7 +33,8 @@
     }
   </style>
   <body>
-    <m-app></m-app>
+    <app-main></app-main>
+    <imports src="../commons/hstack.html"></imports>
     <imports src="../commons/play-button.html"></imports>
   </body>
 </html>

@@ -1,17 +1,17 @@
 <script src="./index.js"></script>
-<template id="m-app" code-behind="App">
-  <div id="editPanel">
-    <div class="title-bar">
-      <span id="title" class="title" m-inner-text$="title"></span>
-      <m-play-button
-        id="btnPlay"
-        class="play-button"
-        m-model="({isPlaying})"
-        m-onclick="tooglePlay($event)"
-      ></m-play-button>
-    </div>
-    <div id="instrumentsPanel">
-      <m-instruct id="instruments" m-for="instruments"></m-instruct>
+<template id="app-main" view-model="App">
+  <div class="edit-panel">
+    <h-stack class="title-bar">
+      <h-spacer>
+        <span class="title" inner-text$.="title"></span>
+      </h-spacer>
+      <play-button
+        model.="({isPlaying})"
+        onclick.="tooglePlay($event)"
+      ></play-button>
+    </h-stack>
+    <div class="instruments-panel">
+      <app-instruct for.="instruments"></app-instruct>
     </div>
   </div>
   <style>
@@ -25,11 +25,11 @@
     }
     .title {
       color: #eee;
-      flex: 1;
+      /* flex: 1; */
       text-align: center;
       padding-left: 60px;
     }
-    .play-button {
+    play-button {
       width: 20px;
       height: 20px;
       --background-color: #eee;
@@ -38,16 +38,16 @@
       margin: 10px 6px 10px 10px;
       background-color: #666;
     }
-    #editPanel {
+    .edit-panel {
       padding: 0 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    #instrumentsPanel {
+    .instruments-panel {
       width: 100%;
     }
-    m-instruct {
+    app-instruct {
       margin-bottom: 10px;
     }
   </style>

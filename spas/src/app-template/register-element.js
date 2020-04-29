@@ -1,5 +1,4 @@
-export const registerElement =
-  window.registerElement ||
+const { registerElement, registerProperties } =
   (() => {
     const evalInContext = (exp, context) => {
       return function () {
@@ -14,12 +13,12 @@ export const registerElement =
     }
 
     const bindingForInstruction = (/**@type HTMLElement */ element) => {
-      let forExp = element.getAttribute('m-for')
+      let forExp = element.getAttribute('for.')
       const match = forExp.match(
         /^\s*(((let|const|of)\s+)?(?<item>\w+)\s+(?<of_in>of|in)\s+)?\s*(?<data>\w+)\s*$/
       )
       if (!match || !match.groups || !match.groups.data) {
-        throw new Error('Invalid m-for Expression')
+        throw new Error('Invalid for Expression')
       }
       const collectionName = match.groups.data
       const of_in = match.groups.of_in || 'of'
@@ -42,7 +41,7 @@ export const registerElement =
       let idx = 0
       let allRemoved = false
       const update = () => {
-        ;(function ($$forEach) {
+        ; (function ($$forEach) {
           if (!this[collectionName]) {
             return
           }
@@ -73,10 +72,15 @@ export const registerElement =
           } else {
             item = element.cloneNode(true)
             item.removeAttribute('id')
-            item.removeAttribute('m-for')
-            item.model = $$i
+            item.removeAttribute('for.')
+            if (item.updateModel) {
+              item.model = $$i
+            } else {
+              item.modelBeforeInit = $$i
+            }
             const context = Object.create(element.context)
             context[varName] = $$i
+            context.tmpCtxName = varName
             item.context = context
           }
           parent.insertBefore(item, comment)
@@ -87,40 +91,48 @@ export const registerElement =
       }
 
       update()
-      return {
-        update,
-      }
+      element.context.on && element.context.on(collectionName, update)
+      return {}
     }
 
     const getPropNameFromBindingAttr = (attr) => {
       return attr.replace(/-(\w)/g, (_, c) => c.toUpperCase())
     }
 
+    const getPropsFromExp = (exp) => {
+      return exp.match(/[a-zA-Z0-9_$.]+/g) || []
+    }
+
     const bindingAttrs = (/**@type HTMLElement */ element) => {
-      if (element.hasAttribute('m-for')) {
+      if (element.hasAttribute('for.')) {
         return bindingForInstruction(element)
       }
       const bindingAttrs = element
         .getAttributeNames()
-        .filter((p) => p.startsWith('m-'))
-      const update = () => {
-        for (const prop of bindingAttrs) {
-          const $$exp = element.getAttribute(prop)
-          const effectedAttr = prop
-            .slice('m-'.length)
-            .split(',')
-            .map((a) => a.trim())
-            .filter((a) => a)
-          let value
-          if (effectedAttr.some((a) => a.startsWith('on'))) {
-            value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
-          } else {
-            value = evalInContext($$exp, element.context)
+        .filter((p) => p.endsWith('.'))
+      for (const prop of bindingAttrs) {
+        const $$exp = element.getAttribute(prop)
+        const effectedAttr = prop
+          .slice(0, -'.'.length)
+          .split(',')
+          .map((a) => a.trim())
+          .filter((a) => a)
+
+        if (effectedAttr.some((a) => a.startsWith('on'))) {
+          const value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
+          for (const ea of effectedAttr) {
+            element.setAttribute(ea, value)
           }
+          continue
+        }
+        const update = () => {
+          const value = evalInContext($$exp, element.context)
           for (const ea of effectedAttr) {
             if (ea === 'model') {
-              if (element.setModelAndUpdate) {
-                element.setModelAndUpdate(value)
+              if (element.updateModel) {
+                element.updateModel(value)
+              } else {
+                element.modelBeforeInit = value
               }
               continue
             }
@@ -151,9 +163,21 @@ export const registerElement =
             }
           }
         }
+        update()
+        for (const exp of getPropsFromExp($$exp)) {
+          const tokens = exp.split('.')
+          if (tokens[1]) {
+            if (element.context.tmpCtxName === tokens[0]) {
+              const tmpCtx = element.context[element.context.tmpCtxName]
+              if (tmpCtx && tmpCtx.on) {
+                tmpCtx.on(tokens[1], update)
+              }
+            }
+          } else {
+            element.context.on && element.context.on(tokens[0], update)
+          }
+        }
       }
-      update()
-      element.update = update
       return element
     }
 
@@ -182,14 +206,59 @@ export const registerElement =
 
     const getNameFromTagName = (tagName) => {
       return tagName
-        .replace(/^m-/, '-')
-        .replace(/-(\w)/g, (_, c) => c.toUpperCase())
+        .replace(/(?:^|-)(\w)/g, (_, c) => c.toUpperCase())
     }
 
-    return (tagName, /**@type { string } */ constructor) => {
+    const registerProperties = (obj, ...props) => {
+      if (!obj.define) {
+        addPropChange(obj)
+      }
+      props.forEach(prop => {
+        let propValue
+        Object.defineProperty(obj, prop, {
+          get() {
+            return propValue
+          },
+          set(newValue) {
+            const oldValue = propValue
+            propValue = newValue
+            obj.raise(prop, newValue, oldValue)
+          }
+        })
+      })
+    }
+
+    const addPropChange = (/**@type { Object } */ obj) => {
+      /**@type Map<string, Set<{(newValue, oldValue):any}>> */
+      const listeners = new Map()
+      obj.define = (...props) => registerProperties(obj, ...props)
+      obj.on = (/**@type string */prop, listener) => {
+        if (!listeners.has(prop)) {
+          listeners.set(prop, new Set())
+        }
+        listeners.get(prop).add(listener)
+      }
+      obj.off = (prop, listener) => {
+        if (!listeners.has(prop)) {
+          return
+        }
+        listeners.get(prop).delete(listener)
+      }
+      obj.raise = (prop, newValue, oldValue) => {
+        if (!listeners.has(prop)) {
+          return
+        }
+        for (const listener of listeners.get(prop)) {
+          listener(newValue, oldValue)
+        }
+      }
+    }
+
+    const registerElement = (tagName, /**@type { string } */ constructor) => {
       const elementClassName = `HTML${
         constructor || getNameFromTagName(tagName)
-      }Element`
+        }Element`
+      constructor = constructor || 'Object'
       eval(`
     class ${elementClassName} extends HTMLElement{
       constructor(){
@@ -202,11 +271,13 @@ export const registerElement =
         const instance = document.importNode(template.content, true)
         shadow.appendChild(instance)
         this.shadow_ = shadow
-        this.codeBehind_ = new ${constructor || 'Object'}()
-        this.codeBehind_.components = { }
-        if(this.context && this.hasAttribute('m-model')){
-          const modeExp = this.getAttribute('m-model')
+        this.model_ = new ${constructor}()
+        this.model_.components = { }
+        if(this.context && this.hasAttribute('model.')){
+          const modeExp = this.getAttribute('model.')
           this.model = evalInContext(modeExp, this.context)
+        }else if(this.modelBeforeInit){
+          this.model = this.modelBeforeInit
         }else{
           this.model =  {}
         }
@@ -218,11 +289,11 @@ export const registerElement =
   
       set model(value){
         //combine code behind with model
-        this.model_ = Object.assign(this.codeBehind_, value)
+        Object.assign(this.model_, value)
         this.shadow_.context = this.model_ 
       }
   
-      setModelAndUpdate(value){
+      updateModel(value){
         this.model = value
         binding(this.shadow_)
       }
@@ -238,4 +309,5 @@ export const registerElement =
     customElements.define('${tagName}', ${elementClassName})
     `)
     }
+    return { registerElement, registerProperties }
   })()

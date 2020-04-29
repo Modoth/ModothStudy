@@ -1,16 +1,16 @@
-<template id="m-instruct" code-behind>
+<template id="app-instruct" view-model>
   <div class="container">
     <div class="title">
-      <!-- <img m-src="icon" /> -->
-      <label m-inner-text$="name"></label>
+      <!-- <img src.="icon" /> -->
+      <label inner-text$.="name"></label>
     </div>
     <div class="beats">
       <div
-        m-style-background-color$="color"
-        m-for="beat of beats"
-        m-value,class-enable="beat.enable"
-        m-onclick="toogleBeat(beat)"
-        m-class-current="beat.current"
+        style-background-color$.="color"
+        for.="beat of beats"
+        value,class-enable.="beat.enable"
+        onclick.="toogleBeat(beat)"
+        class-current.="beat.current"
         class="beat"
       >
         <div></div>
@@ -36,7 +36,7 @@
       flex: 1;
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-around;
     }
     .beat {
       width: 11%;
