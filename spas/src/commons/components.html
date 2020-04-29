@@ -17,6 +17,20 @@
     }
   </style>
 </template>
+<template id="hv-stack" view-model>
+  <slot></slot>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (orientation: landscape) {
+      :host {
+        flex-direction: row;
+      }
+    }
+  </style>
+</template>
 
 <template id="h-spacer" view-model>
   <slot></slot>
@@ -74,14 +88,16 @@
 
 <template id="menu-bar" view-model>
   <h-stack>
-    <h-spacer></h-spacer>
     <div class="menu-item" for.="item of menus">
       <span inner-text$.="item.name" onclick.="item.onclick()"></span>
     </div>
-    <h-spacer></h-spacer>
   </h-stack>
   <style>
     :host {
+      display: block;
+    }
+    h-stack {
+      overflow: hidden;
     }
     .menu-item {
       margin: 5px;
@@ -89,14 +105,16 @@
       border-radius: 4px;
       padding: 2px 5px;
       color: var(--menu-color);
-      text-align: center;
+      display: flex;
+    justify-content: center;
+      flex: 1;
     }
     .menu-item > span {
       display: block;
       text-overflow: ellipsis;
       white-space: pre;
       overflow: hidden;
-      width: 4em;
+      max-width: 4em;
     }
   </style>
 </template>
