@@ -35,6 +35,10 @@ class App {
     this.totalPage = 0
     this.currentPage = 0
     this.lines = []
+    this.loadFile_({
+      file: { name: '文本文件' },
+      data: new TextEncoder('utf-8').encode(`new TextEncoder('utf-8').encode('').buffer`).buffer,
+    })
   }
   openFile_() {
     this.fileSelector.selectFile('*', 'ArrayBuffer', this.loadFile_.bind(this))

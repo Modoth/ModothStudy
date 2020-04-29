@@ -6,7 +6,6 @@ class App {
     this.storage
     registerProperties(this, 'menus', 'fileName')
   }
-  initData() {}
 
   start() {
     this.fileSelector = new FileSelector()
@@ -27,9 +26,10 @@ class App {
 
     this.menus = [
       this.fileNameMenu,
-      new MenuItem('点击图片', () => downloadDataUrl(this.downloadLink)),
+      new MenuItem('下载', () => downloadDataUrl(this.downloadLink)),
       ...this.sizes.map((size) => new MenuItem(size, () => this.resize(size))),
     ]
+    this.loadFile_(this.data)
   }
 
   async loadFile_(
