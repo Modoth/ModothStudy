@@ -27,7 +27,7 @@ class App {
 
     this.menus = [
       this.fileNameMenu,
-      new MenuItem('下载', () => downloadDataUrl(this.downloadLink)),
+      new MenuItem('点击图片', () => downloadDataUrl(this.downloadLink)),
       ...this.sizes.map((size) => new MenuItem(size, () => this.resize(size))),
     ]
   }
@@ -54,6 +54,7 @@ class App {
     this.editedImgData = resizedImg
     this.updateCanvas(this.components.editedFile, resizedImg)
     this.downloadLink = await generateIconFromCanvas(this.components.editedFile)
+    this.components.downloadLink.href = this.downloadLink
   }
 
   updateCanvas(canvas, imgData) {
