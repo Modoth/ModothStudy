@@ -35,7 +35,7 @@ class App {
   async loadFile_(
     /**@type { { file:File, data:ArrayBuffer } } */ { file, data }
   ) {
-    this.fileNameMenu.name = file.name || ''
+    this.fileNameMenu.name = file.name || '打开'
     this.fileData = data
     this.oriImageData = await loadImageData(this.fileData)
     this.updateCanvas(this.components.srcFile, this.oriImageData)
