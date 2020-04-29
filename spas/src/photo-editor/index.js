@@ -4,134 +4,170 @@ class App {
     this.components
     /**@type { Storage | {  } } */
     this.storage
-    registerProperties(
-      this,
-      'menus',
-      'fileName',
-      'lines',
-      'currentPage',
-      'totalPage'
-    )
+    registerProperties(this, 'menus', 'fileName')
   }
   initData() {}
+
   start() {
     this.fileSelector = new FileSelector()
     this.resizeWatcher = new ResizeWatcher()
-    this.resizeWatcher.register(() => setTimeout(this.repage.bind(this), 50))
-    this.fileNameMenu = new MenuItem('打开', this.openFile_.bind(this))
-    this.currentPageMenu = new MenuItem('0/0', () => {})
+    this.resizeWatcher.register(() => {
+      ;[this.components.editedFile].forEach((canvas) => fitCanvas(canvas))
+    })
+    this.fileNameMenu = new MenuItem('打开', () => {
+      this.fileSelector.selectFile(
+        'image/*',
+        'DataURL',
+        this.loadFile_.bind(this)
+      )
+    })
+
     this.menus = [
-      new MenuItem('上一页', () => this.gotoPage(this.currentPage - 1)),
       this.fileNameMenu,
-      this.currentPageMenu,
-      new MenuItem('下一页', () => this.gotoPage(this.currentPage + 1)),
+      new MenuItem('测试', () => this.test()),
+      new MenuItem('红色', () => this.setRed()),
+      new MenuItem('绿色', () => this.addRed()),
+      new MenuItem('重置', () => this.resetImage()),
     ]
-    this.minCharWidth = 32
-    this.minCharHeight = 32
-    this.validCharsPerLines = [8, 16, 32, 64]
-    this.charsPerLine = 16
-    this.linesPerPage = 20
-    this.totalLine = 0
-    this.totalPage = 0
-    this.currentPage = 0
-    this.lines = []
-  }
-  openFile_() {
-    this.fileSelector.selectFile('*', 'ArrayBuffer', this.loadFile_.bind(this))
-  }
-
-  gotoPage(page) {
-    if (page < 0 || page >= this.totalPage) {
-      return
-    }
-    this.currentPage = page
-    this.currentPageMenu.name = `${this.currentPage + 1}/${this.totalPage}`
-    const startLine = this.currentPage * this.linesPerPage
-    const startChar = startLine * this.linesPerPage
-    const linesCurrentPage = Math.min(
-      this.totalLine - startLine,
-      this.linesPerPage
-    )
-    const emptyLines = this.linesPerPage - linesCurrentPage
-    const lines = Array.from(
-      { length: linesCurrentPage },
-      (_, i) =>
-        new Line(
-          new Uint8Array(
-            this.fileData,
-            startChar + i * this.charsPerLine,
-            startChar + i * this.charsPerLine + this.charsPerLine >
-            this.fileData.byteLength
-              ? undefined
-              : this.charsPerLine
-          ),
-          this.charsPerLine
-        )
-    )
-    this.lines = [
-      ...lines,
-      ...Array.from({ length: emptyLines }, () => new Line()),
-    ]
-  }
-
-  repage() {
-    if (!this.fileData) {
-      return
-    }
-    const pageElement = this.components.page
-    for (const charsPerLine of this.validCharsPerLines) {
-      if (charsPerLine * this.minCharWidth < pageElement.clientWidth) {
-        this.charsPerLine = charsPerLine
-      } else {
-        break
-      }
-    }
-    this.linesPerPage = Math.floor(
-      pageElement.clientHeight / this.minCharHeight
-    )
-    this.totalLine = Math.ceil(this.fileData.byteLength / this.charsPerLine)
-    this.totalPage = Math.ceil(this.totalLine / this.linesPerPage)
-    this.gotoPage(0)
   }
 
   async loadFile_(
     /**@type { { file:File, data:ArrayBuffer } } */ { file, data }
   ) {
-    this.fileNameMenu.name = file.name || ''
+    this.fileNameMenu.name = file.name || '打开'
     this.fileData = data
-    this.repage()
+    this.oriImageData = await loadImageData(this.fileData)
+    this.resetImage()
+    fitCanvas(this.components.editedFile)
   }
-}
 
-class Line {
-  constructor(/**@type UInt8Array */ data, /**@type number */ length) {
-    if (!data) {
-      this.chars = []
+  cloneImgData(imgData) {
+    var newImgData = new ImageData(
+      new Uint8ClampedArray(imgData.data),
+      imgData.width,
+      imgData.height
+    )
+    return newImgData
+  }
+
+  resetImage() {
+    if (!this.oriImageData) {
       return
     }
-    const chars = Array.prototype.map.call(data, (c) => new Char(c))
-    this.chars =
-      chars.length === length
-        ? chars
-        : [
-            ...chars,
-            ...Array.from({ length: length - chars.length }, () => new Char()),
-          ]
+    this.setEditedImgData(this.cloneImgData(this.oriImageData))
   }
-}
 
-class Char {
-  constructor(/**@type number */ code = -1) {
-    this.code = code
-    if (this.code === -1) {
-      this.content = ''
-      this.string = ''
+  setRed() {
+    if (!this.editedImgData) {
       return
     }
-    this.content = this.code.toString(16).padStart(2, '0')
-    this.string = String.fromCharCode(this.code).trim() || '.'
+    for (var i = 0; i < this.editedImgData.height; i += 2) {
+      for (var j = 0; j < this.editedImgData.width; j += 2) {
+        var idx = (i * this.editedImgData.width + j) * 4
+        this.editedImgData.data[idx + 1] = 0
+        this.editedImgData.data[idx + 2] = 0
+      }
+    }
+    this.setEditedImgData(this.editedImgData)
+  }
+
+  test() {
+    if (!this.editedImgData) {
+      return
+    }
+    console.time()
+    let newImgData = new ImageData(
+      this.editedImgData.width,
+      this.editedImgData.height
+    )
+    let dw = 4
+    for (var i = dw; i < newImgData.height - dw; i += 1) {
+      for (var j = dw; j < newImgData.width - dw; j += 1) {
+        let indx = (i * newImgData.width + j) * 4
+        let r = 0
+        let g = 0
+        let b = 0
+        let a = 0
+        let count = 0
+        for (let h = i - dw; h <= i + dw; h++) {
+          for (let w = j - dw; w <= j + dw; w++) {
+            let id = (h * this.editedImgData.width + w) * 4
+            let weight = 3 * dw - Math.abs(h - i) - Math.abs(w - j)
+            r += this.editedImgData.data[id] * weight
+            g += this.editedImgData.data[id + 1] * weight
+            b += this.editedImgData.data[id + 2] * weight
+            a += this.editedImgData.data[id + 3] * weight
+            count += weight
+          }
+        }
+        newImgData.data[indx] = r / count
+        newImgData.data[indx + 1] = g / count
+        newImgData.data[indx + 2] = b / count
+        newImgData.data[indx + 3] = a / count
+      }
+    }
+    console.timeEnd()
+    this.setEditedImgData(newImgData)
+  }
+
+  addRed() {
+    if (!this.editedImgData) {
+      return
+    }
+    var iOffset = Math.floor(this.editedImgData.height * 0.05)
+    var jOffset = Math.floor(this.editedImgData.width * 0.05)
+    var newImgData = new ImageData(
+      this.editedImgData.width - jOffset,
+      this.editedImgData.height - iOffset
+    )
+    for (var i = 0; i < newImgData.height; i++) {
+      for (var j = 0; j < newImgData.width; j++) {
+        var idx = (i * newImgData.width + j) * 4
+        var oidx = (i * this.editedImgData.width + j) * 4
+        var nidx = ((i + iOffset) * this.editedImgData.width + j + jOffset) * 4
+        newImgData.data[idx] = this.editedImgData.data[oidx]
+        newImgData.data[idx + 1] =
+          Math.floor(
+            this.editedImgData.data[oidx + 1] +
+              this.editedImgData.data[nidx + 1]
+          ) / 2
+        newImgData.data[idx + 2] = this.editedImgData.data[oidx + 2]
+        newImgData.data[idx + 3] = this.editedImgData.data[oidx + 3]
+      }
+    }
+    this.setEditedImgData(newImgData)
+  }
+
+  setEditedImgData(imgData) {
+    this.editedImgData = imgData
+    var canvas = this.components.editedFile
+    canvas.width = this.editedImgData.width
+    canvas.height = this.editedImgData.height
+    var ctx = canvas.getContext('2d')
+    ctx.putImageData(this.editedImgData, 0, 0)
+  }
+
+  resizeCanvas(canvas) {
+    if (canvas.width <= 0) {
+      return
+    }
+    canvas.style.width = ''
+    canvas.style.height = ''
+    setTimeout(() => {
+      if (window.innerHeight > window.innerWidth) {
+        let width = parseInt(getComputedStyle(canvas).width)
+        let height = (width * canvas.height) / canvas.width
+        canvas.style.height = Math.floor(height) + 'px'
+      } else {
+        let height = parseInt(getComputedStyle(canvas).height)
+        let width = (height * canvas.width) / canvas.height
+        canvas.style.width = Math.floor(width) + 'px'
+      }
+    }, 0)
   }
 }
 
 import { FileSelector } from '../commons/file-selector.js'
 import { ResizeWatcher } from '../commons/resize-watcher.js'
+import { loadImageData } from '../commons/load-imagedata.js'
+import { fitCanvas } from '../commons/fit-canvas.js'

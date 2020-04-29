@@ -1,21 +1,13 @@
 <script src="./index.js"></script>
 <template id="app-main" view-model="App">
   <menu-bar model.="{menus}"></menu-bar>
-  <v-stack id="page" class="page">
-    <h-stack class="line" for.="line of lines">
-      <div class="char" for.="char of line.chars">
-        <ruby>
-          <span inner-text$.="char.content"></span>
-          <rt inner-text$.="char.string"></rt>
-        </ruby>
-      </div>
-    </h-stack>
-  </v-stack>
+  <hv-stack>
+    <canvas id="editedFile"></canvas>
+  </hv-stack>
   <style>
     :host {
       display: flex;
       flex-direction: column;
-      padding: 0 8px;
       height: 100%;
       width: 100%;
       box-sizing: border-box;
@@ -24,19 +16,21 @@
     menu-bar {
       --menu-background-color: lightcoral;
       --menu-color: #eee;
+      margin: 0 3px;
     }
-    .page {
-      flex: 1;
-      margin-bottom: 8px;
-    }
-    .line {
-      flex: 1;
-      align-content: space-around;
-    }
-    .char {
-      flex: 1;
-      text-align: center;
+    canvas {
+      margin: 10px 8px;
       box-sizing: border-box;
+    }
+    @media (orientation: landscape) {
+      hv-stack {
+        overflow: hidden;
+        height: 100%;
+        justify-content: space-around;
+      }
+      canvas {
+        margin-top: 5px;
+      }
     }
   </style>
 </template>

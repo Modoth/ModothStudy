@@ -13,7 +13,7 @@ class App {
     this.resizeWatcher = new ResizeWatcher()
     this.resizeWatcher.register(() => {
       ;[this.components.srcFile, this.components.editedFile].forEach((canvas) =>
-        this.resizeCanvas(canvas)
+        fitCanvas(canvas)
       )
     })
     this.sizes = [16, 64, 256]
@@ -61,26 +61,7 @@ class App {
     canvas.height = imgData.height
     let ctx = canvas.getContext('2d')
     ctx.putImageData(imgData, 0, 0)
-    this.resizeCanvas(canvas)
-  }
-
-  resizeCanvas(canvas) {
-    if (canvas.width <= 0) {
-      return
-    }
-    canvas.style.width = ''
-    canvas.style.height = ''
-    setTimeout(() => {
-      if (window.innerHeight > window.innerWidth) {
-        let width = parseInt(getComputedStyle(canvas).width)
-        let height = (width * canvas.height) / canvas.width
-        canvas.style.height = Math.floor(height) + 'px'
-      } else {
-        let height = parseInt(getComputedStyle(canvas).height)
-        let width = (height * canvas.width) / canvas.height
-        canvas.style.width = Math.floor(width) + 'px'
-      }
-    }, 0)
+    fitCanvas(canvas)
   }
 }
 
@@ -90,3 +71,4 @@ import { loadImageData } from '../commons/load-imagedata.js'
 import { generateIconFromCanvas } from '../commons/generate-icon-from-canvas.js'
 import { resizeImageData } from '../commons/resize-imagedata.js'
 import { downloadDataUrl } from '../commons/download-dataurl.js'
+import { fitCanvas } from '../commons/fit-canvas.js'
