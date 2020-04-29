@@ -17,7 +17,7 @@ class App {
   start() {
     this.fileSelector = new FileSelector()
     this.resizeWatcher = new ResizeWatcher()
-    this.resizeWatcher.register(setTimeout(this.repage.bind(this), 50))
+    this.resizeWatcher.register(() => setTimeout(this.repage.bind(this), 50))
     this.fileNameMenu = new MenuItem('打开', this.openFile_.bind(this))
     this.currentPageMenu = new MenuItem('0/0', () => {})
     this.menus = [
@@ -97,7 +97,7 @@ class App {
   async loadFile_(
     /**@type { { file:File, data:ArrayBuffer } } */ { file, data }
   ) {
-    this.fileNameMenu.name = file.name
+    this.fileNameMenu.name = file.name || ''
     this.fileData = data
     this.repage()
   }

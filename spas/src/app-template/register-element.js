@@ -301,6 +301,7 @@ const { registerElement, registerProperties } = (() => {
       }
 
       rebuildView(){
+        this.shadow_.innerHTML = ''
         const instance = document.importNode(this.template_.content, true)
         this.shadow_.appendChild(instance)
       }
