@@ -1,0 +1,72 @@
+<template id="h-stack" view-model>
+  <slot></slot>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+    }
+  </style>
+</template>
+<template id="v-stack" view-model>
+  <slot></slot>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</template>
+
+<template id="h-spacer" view-model>
+  <slot></slot>
+  <style>
+    :host {
+      flex: 1;
+      display: flex;
+    }
+  </style>
+</template>
+
+<template id="h-text" view-model>
+  <span inner-text$.="content"></span>
+  <style>
+    :host {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      place-content: center;
+    }
+  </style>
+</template>
+
+<template id="play-button" view-model>
+  <span id="btnPlay" class="play-button" class-pause.="isPlaying"></span>
+  <style>
+    :host {
+      display: block;
+      border-radius: 5px;
+      padding: 3px 10px;
+      background-color: #fff4;
+    }
+    .play-button {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: var(--color);
+      clip-path: polygon(25% 10%, 25% 90%, 95% 50%, 25% 10%);
+      transition: 200ms all ease-in-out;
+    }
+    .play-button.pause {
+      clip-path: polygon(
+        60% 50%,
+        20% 20%,
+        20% 80%,
+        60% 50%,
+        60% 80%,
+        80% 80%,
+        80% 20%,
+        60% 20%
+      );
+    }
+  </style>
+</template>

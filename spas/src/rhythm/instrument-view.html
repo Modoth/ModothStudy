@@ -1,10 +1,9 @@
 <template id="app-instruct" view-model>
-  <div class="container">
+  <h-stack>
     <div class="title">
-      <!-- <img src.="icon" /> -->
       <label inner-text$.="name"></label>
     </div>
-    <div class="beats">
+    <h-stack class="beats">
       <div
         style-background-color$.="color"
         for.="beat of beats"
@@ -15,16 +14,13 @@
       >
         <div></div>
       </div>
-    </div>
-  </div>
+    </h-stack>
+  </h-stack>
   <style>
     :host {
       display: block;
       color: #eee;
-    }
-
-    .container {
-      display: flex;
+      padding: 5px 0;
     }
 
     .title {

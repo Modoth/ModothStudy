@@ -1,54 +1,33 @@
 <script src="./index.js"></script>
 <template id="app-main" view-model="App">
-  <div class="edit-panel">
-    <h-stack class="title-bar">
+  <v-stack>
+    <h-stack>
       <h-spacer>
-        <span class="title" inner-text$.="title"></span>
+        <h-text class="title" model.="{content:title}"></h-text>
       </h-spacer>
       <play-button
-        model.="({isPlaying})"
+        model.="{isPlaying}"
         onclick.="tooglePlay($event)"
       ></play-button>
     </h-stack>
-    <div class="instruments-panel">
+    <v-stack>
       <app-instruct for.="instruments"></app-instruct>
-    </div>
-  </div>
+    </v-stack>
+  </v-stack>
   <style>
     :host {
+      --color: #eee;
       display: block;
-    }
-    .title-bar {
-      display: flex;
-      align-items: center;
-      width: 100%;
+      padding: 0 8px;
+      color: var(--color);
     }
     .title {
-      color: #eee;
-      /* flex: 1; */
-      text-align: center;
-      padding-left: 60px;
+      padding-left: 30px;
     }
     play-button {
       width: 20px;
       height: 20px;
-      --background-color: #eee;
-      border-radius: 5px;
-      padding: 3px 10px;
-      margin: 10px 6px 10px 10px;
-      background-color: #666;
-    }
-    .edit-panel {
-      padding: 0 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .instruments-panel {
-      width: 100%;
-    }
-    app-instruct {
-      margin-bottom: 10px;
+      margin: 10px 0px 10px 10px;
     }
   </style>
 </template>

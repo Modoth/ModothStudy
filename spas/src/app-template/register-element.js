@@ -4,7 +4,7 @@ const { registerElement, registerProperties } =
       return function () {
         with (this) {
           try {
-            return eval(exp)
+            return eval(`(${exp})`)
           } catch (e) {
             return
           }
