@@ -4,6 +4,7 @@
     :host {
       display: flex;
       flex-direction: row;
+      flex: 1;
     }
   </style>
 </template>
@@ -13,6 +14,7 @@
     :host {
       display: flex;
       flex-direction: column;
+      flex: 1;
     }
   </style>
 </template>
@@ -70,3 +72,43 @@
     }
   </style>
 </template>
+
+<template id="menu-bar" view-model>
+  <h-stack>
+    <h-spacer></h-spacer>
+    <div class="menu-item" for.="item of menus">
+      <span inner-text$.="item.name" onclick.="item.onclick()"></span>
+    </div>
+    <h-spacer></h-spacer>
+  </h-stack>
+  <style>
+    :host {
+    }
+    .menu-item {
+      margin: 5px;
+      background-color: var(--menu-background-color);
+      border-radius: 4px;
+      padding: 2px 5px;
+      color: var(--menu-color);
+      text-align: center;
+    }
+    .menu-item > span {
+      display: block;
+      text-overflow: ellipsis;
+      white-space: pre;
+      overflow: hidden;
+      width: 4em;
+    }
+  </style>
+</template>
+
+<script>
+  class MenuItem {
+    constructor(name = '', onclick = null, show = true) {
+      registerProperties(this, 'name')
+      this.name = name
+      this.show = show
+      this.onclick = onclick
+    }
+  }
+</script>

@@ -1,16 +1,47 @@
 <script src="./index.js"></script>
 <template id="app-main" view-model="App">
   <menu-bar model.="{menus}"></menu-bar>
+  <v-stack id="page" class="page">
+    <h-stack class="line" for.="line of lines">
+      <div class="char" for.="char of line.chars">
+        <ruby>
+          <span inner-text$.="char.content"></span>
+          <rt inner-text$.="char.string"></rt>
+        </ruby>
+      </div>
+    </h-stack>
+  </v-stack>
   <style>
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      padding: 0 8px;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    menu-bar {
+      --menu-background-color: lightcoral;
+      --menu-color: #eee;
+    }
+    .page {
+      flex: 1;
+      margin-bottom: 8px;
+    }
+    .line {
+      flex: 1;
+      align-content: space-around;
+    }
+    .char {
+      flex: 1;
+      text-align: center;
+      box-sizing: border-box;
     }
   </style>
 </template>
-<template id="menu-bar" view-model>
-  <div>
-    <div for.="item of menus">
-      <span inner-text$.="item.name" onclick.="item.onclick()"></span>
-    </div>
-  </div>
-</template>
+<style>
+  body {
+    /* background-color: lightskyblue; */
+  }
+</style>

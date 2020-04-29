@@ -1,265 +1,283 @@
-const { registerElement, registerProperties } =
-  (() => {
-    const evalInContext = (exp, context) => {
-      return function () {
+const { registerElement, registerProperties } = (() => {
+  const evalInContext = (exp, context) => {
+    return function () {
+      with (this) {
+        try {
+          return eval(`(${exp})`)
+        } catch (e) {
+          return
+        }
+      }
+    }.call(context)
+  }
+
+  const onprop = (exp, context, listener) => {
+    const tokens = exp.split('.')
+    if (tokens[1]) {
+      if (context.tmpCtxName === tokens[0]) {
+        const tmpCtx = context[context.tmpCtxName]
+        if (tmpCtx && tmpCtx.on) {
+          tmpCtx.on(tokens[1], listener)
+        }
+      }
+    } else {
+      context.on && context.on(tokens[0], listener)
+    }
+  }
+
+  const bindingForInstruction = (/**@type HTMLElement */ element) => {
+    let forExp = element.getAttribute('for.')
+    const match = forExp.match(
+      /^\s*(((let|const|of)\s+)?(?<item>\w+)\s+(?<of_in>of|in)\s+)?\s*(?<data>[\w.]+)\s*$/
+    )
+    if (!match || !match.groups || !match.groups.data) {
+      throw new Error('Invalid for Expression')
+    }
+    const collectionName = match.groups.data
+    const of_in = match.groups.of_in || 'of'
+    let varName = match.groups.item
+    let forHead
+    if (varName) {
+      forHead = `for(const ${varName} ${of_in} ${collectionName})`
+    } else {
+      varName = '$$i'
+      forHead = `for(const ${varName} of ${collectionName})`
+    }
+    const comment = document.createComment(element.outerHTML)
+    const parent = element.parentElement
+    parent.insertBefore(comment, element)
+    element.remove()
+    /**@type Map<any, HTMLElement> */
+    let items = new Map()
+    /**@type Map<any, HTMLElement> */
+    let newItems = new Map()
+    let idx = 0
+    let allRemoved = false
+    const update = () => {
+      ;(function ($$forEach) {
+        newItems = new Map()
+        idx = 0
+        allRemoved = false
         with (this) {
-          try {
-            return eval(`(${exp})`)
-          } catch (e) {
-            return
-          }
-        }
-      }.call(context)
-    }
-
-    const bindingForInstruction = (/**@type HTMLElement */ element) => {
-      let forExp = element.getAttribute('for.')
-      const match = forExp.match(
-        /^\s*(((let|const|of)\s+)?(?<item>\w+)\s+(?<of_in>of|in)\s+)?\s*(?<data>\w+)\s*$/
-      )
-      if (!match || !match.groups || !match.groups.data) {
-        throw new Error('Invalid for Expression')
-      }
-      const collectionName = match.groups.data
-      const of_in = match.groups.of_in || 'of'
-      let varName = match.groups.item
-      let forHead
-      if (varName) {
-        forHead = `for(const ${varName} ${of_in} ${collectionName})`
-      } else {
-        varName = '$$i'
-        forHead = `for(const ${varName} of ${collectionName})`
-      }
-      const comment = document.createComment(element.outerHTML)
-      const parent = element.parentElement
-      parent.insertBefore(comment, element)
-      element.remove()
-      /**@type Map<any, HTMLElement> */
-      let items = new Map()
-      /**@type Map<any, HTMLElement> */
-      let newItems = new Map()
-      let idx = 0
-      let allRemoved = false
-      const update = () => {
-        ; (function ($$forEach) {
-          if (!this[collectionName]) {
-            return
-          }
-
-          newItems = new Map()
-          idx = 0
-          allRemoved = false
-          with (this) {
-            eval(`${forHead}{
-          $$forEach(${varName})
+          eval(`
+          if (this.${collectionName}) {
+            ${forHead}{
+              $$forEach(${varName})
+              }
           }`)
-          }
-          items = newItems
-        }.call(element.context, ($$i) => {
-          /**@type HTMLElement */
-          let item
-          if (items.has($$i)) {
-            const pair = items.get($$i)
-            item = pair.item
-            if (!allRemoved && idx !== pair.idx) {
-              console.log('removed')
-              for (const [_, item] of items) {
-                item.remove()
-              }
-              allRemoved = true
+        }
+        for (const [_, { item }] of items) {
+          item.remove()
+        }
+        items = newItems
+      }.call(element.context, ($$i) => {
+        /**@type HTMLElement */
+        let item
+        if (items.has($$i)) {
+          const pair = items.get($$i)
+          item = pair.item
+          if (!allRemoved && idx !== pair.idx) {
+            console.log('removed')
+            for (const [_, { item }] of items) {
+              item.remove()
             }
-            items.delete($$i)
+            allRemoved = true
+          }
+          items.delete($$i)
+        } else {
+          item = element.cloneNode(true)
+          item.removeAttribute('id')
+          item.removeAttribute('for.')
+          if (item.updateModel) {
+            item.model = $$i
           } else {
-            item = element.cloneNode(true)
-            item.removeAttribute('id')
-            item.removeAttribute('for.')
-            if (item.updateModel) {
-              item.model = $$i
-            } else {
-              item.modelBeforeInit = $$i
-            }
-            const context = Object.create(element.context)
-            context[varName] = $$i
-            context.tmpCtxName = varName
-            item.context = context
+            item.modelBeforeInit = $$i
           }
-          parent.insertBefore(item, comment)
-          newItems.set($$i, { idx, item })
-          binding(item)
-          idx++
-        }))
+          const context = Object.create(element.context)
+          context[varName] = $$i
+          context.tmpCtxName = varName
+          item.context = context
+        }
+        parent.insertBefore(item, comment)
+        newItems.set($$i, { idx, item })
+        binding(item)
+        idx++
+      }))
+    }
+    update()
+    let lastContext = element.context
+    comment.updateWhenModelChange = () => {
+      if (lastContext === element.context) {
+        return
       }
-
+      lastContext = element.context
       update()
-      element.context.on && element.context.on(collectionName, update)
-      return {}
     }
+    onprop(collectionName, element.context, update)
+    return {}
+  }
 
-    const getPropNameFromBindingAttr = (attr) => {
-      return attr.replace(/-(\w)/g, (_, c) => c.toUpperCase())
+  const getPropNameFromBindingAttr = (attr) => {
+    return attr.replace(/-(\w)/g, (_, c) => c.toUpperCase())
+  }
+
+  const getPropsFromExp = (exp) => {
+    return exp.match(/[a-zA-Z0-9_$.]+/g) || []
+  }
+
+  const bindingAttrs = (/**@type HTMLElement */ element) => {
+    if (element.hasAttribute('for.')) {
+      return bindingForInstruction(element)
     }
-
-    const getPropsFromExp = (exp) => {
-      return exp.match(/[a-zA-Z0-9_$.]+/g) || []
-    }
-
-    const bindingAttrs = (/**@type HTMLElement */ element) => {
-      if (element.hasAttribute('for.')) {
-        return bindingForInstruction(element)
-      }
-      const bindingAttrs = element
-        .getAttributeNames()
-        .filter((p) => p.endsWith('.'))
-      for (const prop of bindingAttrs) {
-        const $$exp = element.getAttribute(prop)
-        const effectedAttr = prop
-          .slice(0, -'.'.length)
-          .split(',')
-          .map((a) => a.trim())
-          .filter((a) => a)
-
-        if (effectedAttr.some((a) => a.startsWith('on'))) {
-          const value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
-          for (const ea of effectedAttr) {
-            element.setAttribute(ea, value)
-          }
-          continue
-        }
-        const update = () => {
-          const value = evalInContext($$exp, element.context)
-          for (const ea of effectedAttr) {
-            if (ea === 'model') {
-              if (element.updateModel) {
-                element.updateModel(value)
-              } else {
-                element.modelBeforeInit = value
-              }
-              continue
-            }
-            if (ea.startsWith('class-')) {
-              const className = ea.slice('class-'.length)
-              if (value) {
-                element.classList.add(className)
-              } else {
-                element.classList.remove(className)
-              }
-              continue
-            } else if (ea.startsWith('style-')) {
-              const prop = getPropNameFromBindingAttr(
-                ea.slice('style-'.length, -1)
-              )
-              element.style[prop] = value
-              continue
-            }
-            if (ea.endsWith('$')) {
-              const prop = getPropNameFromBindingAttr(ea.slice(0, -1))
-              element[prop] = value
-              continue
-            }
-            if (value === undefined || value === null) {
-              element.removeAttribute(ea)
-            } else if (element[ea] !== value) {
-              element.setAttribute(ea, value)
-            }
-          }
-        }
-        update()
-        for (const exp of getPropsFromExp($$exp)) {
-          const tokens = exp.split('.')
-          if (tokens[1]) {
-            if (element.context.tmpCtxName === tokens[0]) {
-              const tmpCtx = element.context[element.context.tmpCtxName]
-              if (tmpCtx && tmpCtx.on) {
-                tmpCtx.on(tokens[1], update)
-              }
-            }
-          } else {
-            element.context.on && element.context.on(tokens[0], update)
-          }
-        }
-      }
+    if (element.updateWhenModelChange) {
+      element.updateWhenModelChange()
       return element
     }
+    const bindingAttrs = element
+      .getAttributeNames()
+      .filter((p) => p.endsWith('.'))
+    for (const prop of bindingAttrs) {
+      const $$exp = element.getAttribute(prop)
+      const effectedAttr = prop
+        .slice(0, -'.'.length)
+        .split(',')
+        .map((a) => a.trim())
+        .filter((a) => a)
 
-    const binding = (/**@type HTMLElement */ element) => {
-      /**@type { Object.<string,HTMLElement> } */
-      const components = element.context.components
-      if (element.hasAttribute) {
-        const handler = bindingAttrs(element)
-        //collect ids
-        if (element.hasAttribute('id')) {
-          components[element.getAttribute('id')] = handler
+      if (effectedAttr.some((a) => a.startsWith('on'))) {
+        const value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
+        for (const ea of effectedAttr) {
+          element.setAttribute(ea, value)
         }
+        continue
       }
-      for (const child of [...element.children]) {
-        if (
-          child.context == element.context ||
-          (child.context &&
-            Object.getPrototypeOf(child.context) === element.context)
-        ) {
-        } else {
-          child.context = element.context
-        }
-        binding(child)
-      }
-    }
-
-    const getNameFromTagName = (tagName) => {
-      return tagName
-        .replace(/(?:^|-)(\w)/g, (_, c) => c.toUpperCase())
-    }
-
-    const registerProperties = (obj, ...props) => {
-      if (!obj.define) {
-        addPropChange(obj)
-      }
-      props.forEach(prop => {
-        let propValue
-        Object.defineProperty(obj, prop, {
-          get() {
-            return propValue
-          },
-          set(newValue) {
-            const oldValue = propValue
-            propValue = newValue
-            obj.raise(prop, newValue, oldValue)
+      const update = () => {
+        const value = evalInContext($$exp, element.context)
+        for (const ea of effectedAttr) {
+          if (ea === 'model') {
+            if (element.updateModel) {
+              element.updateModel(value)
+            } else {
+              element.modelBeforeInit = value
+            }
+            continue
           }
-        })
+          if (ea.startsWith('class-')) {
+            const className = ea.slice('class-'.length)
+            if (value) {
+              element.classList.add(className)
+            } else {
+              element.classList.remove(className)
+            }
+            continue
+          } else if (ea.startsWith('style-')) {
+            const prop = getPropNameFromBindingAttr(
+              ea.slice('style-'.length, -1)
+            )
+            element.style[prop] = value
+            continue
+          }
+          if (ea.endsWith('$')) {
+            const prop = getPropNameFromBindingAttr(ea.slice(0, -1))
+            element[prop] = value
+            continue
+          }
+          if (value === undefined || value === null) {
+            element.removeAttribute(ea)
+          } else if (element[ea] !== value) {
+            element.setAttribute(ea, value)
+          }
+        }
+      }
+      update()
+      for (const exp of getPropsFromExp($$exp)) {
+        onprop(exp, element.context, update)
+      }
+    }
+    return element
+  }
+
+  const binding = (/**@type HTMLElement */ element) => {
+    /**@type { Object.<string,HTMLElement> } */
+    const components = element.context.components
+    if (element.hasAttribute) {
+      const handler = bindingAttrs(element)
+      //collect ids
+      if (element.hasAttribute('id')) {
+        components[element.getAttribute('id')] = handler
+      }
+      if (handler !== element) {
+        return
+      }
+    }
+    for (const child of [...element.children]) {
+      if (
+        child.context == element.context ||
+        (child.context &&
+          Object.getPrototypeOf(child.context) === element.context)
+      ) {
+      } else {
+        child.context = element.context
+      }
+      binding(child)
+    }
+  }
+
+  const getNameFromTagName = (tagName) => {
+    return tagName.replace(/(?:^|-)(\w)/g, (_, c) => c.toUpperCase())
+  }
+
+  const registerProperties = (obj, ...props) => {
+    if (!obj.define) {
+      addPropChange(obj)
+    }
+    props.forEach((prop) => {
+      let propValue
+      Object.defineProperty(obj, prop, {
+        get() {
+          return propValue
+        },
+        set(newValue) {
+          const oldValue = propValue
+          propValue = newValue
+          obj.raise(prop, newValue, oldValue)
+        },
       })
-    }
+    })
+  }
 
-    const addPropChange = (/**@type { Object } */ obj) => {
-      /**@type Map<string, Set<{(newValue, oldValue):any}>> */
-      const listeners = new Map()
-      obj.define = (...props) => registerProperties(obj, ...props)
-      obj.on = (/**@type string */prop, listener) => {
-        if (!listeners.has(prop)) {
-          listeners.set(prop, new Set())
-        }
-        listeners.get(prop).add(listener)
+  const addPropChange = (/**@type { Object } */ obj) => {
+    /**@type Map<string, Set<{(newValue, oldValue):any}>> */
+    const listeners = new Map()
+    obj.define = (...props) => registerProperties(obj, ...props)
+    obj.on = (/**@type string */ prop, listener) => {
+      if (!listeners.has(prop)) {
+        listeners.set(prop, new Set())
       }
-      obj.off = (prop, listener) => {
-        if (!listeners.has(prop)) {
-          return
-        }
-        listeners.get(prop).delete(listener)
+      listeners.get(prop).add(listener)
+    }
+    obj.off = (prop, listener) => {
+      if (!listeners.has(prop)) {
+        return
       }
-      obj.raise = (prop, newValue, oldValue) => {
-        if (!listeners.has(prop)) {
-          return
-        }
-        for (const listener of listeners.get(prop)) {
-          listener(newValue, oldValue)
-        }
+      listeners.get(prop).delete(listener)
+    }
+    obj.raise = (prop, newValue, oldValue) => {
+      if (!listeners.has(prop)) {
+        return
+      }
+      for (const listener of listeners.get(prop)) {
+        listener(newValue, oldValue)
       }
     }
+  }
 
-    const registerElement = (tagName, /**@type { string } */ constructor) => {
-      const elementClassName = `HTML${
-        constructor || getNameFromTagName(tagName)
-        }Element`
-      constructor = constructor || 'Object'
-      eval(`
+  const registerElement = (tagName, /**@type { string } */ constructor) => {
+    const elementClassName = `HTML${
+      constructor || getNameFromTagName(tagName)
+    }Element`
+    constructor = constructor || 'Object'
+    eval(`
     class ${elementClassName} extends HTMLElement{
       constructor(){
         super()
@@ -268,8 +286,7 @@ const { registerElement, registerProperties } =
         if(!template || template.tagName !== 'TEMPLATE' ){
           throw new Error('Define Template')
         }
-        const instance = document.importNode(template.content, true)
-        shadow.appendChild(instance)
+        this.template_ = template
         this.shadow_ = shadow
         this.model_ = new ${constructor}()
         this.model_.components = { }
@@ -282,6 +299,11 @@ const { registerElement, registerProperties } =
           this.model =  {}
         }
       }
+
+      rebuildView(){
+        const instance = document.importNode(this.template_.content, true)
+        this.shadow_.appendChild(instance)
+      }
   
       get model(){
         return this.model_
@@ -291,6 +313,7 @@ const { registerElement, registerProperties } =
         //combine code behind with model
         Object.assign(this.model_, value)
         this.shadow_.context = this.model_ 
+        this.rebuildView()
       }
   
       updateModel(value){
@@ -308,6 +331,6 @@ const { registerElement, registerProperties } =
     }
     customElements.define('${tagName}', ${elementClassName})
     `)
-    }
-    return { registerElement, registerProperties }
-  })()
+  }
+  return { registerElement, registerProperties }
+})()

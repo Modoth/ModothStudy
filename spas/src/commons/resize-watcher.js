@@ -1,5 +1,5 @@
 export class ResizeWatcher {
-  constructor(target) {
+  constructor(target = window) {
     /**@type Window & typeof globalThis*/
     this.target_ = target
     this.target_.onresize = (ev) => this.onResize_(ev)
