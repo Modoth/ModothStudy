@@ -1,0 +1,16 @@
+<script src="./index.js"></script>
+<template id="app-main" view-model="App">
+  <menu-bar model.="{menus}"></menu-bar>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+</template>
+<template id="menu-bar" view-model>
+  <div>
+    <div for.="item of menus">
+      <span inner-text$.="item.name" onclick.="item.onclick()"></span>
+    </div>
+  </div>
+</template>

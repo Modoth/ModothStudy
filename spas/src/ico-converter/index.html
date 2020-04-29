@@ -1,0 +1,253 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <script>
+        class BufferWriter {
+            constructor(buffer) {
+                this.dataView = new DataView(buffer);
+                this.offset = 0;
+            }
+            writeUint8(num) {
+                this.dataView.setUint8(this.offset, num, true);
+                this.offset += 1;
+            }
+            writeUint16(num) {
+                this.dataView.setUint16(this.offset, num, true);
+                this.offset += 2;
+            }
+            writeUint32(num) {
+                this.dataView.setUint32(this.offset, num, true);
+                this.offset += 4;
+            }
+        }
+
+        class App {
+
+            init() {
+                ['srcFile', 'editedFile', 'file', 'selectSize', 'downloadLink', 'container', 'icoImg'].forEach(
+                    e => this[e] = document.getElementById(e));
+                this.file.onchange = (e) => {
+                    let file = e.target.files[0];
+                    if (file) {
+                        this.openFile(file);
+                    }
+                }
+                this.selectSize.onchange = () => this.resizeImg();
+                window.onresize = () => {
+                    [this.srcFile, this.editedFile].forEach(canvas => this.resizeCanvas(canvas));
+                }
+                this.sizes = [16, 32, 64, 128, 256];
+                this.updateSizes(this.sizes);
+            }
+
+            updateSizes(sizes) {
+                let currentSize = this.selectSize.value;
+                if (sizes.indexOf(currentSize) < 0) {
+                    currentSize = sizes[sizes.length - 1];
+                }
+                this.selectSize.innerHTML = '';
+                sizes.forEach(size => {
+                    let btn = document.createElement('option');
+                    btn.innerText = `${size}`;
+                    btn.value = size;
+                    this.selectSize.appendChild(btn);
+                })
+                this.selectSize.value = currentSize;
+            }
+
+            getImgData(file) {
+                return new Promise((resolve, reject) => {
+                    let reader = new FileReader();
+                    reader.onload = (e) => {
+                        let img = document.createElement('img');
+                        img.src = e.target.result //解码前
+                        img.onload = e => {
+                            let canvas = document.createElement('canvas');
+                            canvas.width = img.naturalWidth;
+                            canvas.height = img.naturalHeight;
+                            let ctx = canvas.getContext("2d");
+                            ctx.drawImage(img, 0, 0);
+                            //解码后
+                            let imgData = ctx.getImageData(0, 0, img.naturalWidth, img
+                                .naturalHeight);
+                            resolve(imgData);
+                        }
+                    }
+                    reader.onerror = (e) => {
+                        reject(e.target.error);
+                    }
+                    reader.readAsDataURL(file);
+                })
+            }
+
+            async openFile(file) {
+                this.oriImageData = await this.getImgData(file);
+                let sizes = this.sizes.filter(s => s <= Math.min(this.oriImageData.width, this.oriImageData.height));
+                this.updateSizes(sizes);
+                this.setImgData(this.srcFile, this.oriImageData);
+                this.resizeImg();
+            }
+
+            async resizeImg() {
+                let size = this.selectSize.value >>> 0;
+                if (size === 0 || this.oriImageData == null) {
+                    return;
+                }
+                let iStep = Math.floor(this.oriImageData.width / size);
+                let jStep = Math.floor(this.oriImageData.height / size);
+                if (iStep <= 0 || jStep <= 0) {
+                    throw Error()
+                }
+                let img = new ImageData(size, size);
+                for (let j = 0; j < size; j++) {
+                    for (let i = 0; i < size; i++) {
+                        let nIdx = (j * size + i) * 4;
+                        let r = 0;
+                        let g = 0;
+                        let b = 0;
+                        let a = 0;
+                        let count = 0;
+                        for (let n = j * jStep; n < Math.min(this.oriImageData.height, (j + 1) * jStep); n++) {
+                            for (let m = i * iStep; m < Math.min(this.oriImageData.width, (i + 1) * iStep); m++) {
+                                let oIdx = (n * this.oriImageData.width + m) * 4;
+                                r += this.oriImageData.data[oIdx];
+                                g += this.oriImageData.data[oIdx + 1];
+                                b += this.oriImageData.data[oIdx + 2];
+                                a += this.oriImageData.data[oIdx + 3];
+                                count++;
+                            }
+                        }
+                        img.data[nIdx] = r / count;
+                        img.data[nIdx + 1] = g / count;
+                        img.data[nIdx + 2] = b / count;
+                        img.data[nIdx + 3] = a / count;
+                    }
+                }
+                this.editedImgData = img;
+                this.setImgData(this.editedFile, img);
+                this.downloadLink.href = await this.generateDataUrl(this.editedFile);
+            }
+
+            async generateDataUrl(canvas) {
+                let icoType = 'image/vnd.microsoft.icon';
+                let blob = await new Promise(resolve => canvas.toBlob(b => resolve(b), icoType));
+                debugger;
+                if (blob.type === icoType) {
+                    return window.URL.createObjectURL(blob);
+                }
+                let width = canvas.width;
+                let height = canvas.height;
+                let headerLength = 6 + 16 * 1; //ICONDIR + ICONDIRENTRY * 1
+                var buffer = new ArrayBuffer(headerLength);
+                var writer = new BufferWriter(buffer);
+                //ICONDIR
+                writer.writeUint16(0); //Reserved
+                writer.writeUint16(1); //icon
+                writer.writeUint16(1); //image numbers
+                //ICONDIRENTRY
+                writer.writeUint8(width % 256);
+                writer.writeUint8(height % 256);
+                writer.writeUint8(0); // color palette
+                writer.writeUint8(0); //Reserved
+                writer.writeUint16(1); // color planes
+                writer.writeUint16(32); //bits per pixel
+                writer.writeUint32(blob.size); // size of image data
+                writer.writeUint32(headerLength); //offset
+                blob = new Blob([buffer, blob], {
+                    type: icoType
+                });
+                return window.URL.createObjectURL(blob);
+            }
+
+            setImgData(canvas, imgData) {
+                canvas.width = imgData.width;
+                canvas.height = imgData.height;
+                let ctx = canvas.getContext("2d");
+                ctx.putImageData(imgData, 0, 0);
+                this.resizeCanvas(canvas);
+            }
+
+            resizeCanvas(canvas) {
+                if (canvas.width > 0) {
+                    let width = parseInt(getComputedStyle(canvas).width);
+                    let height = width * canvas.height / canvas.width;
+                    canvas.style.height = Math.floor(height) + 'px';
+                }
+            }
+        }
+
+        window.onload = () => {
+            window.app = new App();
+            window.app.init()
+        };
+    </script>
+</head>
+<style>
+    body {
+        margin: 0;
+    }
+
+    #app {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        margin: 5px;
+        overflow: auto;
+    }
+
+    #main {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        max-width: 250px;
+        align-self: center;
+        margin: 0;
+    }
+
+    #main>canvas {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        margin: 10px 0 0 0;
+    }
+
+    #header {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 10px;
+    }
+
+    #header>* {
+        margin: 0 10px 10px 0;
+        align-self: center;
+    }
+
+    #file {
+        flex: 1;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div id="header">
+            <input type="file" accept="image/*" id='file' />
+            <select id='selectSize'>
+            </select>
+            <a id="downloadLink" download="download.ico">保存</a>
+        </div>
+        <div id="main">
+            <canvas id='editedFile' width="0" height="0"></canvas>
+            <canvas id='srcFile' width="0" height="0"></canvas>
+        </div>
+    </div>
+</body>
+
+</html>
