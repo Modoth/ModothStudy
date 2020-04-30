@@ -58,10 +58,10 @@
     ),
     linear-gradient(
       45deg,
-      #0001 26%,
-      transparent 26%,
-      transparent 74%,
-      #0001 74%,
+      #0001 25%,
+      transparent 25%,
+      transparent 75%,
+      #0001 75%,
       #0001
     );
   background-size: 20px 20px;
