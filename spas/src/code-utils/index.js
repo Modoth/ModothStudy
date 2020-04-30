@@ -19,7 +19,7 @@ class App {
         this.redoMenu_,
         this.createCodeMenuItem('JSON转义', this.encodeJSON),
       ])
-    this.content = '123'
+    this.content = ''
     this.maxContentsLength = 2
     this.undoContents_ = []
     this.redoContents_ = []
