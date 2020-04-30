@@ -1,4 +1,9 @@
-export const generateIconFromCanvas = async (canvas) => {
+export const generateIconUrl = async (imgData) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = imgData.width
+  canvas.height = imgData.height
+  let ctx = canvas.getContext('2d')
+  ctx.putImageData(imgData, 0, 0)
   let icoType = 'image/vnd.microsoft.icon'
   let blob = await new Promise((resolve) =>
     canvas.toBlob((b) => resolve(b), icoType)
