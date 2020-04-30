@@ -175,3 +175,31 @@
     }
   }
 </script>
+<template id="pop-up" view-model="Popup">
+  <div class="popup">
+    <slot></slot>
+  </div>
+  <style>
+    :host {
+      display: block;
+      position: relative;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      position: fixed;
+      background: #0002;
+    }
+    .popup {
+      max-width: 99%;
+      max-height: 99%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</template>
+<script>
+  class Popup {}
+</script>

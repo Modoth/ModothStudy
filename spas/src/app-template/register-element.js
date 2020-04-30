@@ -117,6 +117,44 @@ const { registerElement, registerProperties } = (() => {
     return {}
   }
 
+  const bindingIfInstruction = (/**@type HTMLElement */ element) => {
+    let ifExp = element.getAttribute('if.')
+    const comment = document.createComment(element.outerHTML)
+    const parent = element.parentElement
+    parent.insertBefore(comment, element)
+    element.remove()
+    let item
+    const update = () => {
+      const value = evalInContext(ifExp, element.context)
+      if (value) {
+        if (item) {
+          return
+        }
+        item = element.cloneNode(true)
+        item.removeAttribute('if.')
+        parent.insertBefore(item, comment)
+        item.context = element.context
+        binding(item)
+      } else if (item) {
+        item.remove()
+        item = null
+      }
+    }
+    update()
+    let lastContext = element.context
+    comment.updateWhenModelChange = () => {
+      if (lastContext === element.context) {
+        return
+      }
+      lastContext = element.context
+      update()
+    }
+    for (const exp of getPropsFromExp(ifExp)) {
+      onprop(exp, element.context, update)
+    }
+    return {}
+  }
+
   const getPropNameFromBindingAttr = (attr) => {
     return attr.replace(/-(\w)/g, (_, c) => c.toUpperCase())
   }
@@ -128,6 +166,9 @@ const { registerElement, registerProperties } = (() => {
   const bindingAttrs = (/**@type HTMLElement */ element) => {
     if (element.hasAttribute('for.')) {
       return bindingForInstruction(element)
+    }
+    if (element.hasAttribute('if.')) {
+      return bindingIfInstruction(element)
     }
     if (element.updateWhenModelChange) {
       element.updateWhenModelChange()
@@ -289,7 +330,7 @@ const { registerElement, registerProperties } = (() => {
         this.template_ = template
         this.shadow_ = shadow
         this.model_ = new ${constructor}()
-        this.model_.components = { }
+        this.model_.components = { host: this.shadow_ }
         if(this.context && this.hasAttribute('model.')){
           const modeExp = this.getAttribute('model.')
           this.model = evalInContext(modeExp, this.context)
@@ -319,14 +360,13 @@ const { registerElement, registerProperties } = (() => {
   
       updateModel(value){
         this.model = value
-        binding(this.shadow_)
+        this.connectedCallback()
       }
       
       connectedCallback(){
         binding(this.shadow_)
         if(this.model_.launch){
           this.model_.launch()
-          window.app = this.model_
         } 
       }
     }

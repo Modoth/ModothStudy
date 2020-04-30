@@ -9,6 +9,11 @@
     autocapitalize="off"
     spellcheck="false"
   ></textarea>
+  <div>
+    <pop-up if.="showQrCode" onclick.="showQrCode=false">
+      <qr-code model.="{content}"></qr-code>
+    </pop-up>
+  </div>
   <modal-panel id="modal"></modal-panel>
   <style>
     :host {
@@ -39,5 +44,15 @@
       flex: 1;
       outline: none !important;
     }
+    qr-code {
+      width: 90vmin;
+      height: 90vmin;
+      box-shadow: 3px 3px 5px #0008;
+      box-sizing: border-box;
+      background-color: white;
+      padding: 10px;
+      border-radius: 4px;
+    }
   </style>
 </template>
+<imports src="../commons/qrcode.html"></imports>

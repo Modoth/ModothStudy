@@ -4,29 +4,39 @@ class App {
     this.components
     /**@type { Storage | {  } } */
     this.storage
-    registerProperties(this, 'menus', 'content')
+    registerProperties(this, 'menus', 'content', 'showQrCode')
   }
 
   start() {
     /**@type { { toast:(msg:string, timeout:number = 1000)=>Promise<any> } } */
     this.modal_ = this.components.modal.model
     this.undoMenu_ = new MenuItem('撤销', this.undo_.bind(this), false)
-    ;(this.redoMenu_ = new MenuItem('重做', this.redo_.bind(this), false)),
-      (this.menus = [
-        new MenuItem('粘贴', this.paste_.bind(this), false),
-        new MenuItem('复制', this.copy_.bind(this)),
-        this.undoMenu_,
-        this.redoMenu_,
-        this.createCodeMenuItem('JSON转义', this.encodeJSON),
-      ])
-    this.content = ''
+    this.redoMenu_ = new MenuItem('重做', this.redo_.bind(this), false)
+    this.menus = [
+      new MenuItem('粘贴', this.paste_.bind(this), false),
+      new MenuItem('复制', this.copy_.bind(this)),
+      this.undoMenu_,
+      this.redoMenu_,
+      new MenuItem('二维码', this.showQrCode_.bind(this)),
+      this.createCodeMenuItem('JSON转义', this.encodeJSON_),
+    ]
+    this.content = 'asfsdbfdjsbgkuidbgkdfgbki'
     this.maxContentsLength = 2
     this.undoContents_ = []
     this.redoContents_ = []
+    /**@type boolean */
+    this.showQrCode
   }
 
   changeContent(content) {
     this.content = content
+  }
+
+  showQrCode_() {
+    if (!this.content) {
+      return
+    }
+    this.showQrCode = true
   }
 
   paste_() {
@@ -78,7 +88,7 @@ class App {
     })
   }
 
-  encodeJSON(content) {
+  encodeJSON_(content) {
     return JSON.stringify(content)
   }
 

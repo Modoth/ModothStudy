@@ -1,5 +1,6 @@
 export class AppBase {
   async launch() {
+    window.app = this
     this.storage = this.initStorage_()
     this.data = await this.initData(window.appData)
     await this.start()
