@@ -87,7 +87,7 @@
 
 <template id="menu-bar" view-model>
   <h-stack>
-    <div class="menu-item" for.="item of menus">
+    <div class-hidden.="!item.show" class="menu-item" for.="item of menus">
       <span inner-text$.="item.name" onclick.="item.onclick()"></span>
     </div>
   </h-stack>
@@ -113,7 +113,10 @@
       text-overflow: ellipsis;
       white-space: pre;
       overflow: hidden;
-      max-width: 4em;
+      max-width: 6em;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </template>
@@ -121,10 +124,54 @@
 <script>
   class MenuItem {
     constructor(name = '', onclick = null, show = true) {
-      registerProperties(this, 'name')
+      registerProperties(this, 'name', 'show')
       this.name = name
       this.show = show
       this.onclick = onclick
+    }
+  }
+</script>
+
+<template id="modal-panel" view-model="Modal">
+  <span class-hidden.="!toastMessage" inner-text$.="toastMessage"></span>
+  <style>
+    .hidden {
+      /* left: -100%; */
+      /* transition: ease-in-out 0.05s left; */
+      display: none;
+    }
+    span {
+      color: var(--toast-color, #eee);
+      background-color: var(--toast-background-color, #0008);
+      position: fixed;
+      bottom: 0;
+      margin: 20px auto;
+      left: 50%;
+      transform: translate(-50%, 0);
+      padding: 5px 20px;
+      border-radius: 4px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+  </style>
+</template>
+<script>
+  class Modal {
+    constructor() {
+      /**@type { Object.<string,HTMLElement> } */
+      this.components
+      /**@type { Storage | {  } } */
+      this.storage
+      registerProperties(this, 'toastMessage')
+    }
+    toast(/**@string */ msg, /**@type number */ timeout = 1000) {
+      return new Promise((resolve) => {
+        this.toastMessage = msg
+        setTimeout(() => {
+          this.toastMessage = null
+          resolve()
+        }, timeout)
+      })
     }
   }
 </script>

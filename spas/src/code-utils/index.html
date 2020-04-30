@@ -1,0 +1,43 @@
+<script src="./index.js"></script>
+<template id="app-main" view-model="App">
+  <menu-bar model.="{menus}"></menu-bar>
+  <textarea
+    value$.="content"
+    onchange.="changeContent(event.target.value)"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  ></textarea>
+  <modal-panel id="modal"></modal-panel>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      --primary-color: lightseagreen;
+      --primary-contract-color: #eee;
+      color: #333;
+    }
+    modal-panel {
+      --toast-background-color: var(--primary-color);
+      --toast-color: var(--primary-contract-color);
+    }
+    menu-bar {
+      --menu-background-color: var(--primary-color);
+      --menu-color: var(--primary-contract-color);
+      margin: 0 3px;
+    }
+    textarea {
+      margin: 5px;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px var(--primary-color) dashed;
+      flex: 1;
+      outline: none !important;
+    }
+  </style>
+</template>
