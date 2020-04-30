@@ -44,19 +44,20 @@ class App {
     this.oriImageData = await loadImageData(this.fileData)
     this.updateMenu(Math.min(this.oriImageData.width, this.oriImageData.height))
     await this.updateCanvas(this.oriImageData)
-    this.resize(this.sizes[0])
+    this.resize(
+      Math.min(this.sizes[0], this.oriImageData.width, this.oriImageData.height)
+    )
   }
 
   async resize(size) {
-    if (
-      size === 0 ||
-      this.oriImageData == null ||
-      size > Math.min(this.oriImageData.width, this.oriImageData.height)
-    ) {
+    if (size === 0 || this.oriImageData == null) {
       return
     }
     const resizedImg = resizeImageData(this.oriImageData, size)
     this.editedImgData = resizedImg
+    if (this.downloadLink) {
+      window.URL.revokeObjectURL(this.downloadLink)
+    }
     this.downloadLink = await generateIconUrl(resizedImg)
     this.components.editedFile.src = this.downloadLink
   }
