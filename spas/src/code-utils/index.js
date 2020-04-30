@@ -20,7 +20,7 @@ class App {
       new MenuItem('二维码', this.showQrCode_.bind(this)),
       this.createCodeMenuItem('JSON转义', this.encodeJSON_),
     ]
-    this.content = 'asfsdbfdjsbgkuidbgkdfgbki'
+    this.content = ''
     this.maxContentsLength = 2
     this.undoContents_ = []
     this.redoContents_ = []
