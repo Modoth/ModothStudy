@@ -10,20 +10,9 @@
     "七月",
     "八月",
     "九月",
-    "十",
+    "十月",
     "十一月",
     "十二月"
   ],
-  "colors": [
-    "transparent",
-    "#99cc66a0",
-    "#ccccffa0",
-    "#cccc99a0",
-    "#ffcccca0",
-    "#99cccca0",
-    "#ffffcca0",
-    "#e9ae6aa0",
-    "#cc9999a0",
-    "#ff6666a0"
-  ]
+  "colors": ["transparent", "#cc9999a0", "#e9ae6aa0", "#ff6666a0", "#99cc66a0"]
 }

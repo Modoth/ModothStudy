@@ -1,9 +1,18 @@
+const getDayNum = (date) => {
+  return Math.floor(date / (1000 * 60 * 60 * 24))
+}
+
+const todayNum = getDayNum(Date.now())
+
 class App {
   async start() {
     this.selectColor = this.selectColor.bind(this)
     this.selectColorForDay = this.selectColorForDay.bind(this)
-    this.msPerDay_ = 1000 * 60 * 60 * 24
-    await this.registerStorageProperties(['dayColors', {}])
+    await this.registerStorageProperties(['dayColors', {}, () => this.resume()])
+    await this.resume()
+  }
+
+  async resume() {
     this.setCurrentMonth_(new Date())
   }
 
@@ -31,24 +40,21 @@ class App {
       }),
       ...Array.from(
         { length: padEnd },
-        (_, i) => new Day(new Date(year, month, i + 1))
+        (_, i) => new Day(new Date(year, month + 1, i + 1))
       ),
     ]
+    this.selectedDay = this.days[0]
   }
 
   getDayColors_(/**@type Date */ day) {
-    return getBitFlags(this.dayColors[this.getDayKey_(day)]).map(
+    return getBitFlags(this.dayColors[getDayNum(day)]).map(
       (i) => this.colors[i]
     )
   }
 
-  getDayKey_(date) {
-    return Math.floor(date / this.msPerDay_)
-  }
-
   selectColor(/**@type string */ color) {
     if (this.selectingDay_ && color) {
-      const key = this.getDayKey_(this.selectingDay_.date)
+      const key = getDayNum(this.selectingDay_.date)
       if (color && color !== 'transparent') {
         this.selectingDay_.colors = [color]
         this.dayColors[key] = this.selectingDay_.colors
@@ -124,6 +130,7 @@ class Day {
     this.name = this.disable ? '' : this.date.getDate().toString()
     this.colors = colors
     this.current = current
+    this.today = todayNum === getDayNum(this.date)
   }
 }
 

@@ -1,6 +1,7 @@
 <script src="./index.js"></script>
 <template id="app-main" view-model="App">
   <react-stack>
+    <h-spacer></h-spacer>
     <h-stack class="title-bar">
       <span class="nav" onclick.="goPreMonth()">&lt;</span>
       <h-spacer></h-spacer>
@@ -12,7 +13,12 @@
       <div class="day" for.="day of dayNames">
         <div inner-text$.="day" class="week-name"></div>
       </div>
-      <div class="day" for.="day of days" onclick.="selectColorForDay(day)">
+      <div
+        class-today.="day.today"
+        class="day"
+        for.="day of days"
+        onclick.="selectColorForDay(day)"
+      >
         <div
           for.="color of day.colors"
           class="day-color"
@@ -28,8 +34,9 @@
     </div>
     <div
       class="footer"
-      style-background-color$.="selectedDay && selectedDay.colors[0] || '#99cccca0'"
+      style-background-color$.="(selectedDay && selectedDay.colors[0]) || '#99cccc'"
     ></div>
+    <h-spacer></h-spacer>
   </react-stack>
   <div>
     <pop-up if.="selectingColor" onclick.="selectColor()">
@@ -46,17 +53,19 @@
   <style>
     :host {
       display: block;
-      --dark-color: #333;
-      --light-color: #666;
+      --dark-color: #666;
+      --light-color: #888;
       --disabled-color: #ccc;
       --shadow-color: #0008;
+      font-family: monospace;
+      font-size: 14px;
     }
     react-stack {
       height: 100%;
       width: 100%;
     }
     .title-bar {
-      padding: 20px 0 10px 0;
+      padding: 20px 15px 10px 15px;
       font-size: large;
       align-items: center;
     }
@@ -73,20 +82,23 @@
       height: 100vmin;
       grid-template-columns: repeat(7, 1fr);
       grid-template-rows: repeat(7, 1fr);
+      background-color: white;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 5px;
     }
     .footer {
       flex: 1;
     }
     .day,
     .nav {
-      margin: 2px;
-      padding: 10px;
       box-sizing: border-box;
       text-align: center;
       position: relative;
     }
 
     .day-name,
+    .week-name,
     .day-color {
       position: absolute;
       top: 50%;
@@ -98,8 +110,11 @@
       height: 80%;
       box-sizing: border-box;
       border-radius: 100%;
-      z-index: -1;
-      box-shadow: 1px 1px 2px var(--shadow-color);
+      box-shadow: 0px 0px 1px var(--shadow-color);
+    }
+    .today {
+      background-color: #ff0;
+      border-radius: 4px;
     }
     .week-name {
       color: var(--light-color);
@@ -114,14 +129,17 @@
     }
     .footer,
     .hightlight.day-name {
-      color: var(--dark-color);
+      color: var(--disabled-color);
       mix-blend-mode: screen;
+    }
+    .footer {
+      opacity: 0;
     }
     .colors {
       box-shadow: 3px 3px 5px var(--shadow-color);
       box-sizing: border-box;
       background-color: white;
-      padding: 10px;
+      padding: 5px;
       border-radius: 4px;
       display: flex;
       flex-wrap: wrap;
@@ -141,16 +159,11 @@
     @media (orientation: landscape) {
       .title-bar {
         flex-direction: column-reverse;
-        padding: 5vmin 0px 5vmin 20px;
+        padding: 15px 5px;
       }
       .title,
       .nav {
         transform: rotate(-90deg);
-      }
-      .cal {
-        display: grid;
-        padding: 5vmin;
-        box-sizing: border-box;
       }
     }
   </style>
