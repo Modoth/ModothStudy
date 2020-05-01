@@ -1,4 +1,5 @@
 {
+  "dayNames": ["一", "二", "三", "四", "五", "六", "日"],
   "months": [
     "一月",
     "二月",
@@ -13,5 +14,16 @@
     "十一月",
     "十二月"
   ],
-  "colors": ["transparent", "red", "green", "blue"]
+  "colors": [
+    "transparent",
+    "#99cc66a0",
+    "#ccccffa0",
+    "#cccc99a0",
+    "#ffcccca0",
+    "#99cccca0",
+    "#ffffcca0",
+    "#e9ae6aa0",
+    "#cc9999a0",
+    "#ff6666a0"
+  ]
 }
