@@ -6,19 +6,21 @@ export class AppBase {
     await this.start()
   }
 
-  registerStorageProperties(...props) {
+  async registerStorageProperties(...props) {
     if (!this.storage) {
       return
     }
-    props.forEach((prop) => {
-      let propValue = (() => {
-        const jsonStr = this.storage.getItem(prop)
+    for (const [prop, defaultValue] of props) {
+      let propValue = await (async () => {
+        const jsonStr = await this.storage.getItem(prop)
         if (!jsonStr) {
-          return
+          return defaultValue
         }
         try {
           return JSON.parse(jsonStr)
-        } catch {}
+        } catch {
+          return defaultValue
+        }
       })()
       Object.defineProperty(this, prop, {
         get() {
@@ -29,12 +31,12 @@ export class AppBase {
           this.storage.setItem(prop, JSON.stringify(propValue))
         },
       })
-    })
+    }
   }
 
   initStorage_() {
-    if (window.$storage) {
-      return window.$storage
+    if (window.$localStorage) {
+      return window.$localStorage
     }
     try {
       const s = window.localStorage

@@ -19,8 +19,10 @@ class App {
     this.months_ = data.months
     this.colors = data.colors
   }
-  start() {
-    this.registerStorageProperties('dayColors')
+  async start() {
+    this.selectColor = this.selectColor.bind(this)
+    this.selectColorForDay = this.selectColorForDay.bind(this)
+    await this.registerStorageProperties(['dayColors', {}])
     /**@type { { toast:(msg:string, timeout:number = 1000)=>Promise<any> } } */
     this.modal_ = this.components.modal.model
     const now = new Date()
@@ -61,7 +63,7 @@ class App {
     return Math.floor(date / this.msPerDay_)
   }
 
-  selectColor = (/**@type string */ color) => {
+  selectColor(/**@type string */ color) {
     if (this.selectedDay_ && color) {
       const key = this.getDayKey_(this.selectedDay_.date)
       if (color && color !== 'transparent') {
@@ -81,7 +83,7 @@ class App {
     this.selectingColor = false
   }
 
-  selectColorForDay = (/**@type Day */ day) => {
+  selectColorForDay(/**@type Day */ day) {
     if (!day.date) {
       return
     }
