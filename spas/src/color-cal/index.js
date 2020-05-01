@@ -6,9 +6,14 @@ const todayNum = getDayNum(Date.now())
 
 class App {
   async start() {
+    document.title = '彩色日历'
     this.selectColor = this.selectColor.bind(this)
     this.selectColorForDay = this.selectColorForDay.bind(this)
-    await this.registerStorageProperties(['dayColors', {}, () => this.resume()])
+    await this.registerStorageProperties([
+      'dayColors',
+      {},
+      () => this.setCurrentMonth_(new Date()),
+    ])
     await this.resume()
   }
 

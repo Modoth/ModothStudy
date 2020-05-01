@@ -723,11 +723,11 @@ class Server {
   resList(res) {
     res.setHeader('content-type', 'text/html')
     res.write(
-      '<ul>' +
+      '<html><head><meta charset="utf-8"><title>spack</title></head><body><ul>' +
         this.entries
           .map((e) => `<li><a href="/${e.name}">${e.name}</a></li>`)
           .join('') +
-        '</ul>'
+        '</ul></body></html>'
     )
   }
 
@@ -881,7 +881,7 @@ Connection: Upgrade
     const apiPrefix = '/api/'
     const httpServer = http.createServer((req, res) => {
       if (
-        req.headers['connection'] === 'Upgrade' &&
+        req.headers['connection'].indexOf('Upgrade') >= 0 &&
         req.headers['upgrade'] === 'websocket'
       ) {
         this.resWebSocket(req, res)

@@ -28,14 +28,14 @@ const { registerElement, registerProperties } = (() => {
   const bindingForInstruction = (/**@type HTMLElement */ element) => {
     let forExp = element.getAttribute('for.')
     const match = forExp.match(
-      /^\s*(((let|const|of)\s+)?(?<item>\w+)\s+(?<of_in>of|in)\s+)?\s*(?<data>[\w.]+)\s*$/
+      /^\s*(((let|const|of)\s+)?(\w+)\s+(of|in)\s+)?\s*([\w.]+)\s*$/
     )
-    if (!match || !match.groups || !match.groups.data) {
+    if (!match || !match[6]) {
       throw new Error('Invalid for Expression')
     }
-    const collectionName = match.groups.data
-    const of_in = match.groups.of_in || 'of'
-    let varName = match.groups.item
+    const collectionName = match[6]
+    const of_in = match[5] || 'of'
+    let varName = match[4]
     let forHead
     if (varName) {
       forHead = `for(const ${varName} ${of_in} ${collectionName})`
