@@ -1,9 +1,35 @@
 export class AppBase {
   async launch() {
-    window.app = this
     this.storage = this.initStorage_()
     this.data = await this.initData(window.appData)
+    window.app = this
     await this.start()
+  }
+
+  registerStorageProperties(...props) {
+    if (!this.storage) {
+      return
+    }
+    props.forEach((prop) => {
+      let propValue = (() => {
+        const jsonStr = this.storage.getItem(prop)
+        if (!jsonStr) {
+          return
+        }
+        try {
+          return JSON.parse(jsonStr)
+        } catch {}
+      })()
+      Object.defineProperty(this, prop, {
+        get() {
+          return propValue
+        },
+        set(newValue) {
+          propValue = newValue
+          this.storage.setItem(prop, JSON.stringify(propValue))
+        },
+      })
+    })
   }
 
   initStorage_() {

@@ -1,0 +1,109 @@
+<script src="./index.js"></script>
+<template id="app-main" view-model="App">
+  <react-stack>
+    <h-stack>
+      <h-spacer></h-spacer>
+      <span onclick.="goPreMonth()">上月</span>
+      <h-spacer></h-spacer>
+      <span inner-text$.="currentMonth"></span>
+      <h-spacer></h-spacer>
+      <span onclick.="goNextMonth()">下月</span>
+      <h-spacer></h-spacer>
+    </h-stack>
+    <div>
+      <div class="day" for.="day of days" onclick.="selectColorForDay(day)">
+        <div inner-text$.="day.name"></div>
+        <div
+          for.="color of day.colors"
+          class="day-color"
+          style-background-color$.="color"
+        ></div>
+      </div>
+    </div>
+    <div>footer</div>
+  </react-stack>
+  <div>
+    <pop-up if.="selectingColor" onclick.="selectColor()">
+      <div class="colors">
+        <div
+          class="color"
+          for.="color of colors"
+          style-background-color$.="color"
+          onclick$.="selectColor(color)"
+        ></div>
+      </div>
+    </pop-up>
+  </div>
+  <modal-panel id="modal"></modal-panel>
+  <style>
+    :host {
+      display: block;
+    }
+    react-stack {
+      height: 100%;
+      width: 100%;
+    }
+    react-stack > *:nth-child(1) {
+      background-color: red;
+    }
+    react-stack > *:nth-child(2) {
+      background-color: blanchedalmond;
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: center;
+    }
+    react-stack > *:nth-child(3) {
+      background-color: green;
+    }
+    .day {
+      width: 12.4%;
+      margin: 2px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .colors {
+      box-shadow: 3px 3px 5px #0008;
+      box-sizing: border-box;
+      background-color: white;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: center;
+      width: 80vw;
+      max-height: 80vh;
+    }
+    .color {
+      width: 42px;
+      height: 42px;
+      box-sizing: border-box;
+      margin: 5px;
+      border-radius: 4px;
+    }
+
+    .day-color {
+      width: 5px;
+      height: 5px;
+    }
+  </style>
+</template>
+<script>
+  window.appData = window.appData || /**@imports json */ './app-data.json'
+</script>
+<template id="react-stack" view-model>
+  <slot></slot>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (orientation: landscape) {
+      :host {
+        flex-direction: row;
+      }
+    }
+  </style>
+</template>

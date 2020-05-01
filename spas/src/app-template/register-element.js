@@ -188,7 +188,14 @@ const { registerElement, registerProperties } = (() => {
       if (effectedAttr.some((a) => a.startsWith('on'))) {
         const value = `(function($event){with(this){${$$exp}}}).call(event.target.context, event)`
         for (const ea of effectedAttr) {
-          element.setAttribute(ea, value)
+          if (ea.endsWith('$')) {
+            element.setAttribute(
+              ea.slice(0, -1),
+              'event.stopPropagation();' + value
+            )
+          } else {
+            element.setAttribute(ea, value)
+          }
         }
         continue
       }
