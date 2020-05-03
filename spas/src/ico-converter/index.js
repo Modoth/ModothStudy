@@ -31,7 +31,7 @@ class App {
       this.fileNameMenu,
       this.downloadMenu,
       ...this.sizes
-        .filter((size) => size < maxSize)
+        .filter((size) => size <= maxSize)
         .map((size) => new MenuItem(size, () => this.resize(size))),
     ]
   }
@@ -44,9 +44,8 @@ class App {
     this.oriImageData = await loadImageData(this.fileData)
     this.updateMenu(Math.min(this.oriImageData.width, this.oriImageData.height))
     await this.updateCanvas(this.oriImageData)
-    this.resize(
-      Math.min(this.sizes[0], this.oriImageData.width, this.oriImageData.height)
-    )
+    this.downloadLink = await generateIconUrl(this.oriImageData)
+    this.components.editedFile.src = this.downloadLink
   }
 
   async resize(size) {

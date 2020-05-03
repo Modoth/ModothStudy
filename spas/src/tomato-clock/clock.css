@@ -4,11 +4,12 @@
 
 .clock-panel {
   position: relative;
-  background-color: whitesmoke;
+  background-color: #fff2;
+  backdrop-filter: blur(5px);
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  box-shadow: -3px -3px 5px #fff3, 3px 3px 5px #0003, 0px 0px 1px #0003 inset,
+  box-shadow: -1px -1px 3px #fff3, 1px 1px 3px #0003, 0px 0px 1px #0003 inset,
     -1px -1px 1px #fff3 inset;
 }
 
@@ -16,14 +17,14 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  height: 15%;
-  width: 15%;
+  /* height: 15%;
+  width: 15%; */
   min-width: 32px;
   min-height: 32px;
   transform: translate(-50%, -50%);
   background-color: whitesmoke;
   border-radius: 100%;
-  box-shadow: 1px 1px 2px #0008, 1px 1px 1px #0002 inset;
+  box-shadow: 1px 1px 2px #0008 inset, 1px 1px 1px #0002;
 }
 
 .center.enabled {
@@ -49,11 +50,11 @@
 }
 
 .hour-hand.hand {
-  width: 60%;
+  width: 40%;
 }
 
 .minute-hand.hand {
-  width: 65%;
+  width: 50%;
 }
 
 .second-hand.hand {

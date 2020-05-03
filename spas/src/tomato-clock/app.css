@@ -21,8 +21,8 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 80vmin;
-  height: 80vmin;
+  width: 75vmin;
+  height: 75vmin;
 }
 
 .clock-panel {
@@ -35,7 +35,7 @@
   box-shadow: 0 -3px 5px #0004;
   color: #666;
   flex: 1;
-  font-size: x-large;
+  font-size: large;
   display: flex;
   align-items: center;
   justify-content: center;

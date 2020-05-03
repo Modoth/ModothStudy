@@ -82,7 +82,7 @@
       height: 100vmin;
       grid-template-columns: repeat(7, 1fr);
       grid-template-rows: repeat(7, 1fr);
-      background-color: white;
+      /* background-color: white; */
       overflow: hidden;
       box-sizing: border-box;
       padding: 5px;
@@ -167,6 +167,15 @@
     }
   </style>
 </template>
+<style>
+  body {
+    background-image: 
+      radial-gradient(#ccccff, rgba(255, 255, 255, 0.3) 30px, transparent 100px),
+      radial-gradient(#99cccc, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+    background-size: 300px 300px, 200px 200px, 300px 300px;
+    background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
+  }
+</style>
 <script>
   window.appData = window.appData || /**@imports json */ './app-data.json'
 </script>
