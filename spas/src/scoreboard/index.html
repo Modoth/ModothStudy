@@ -1,0 +1,124 @@
+<script src="./index.js"></script>
+<template id="app-main" view-model="App">
+  <menu-bar model.="{menus}"></menu-bar>
+  <v-stack>
+    <div
+      class-best-score.="score.bestScore"
+      class="score"
+      for.="score of scores"
+    >
+      <div
+        class="score-oridinal"
+        style-background-color$.="score.color"
+        inner-text$.="score.oridinal"
+      ></div>
+      <div class="score-detail" onclick.="selectScore(score)">
+        <div class="score-name">
+          <span inner-text$.="score.name"></span>(
+          <span inner-text$.="score.value"></span>/
+          <span inner-text$.="maxScore"></span>)
+        </div>
+        <div class="score-value">
+          <progress max.="maxScore" value.="score.value"></progress>
+        </div>
+      </div>
+    </div>
+  </v-stack>
+  <div>
+    <pop-up if.="selectedScore" onclick.="selectScore(null)">
+      <div class="increase-scores">
+        <div
+          class="increase-score"
+          for.="score of increaseScores"
+          inner-text$.="score"
+          onclick$.="increaseScore(score)"
+        ></div>
+      </div>
+    </pop-up>
+  </div>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    menu-bar {
+      --menu-background-color: #000c;
+      --menu-color: #eee;
+      margin: 0 3px;
+    }
+    .increase-score,
+    .score {
+      display: flex;
+      border-radius: 4px;
+      margin: 10px 10px 0 10px;
+      background: #fff8;
+      box-sizing: border-box;
+      /* backdrop-filter: blur(5px); */
+      padding: 10px;
+      box-shadow: 1px 1px 2px #0004, 1px 1px 1px #0002 inset;
+    }
+    .best-score {
+      box-shadow: 1px 1px 3px lightsalmon, -1px -1px 2px lightsalmon,
+        3px 3px 5px lightsalmon;
+    }
+    .score-oridinal {
+      width: 1.5em;
+      height: 1.5em;
+      margin: 0.25em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      font-size: xx-large;
+      margin: 0.25em;
+      border-radius: 100%;
+      color: white;
+    }
+    .score-detail {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-left: 10px;
+    }
+    .score-detail > * {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .score-name {
+      color: #333;
+    }
+    progress {
+      width: calc(100% - 10px);
+      -webkit-appearance: none;
+    }
+    .increase-scores {
+      display: flex;
+      flex-wrap: wrap;
+      background-color: white;
+      border-radius: 10px;
+      padding: 5px;
+      max-height: 80vh;
+      width: 80vw;
+      justify-content: center;
+    }
+    .increase-score {
+      flex: 1;
+    }
+  </style>
+</template>
+<style>
+  body {
+    background-image: radial-gradient(
+        #cc9999,
+        rgba(255, 255, 255, 0.3) 30px,
+        transparent 100px
+      ),
+      radial-gradient(#e9ae6a, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+    background-size: 300px 300px, 200px 200px, 300px 300px;
+    background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
+  }
+</style>
+<script>
+  window.appData = window.appData || /**@imports json */ './app-data.json'
+</script>

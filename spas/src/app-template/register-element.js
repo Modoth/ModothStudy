@@ -219,9 +219,7 @@ const { registerElement, registerProperties } = (() => {
             }
             continue
           } else if (ea.startsWith('style-')) {
-            const prop = getPropNameFromBindingAttr(
-              ea.slice('style-'.length, -1)
-            )
+            const prop = ea.slice('style-'.length, -1)
             element.style[prop] = value
             continue
           }
