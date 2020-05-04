@@ -13,13 +13,13 @@
         inner-text$.="score.oridinal"
       ></div>
       <div class="score-detail" onclick.="selectScore(score)">
+        <div class="score-value">
+          <progress max.="maxScore" value.="score.value"></progress>
+        </div>
         <div class="score-name">
           <span inner-text$.="score.name"></span>(
           <span inner-text$.="score.value"></span>/
           <span inner-text$.="maxScore"></span>)
-        </div>
-        <div class="score-value">
-          <progress max.="maxScore" value.="score.value"></progress>
         </div>
       </div>
     </div>
@@ -42,55 +42,80 @@
       flex-direction: column;
     }
     menu-bar {
-      --menu-background-color: #000c;
-      --menu-color: #eee;
+      --menu-background-color: var(--primary);
+      --menu-color: var(--primary-color);
       margin: 0 3px;
     }
-    .increase-score,
+    .increase-score {
+      border-radius: 4px;
+      background: #fff8;
+      box-sizing: border-box;
+      padding: 2px;
+      margin: 2px;
+      min-width: 2em;
+      text-align: center;
+      box-shadow: 1px 1px 2px #0008;
+    }
     .score {
       display: flex;
       border-radius: 4px;
       margin: 10px 10px 0 10px;
       background: #fff8;
       box-sizing: border-box;
-      /* backdrop-filter: blur(5px); */
-      padding: 10px;
       box-shadow: 1px 1px 2px #0004, 1px 1px 1px #0002 inset;
     }
     .best-score {
-      box-shadow: 1px 1px 3px lightsalmon, -1px -1px 2px lightsalmon,
-        3px 3px 5px lightsalmon;
+      box-shadow: 1px 1px 3px var(--primary), -1px -1px 2px var(--primary),
+        3px 3px 5px var(--primary);
     }
     .score-oridinal {
       width: 1.5em;
       height: 1.5em;
-      margin: 0.25em;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: white;
       font-size: xx-large;
-      margin: 0.25em;
-      border-radius: 100%;
+      padding: 0.5em;
+      border-radius: 4px 0 0 4px;
       color: white;
     }
     .score-detail {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      margin-left: 10px;
+      position: relative;
     }
     .score-detail > * {
-      flex: 1;
-      display: flex;
-      align-items: center;
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 50%;
+      transform: translate(0, -50%);
     }
     .score-name {
-      color: #333;
+      color: var(--primary-color);
+      align-self: center;
+      padding: 5px 10px;
+      font-size: 0.95em;
     }
     progress {
-      width: calc(100% - 10px);
+      width: 100%;
+      height: 1.8em;
       -webkit-appearance: none;
+    }
+    progress::-webkit-progress-bar {
+      background-color: #eee;
+      border-radius: 2px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    }
+    progress::-webkit-progress-value {
+      border-radius: 2px;
+      transition: ease-in-out width 0.25s;
+      background-color: var(--primary);
+      background-image: -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.15),
+        rgba(0, 0, 0, 0.15)
+      );
+      background-size: 100% 100%;
     }
     .increase-scores {
       display: flex;
@@ -109,12 +134,19 @@
 </template>
 <style>
   body {
+    --primary: #99cc66;
+    --primary-color: #333;
+    color: var(--primary-color);
     background-image: radial-gradient(
-        #cc9999,
+        var(--primary),
         rgba(255, 255, 255, 0.3) 30px,
         transparent 100px
       ),
-      radial-gradient(#e9ae6a, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+      radial-gradient(
+        var(--primary),
+        rgba(255, 255, 255, 0.2) 30px,
+        transparent 100px
+      );
     background-size: 300px 300px, 200px 200px, 300px 300px;
     background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
   }
