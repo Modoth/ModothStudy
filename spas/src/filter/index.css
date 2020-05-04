@@ -12,22 +12,7 @@ body,
   overflow-y: auto;
   box-sizing: border-box;
   color: darkblue;
-  background: repeating-linear-gradient(
-        90deg,
-        #f0f0f0 0,
-        #f0f0f0 5%,
-        transparent 0,
-        transparent 50%
-      )
-      0 / 15px 15px,
-    repeating-linear-gradient(
-        180deg,
-        #f0f0f0 0,
-        #f0f0f0 5%,
-        transparent 0,
-        transparent 50%
-      )
-      0 / 15px 15px;
+  background-color: whitesmoke;
 }
 
 #searchBar {
@@ -35,30 +20,32 @@ body,
   display: flex;
   background: #ffffff80;
   width: 100%;
+  box-sizing: border-box;
 }
 
 #txbFilter {
-  margin: 10px 5px 0px 5px;
+  margin: 15px 5px;
   padding: 5px;
   border: #c0c0c0 solid 1px;
   border-radius: 8px !important;
-  -webkit-appearance:none;
+  -webkit-appearance: none;
   flex: 1;
   outline: 0 !important;
-  background: transparent;
+  background: #fff8;
+  backdrop-filter: blur(2px);
   font-size: 1.25rem;
 }
 
 #table {
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start;
+  justify-content: space-evenly;
   flex-direction: row;
-  margin-top: 48px;
+  margin-top: 64px;
 }
 
 #table > div {
-  flex: 1;
+  /* flex: 1; */
   display: inline-flex;
 }
 

@@ -1,5 +1,4 @@
 import { Modal } from '../modal/index.js'
-import { Config } from './config.js'
 import { copy } from '../commons/copy.js'
 
 export class App {
@@ -13,7 +12,8 @@ export class App {
     this.txbFilter_.addEventListener('input', () => this.update())
     this.btnExport_ = this.window_.document.getElementById('btnExport')
     this.modal = new Modal()
-    this.data_ = new Config().appData
+    this.data_ = /**@imports json */ './app-data.json'
+
     this.cmdPrefix_ = '> '
     this.cmdObj_ = {
       new: {
@@ -301,6 +301,14 @@ export class App {
               await cmd.exec(idx)
             }
             return
+          }
+          if (item.style) {
+            document.getElementById('styleBg').innerText = `
+           #searchBar{
+            background-size: 2em 2em;
+            ${item.style}
+           }
+            `
           }
           if (copy(textSpan.innerText)) {
             this.modal.toast(
