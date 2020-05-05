@@ -12,7 +12,13 @@ class App {
     this.root.appendChild(this.replayer_.view)
     this.root.appendChild(this.replay_)
     this.root.appendChild(style)
-    this.replay_.onclick = () => !this.isReplay && this.resume()
+    this.replay_.onclick = () => {
+      if (this.cancleToken_) {
+        this.pause()
+      } else {
+        this.resume()
+      }
+    }
     this.testData_ = /**@imports txt */ './app-data.txt'
   }
 
@@ -34,7 +40,7 @@ class App {
     }
     this.cancleToken_ = { cancled: false }
     this.replay_.classList.add('playing')
-    this.replay_.innerText = 'PLAY...'
+    this.replay_.innerText = 'STOP'
     await this.replayer_.replay(
       this.highlightedData_,
       option,

@@ -238,9 +238,6 @@ export class TerminalReplayer {
 
   async printLine_(/**@type Context */ ctx) {
     while (ctx.currentLine.length) {
-      if (this.cancleToken_.cancled) {
-        return
-      }
       if (ctx.currentLine.startsWith(this.escapePrefix_)) {
         ctx.currentLine = ctx.currentLine.slice(this.escapePrefix_.length)
         await this.escape_(ctx)
@@ -255,6 +252,9 @@ export class TerminalReplayer {
       this.printChar_(ctx, c)
       if (!ctx.currentLine.length) {
         return
+      }
+      if (this.cancleToken_.cancled) {
+        continue
       }
       if (ctx.enableCaret) {
         this.inputCharDelay_ && (await sleep(this.inputCharDelay_))
@@ -275,12 +275,9 @@ export class TerminalReplayer {
     this.printCaret_()
     this.rows_ = [[]]
     for (const line of ctx.lines) {
-      if (this.cancleToken_.cancled) {
-        return
-      }
       ctx.currentLine = line
       if (line.delay) {
-        await sleep(line.delay)
+        this.cancleToken_.cancled || (await sleep(line.delay))
         continue
       }
       await this.printLine_(ctx)
