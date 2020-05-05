@@ -305,7 +305,7 @@ export class App {
           if (item.style) {
             document.getElementById('styleBg').innerText = `
            #searchBar{
-            background-size: 2em 2em;
+            background-size: 1em 1em;
             ${item.style}
            }
             `
