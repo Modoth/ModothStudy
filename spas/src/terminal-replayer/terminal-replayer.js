@@ -246,8 +246,12 @@ export class TerminalReplayer {
         await this.escape_(ctx)
         continue
       }
-      const c = ctx.currentLine[0]
+      let c = ctx.currentLine[0]
       ctx.currentLine = ctx.currentLine.slice(1)
+      if (c === '\u{d}' && ctx.currentLine[0] === '\n') {
+        c = ctx.currentLine[0]
+        ctx.currentLine = ctx.currentLine.slice(1)
+      }
       this.printChar_(ctx, c)
       if (!ctx.currentLine.length) {
         return
@@ -261,7 +265,7 @@ export class TerminalReplayer {
   }
 
   async replay(data, option, /**@type { {cancled : boolean} } */ cancleToken) {
-    const { inputCharDelay = 100, outputCharDelay = 0 } = option || {}
+    const { inputCharDelay = 75, outputCharDelay = 0 } = option || {}
     this.inputCharDelay_ = inputCharDelay
     this.outputCharDelay_ = outputCharDelay
     this.cancleToken_ = cancleToken

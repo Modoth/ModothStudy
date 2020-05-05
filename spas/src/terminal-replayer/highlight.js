@@ -2,11 +2,7 @@ export const highlight = (/**@type string */ content) => {
   const results = []
   const lines = content.split('\n')
   let prefix
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i]
-    if (i === lines.length - 1 && !line.trim()) {
-      continue
-    }
+  for (let line of lines) {
     let match = line.match(/^([\$#]|(?:PS.*?>)|(?:>>>)|(?:>))(\s+)(\w+)?(.*)/)
     if (!match) {
       results.push(line)
