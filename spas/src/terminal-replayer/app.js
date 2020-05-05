@@ -18,7 +18,7 @@ class App {
 
   async start(data) {
     this.highlightedData_ = [highlight(data || this.testData_)]
-    const option = { inputCharDelay: 1, outputCharDelay: 0 }
+    const option = { inputCharDelay: 0, outputCharDelay: 0 }
     await this.resume(option)
   }
 

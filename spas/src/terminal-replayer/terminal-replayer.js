@@ -261,7 +261,7 @@ export class TerminalReplayer {
   }
 
   async replay(data, option, /**@type { {cancled : boolean} } */ cancleToken) {
-    const { inputCharDelay = 100, outputCharDelay = 5 } = option || {}
+    const { inputCharDelay = 100, outputCharDelay = 10 } = option || {}
     this.inputCharDelay_ = inputCharDelay
     this.outputCharDelay_ = outputCharDelay
     this.cancleToken_ = cancleToken

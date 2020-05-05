@@ -3,7 +3,7 @@ export const highlight = (/**@type string */ content) => {
   const lines = content.split('\n')
   let prefix
   for (let line of lines) {
-    let match = line.match(/^([\$#]|(?:PS.*?>)|(?:>>>)|(?:>))(\s+)(\w+)?(.*)$/)
+    let match = line.match(/^([\$#]|(?:PS.*?>)|(?:>>>)|(?:>))(\s+)(\w+)?(.*)/)
     if (!match) {
       results.push(line)
       continue
