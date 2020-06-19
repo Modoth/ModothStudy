@@ -1,18 +1,18 @@
 version: "3.1"
 services:
-  dev:
+  dev_mod:
     build: .
-    container_name: dev
+    container_name: dev_mod
     cap_add:
       - SYS_PTRACE
     volumes:
-      - ../../vms/dev:/home/dev
+      - ~/Data/vms/dev:/home/dev
     ports:
       - "8222:22"
   db:
     image: mariadb
     container_name: db
     volumes:
-      - ../../vms/db:/var/lib/mysql
+      - ~/Data/vms/db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123456

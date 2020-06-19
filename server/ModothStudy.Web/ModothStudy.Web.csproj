@@ -45,6 +45,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet swagger tofile  --output $(OutDir)api.json $(TargetDir)$(TargetFileName) api &amp;&amp; java -jar $(ProjectDir)swagger-codegen-cli.jar generate -l typescript-angular -i $(ProjectDir)$(OutDir)api.json -o $(SolutionDir)/../client/src/app/apis &amp;&amp; cd $(SolutionDir)/../client/src/app/apis &amp;&amp; grep 'let formParams: { append(param: string, value: any): void; };' ./ -r -l | xargs -n 1 sed -i -e 's/let formParams: { append(param: string, value: any): void; };/let formParams: { append(param: string, value: any): void | HttpParams; };/g'" />
+    <Exec Command="dotnet swagger tofile  --output $(OutDir)api.json $(TargetDir)$(TargetFileName) api &amp;&amp; java -jar $(ProjectDir)swagger-codegen-cli.jar generate -l typescript-angular -i $(ProjectDir)$(OutDir)api.json -o $(SolutionDir)/../client/src/app/apis &amp;&amp; java -jar $(ProjectDir)swagger-codegen-cli.jar generate -l typescript-fetch -i $(ProjectDir)$(OutDir)api.json -o $(SolutionDir)/../client_math/src/apis &amp;&amp; cd $(SolutionDir)/../client/src/app/apis &amp;&amp; grep 'let formParams: { append(param: string, value: any): void; };' ./ -r -l | xargs -n 1 sed -i -e 's/let formParams: { append(param: string, value: any): void; };/let formParams: { append(param: string, value: any): void | HttpParams; };/g'" />
   </Target>
 </Project>
