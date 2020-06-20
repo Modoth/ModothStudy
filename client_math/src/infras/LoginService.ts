@@ -1,10 +1,14 @@
-import { LoginApi, LoginUser, Configs, ApiResult } from '../apis'
-import ILoginService from '../app/ILoginService'
+import { LoginApi, LoginUser, Configs } from '../apis'
+import ILoginService, { ILoginUser } from '../app/ILoginService'
 import { ApiService } from './ApiService'
 
 export default class LoginService extends ApiService<LoginApi> implements ILoginService {
   constructor () {
     super(new LoginApi())
+  }
+
+  raiseUpdate () {
+    this.user = this.user && { ...this.user }
   }
 
   async logout (): Promise<any> {
@@ -13,7 +17,7 @@ export default class LoginService extends ApiService<LoginApi> implements ILogin
   }
 
   async login (name: string, pwd: string): Promise<LoginUser | undefined> {
-    this.user = await this.try(() => this.api.pwdOn({ name, password: pwd }))
+    this.user = await this.try(() => this.api.pwdOn({ name, password: pwd })) as ILoginUser
     return this.user
   }
 
@@ -27,21 +31,24 @@ export default class LoginService extends ApiService<LoginApi> implements ILogin
     } catch (e) {
       console.log(e)
     }
-    this.user = user
+    this.user = user as ILoginUser
     return this.user
   }
 
-  private mUser?: LoginUser
+  private mUser?: ILoginUser
 
-  get user (): LoginUser | undefined {
+  get user (): ILoginUser | undefined {
     return this.mUser
   }
 
   set user (value) {
     this.mUser = value
+    if (this.mUser) {
+      this.mUser.managePermission = (value && value.permissions && value.permissions[Configs.PermissionDescriptionsEnum.MANAGE]) === true
+    }
     this.setUser && this.setUser(this.user)
   }
 
-  setUser (_?:LoginUser) {
+  setUser (_?:ILoginUser) {
   }
 }

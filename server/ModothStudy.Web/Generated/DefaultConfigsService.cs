@@ -41,6 +41,8 @@ namespace ModothStudy.Web.Generated
         public string PERMISSION_THIRD_SHARE {get;set;}
         public string Home {get;set;}
         public string Library {get;set;}
+        public string Subject {get;set;}
+        public string Workbook {get;set;}
         public string Name {get;set;}
         public string UserName {get;set;}
         public string Password {get;set;}

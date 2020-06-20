@@ -45,6 +45,7 @@ export default function Login () {
           setPwd(e.target.value)
         }}
         placeholder={langs.get(Configs.UiLangsEnum.Password)}
+        onPressEnter={tryLogin}
       />
       <Button className="login-btn" type="primary" onClick={tryLogin}>
         {langs.get(Configs.UiLangsEnum.Login)}

@@ -33,6 +33,8 @@ namespace ModothStudy.Web.Generated
             PythonConsole = "Python控制台";
 
             Library = "浏览";
+            Subject = "专题";
+            Workbook = "题库";
             Name = "名称";
             UserName = "用户名";
             Password = "密码";

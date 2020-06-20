@@ -49,6 +49,7 @@ namespace ModothStudy.Repository
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Shared));
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.GroupShared));
             modelBuilder.Entity<Node>().HasIndex(nameof(Node.Created));
+            modelBuilder.Entity<Node>().HasIndex(nameof(Node.Published));
 
             modelBuilder.Entity<Node>()
                 .HasOne(a => a.User)

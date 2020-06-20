@@ -9,6 +9,7 @@ using ModothStudy.App.Models;
 using ModothStudy.Entity;
 using ModothStudy.ServiceInterface.AppServices;
 using ModothStudy.ServiceInterface.Common;
+using ModothStudy.ServiceInterface.CommonServices;
 using ModothStudy.ServiceInterface.EntityServices;
 using ModothStudy.ServiceInterface.Lang;
 using User = ModothStudy.App.Models.User;
@@ -55,8 +56,13 @@ namespace ModothStudy.App.Controllers
         [Permission(nameof(PermissionDescriptions.PERMISSION_MANAGE))]
         [HttpPut("role")]
         public async Task<ApiResult> ChangeUserRole([Required] Guid id, Guid? roleId,
-                    [FromServices] IUserPermissionsService permissionsService)
+                    [FromServices] IUserPermissionsService permissionsService,
+                    [FromServices]IOperatorService operatorService)
         {
+            var user = await operatorService.Operator();
+            if(user == null || user!.Id == id){
+                throw new ServiceException(nameof(ServiceMessages.NoPermission));
+            }
             await permissionsService.ChangeUserRole(id, roleId);
             return true;
         }
@@ -64,8 +70,13 @@ namespace ModothStudy.App.Controllers
         [Permission(nameof(PermissionDescriptions.PERMISSION_MANAGE))]
         [HttpPut("state")]
         public async Task<ApiResult> ChangeUserState([Required] Guid id, [Required] bool normal,
-                    [FromServices] IUsersService usersService)
+                    [FromServices] IUsersService usersService,
+                    [FromServices]IOperatorService operatorService)
         {
+            var user = await operatorService.Operator();
+            if(user == null || user!.Id == id){
+                throw new ServiceException(nameof(ServiceMessages.NoPermission));
+            }
             await usersService.ChangeUserState(id, normal ? UserState.Normal : UserState.Disabled);
             return true;
         }

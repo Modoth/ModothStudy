@@ -8,6 +8,10 @@ namespace ModothStudy.ServiceInterface.Lang
 
         Library,
 
+        Subject,
+
+        Workbook,
+
         Name,
 
         UserName,

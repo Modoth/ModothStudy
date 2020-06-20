@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import './Account.less'
 import { useLangs, useLogin, useNotify, useUser } from '../../app/contexts'
 import { Space, Button, Avatar, Modal, Input } from 'antd'
 import { Configs, LoginApi } from '../../apis'
 import { Redirect } from 'react-router-dom'
-import { tryRun as rewindRun } from '../../infras/ApiService'
+import { rewindRun } from '../../infras/ApiService'
+import ImageEditor from '../components/ImageEditor'
+import { FileApiService, FileApiUrls } from '../../infras/FileApiService'
 
 export default function Account () {
   const user = useUser()
@@ -33,6 +35,30 @@ export default function Account () {
       notify!.errorKey(langs, e.message)
     }
   }
+  const [newAvatar, setNewAvatar] = useState<Blob|undefined>(undefined)
+  const refFile = useRef<HTMLInputElement| null>(null)
+  const [changeAvatarVisible, setChangeAvatarVisible] = useState(false)
+  const cancleChangeAvatar = () => {
+    if (refFile.current) {
+      refFile.current.value = ''
+    }
+    setNewAvatar(undefined)
+    setChangeAvatarVisible(false)
+  }
+  const changeAvatar = async (image?: Blob) => {
+    if (!image) {
+      cancleChangeAvatar()
+      return
+    }
+    try {
+      const url = await new FileApiService().fetch(FileApiUrls.Login_UpdateAvatar, { blob: image })
+      user.avatar = url
+      loginService!.raiseUpdate()
+    } catch (e) {
+      notify!.errorKey(langs, e.message)
+    }
+    cancleChangeAvatar()
+  }
   const [oldPwd, setOldPwd] = useState('')
   const [newPwd1, setNewPwd1] = useState('')
   const [newPwd2, setNewPwd2] = useState('')
@@ -56,7 +82,19 @@ export default function Account () {
   }
   return (
     <div className="account">
-      <Avatar className="avatar" src={user.avatar || '/assets/avatar.png'} />
+      <div className="avatar-wraper" onClick={() => {
+        refFile.current!.click()
+      }}>
+        <Avatar className="avatar" src={user.avatar || '/assets/avatar.png'} />
+        <input type="file" className="hidden" ref={refFile} accept="image/*" onChange={e => {
+          const file = e.target.files && e.target.files![0]
+          if (!file) {
+            return
+          }
+          setNewAvatar(file)
+          setChangeAvatarVisible(true)
+        }}></input>
+      </div>
       <Button
         className="user-name"
         size="large"
@@ -71,6 +109,15 @@ export default function Account () {
       <Button className="btn logout-btn" danger type="primary" onClick={logOut}>
         {langs.get(Configs.UiLangsEnum.Logout)}
       </Button>
+      <Modal
+        title={langs.get(Configs.UiLangsEnum.Modify)}
+        visible={changeAvatarVisible}
+        footer={null}
+        bodyStyle={{ padding: 5 }}
+        onCancel={cancleChangeAvatar}
+      >
+        <ImageEditor closed={changeAvatar} className="image-editor" image={newAvatar}></ImageEditor>
+      </Modal>
       <Modal
         title={langs.get(Configs.UiLangsEnum.Modify) + langs.get(Configs.UiLangsEnum.UserName)}
         visible={changeNameVisible}

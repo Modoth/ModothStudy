@@ -11,6 +11,8 @@ public class Blog
     public string? Content { get; set; }
 
     public string? Name { get; set; }
+
+    public DateTime? Published { get; set; }
 }
 
 public static class BlogConverter
@@ -20,6 +22,7 @@ public static class BlogConverter
         UserId = b.User == null ? default : b.User.Id,
         Id = b.Id,
         Name = b.Name,
+        Published = b.Published,
         Content = b.Detail == null ? null : b.Detail.Content
     };
 }

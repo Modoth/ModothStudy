@@ -8,6 +8,8 @@ namespace ModothStudy.Entity
     {
         public DateTime Created { get; set; }
 
+        public DateTime Published { get; set; }
+
         public DateTime Modified { get; set; }
 
         public string? Name { get; set; }

@@ -16,4 +16,5 @@ export interface Blog {
     userId?: string;
     content?: string;
     name?: string;
+    published?: Date;
 }

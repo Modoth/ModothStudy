@@ -17,7 +17,7 @@ import * as url from "url";
 import * as portableFetch from "portable-fetch";
 import { Configuration } from "./configuration";
 
-const BASE_PATH = '';
+const BASE_PATH = "".replace(/\/+$/, "");
 
 /**
  *
@@ -40,7 +40,7 @@ export interface FetchAPI {
 }
 
 /**
- *
+ *  
  * @export
  * @interface FetchArgs
  */
@@ -50,7 +50,7 @@ export interface FetchArgs {
 }
 
 /**
- *
+ * 
  * @export
  * @class BaseAPI
  */
@@ -66,7 +66,7 @@ export class BaseAPI {
 };
 
 /**
- *
+ * 
  * @export
  * @class RequiredError
  * @extends {Error}
@@ -596,6 +596,12 @@ export interface Blog {
      * @memberof Blog
      */
     name?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Blog
+     */
+    published?: Date;
 }
 
 /**
@@ -885,6 +891,8 @@ export namespace Configs {
     export enum UiLangsEnum {
         Home = <any> 'Home',
         Library = <any> 'Library',
+        Subject = <any> 'Subject',
+        Workbook = <any> 'Workbook',
         Name = <any> 'Name',
         UserName = <any> 'UserName',
         Password = <any> 'Password',
@@ -4003,6 +4011,38 @@ export const NodesApiFetchParamCreator = function (configuration?: Configuration
         /**
          * 
          * @param {string} [nodeId] 
+         * @param {Date} [published] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateNodePublished(nodeId?: string, published?: Date, options: any = {}): FetchArgs {
+            const localVarPath = `/api/Nodes/UpdateNodePublished`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'POST' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (nodeId !== undefined) {
+                localVarQueryParameter['nodeId'] = nodeId;
+            }
+
+            if (published !== undefined) {
+                localVarQueryParameter['published'] = (published as any).toISOString();
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [nodeId] 
          * @param {boolean} [shared] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4534,6 +4574,25 @@ export const NodesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} [nodeId] 
+         * @param {Date} [published] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateNodePublished(nodeId?: string, published?: Date, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<ApiResult> {
+            const localVarFetchArgs = NodesApiFetchParamCreator(configuration).updateNodePublished(nodeId, published, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @param {string} [nodeId] 
          * @param {boolean} [shared] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4813,6 +4872,16 @@ export const NodesApiFactory = function (configuration?: Configuration, fetch?: 
          */
         updateNodeGroupShared(nodeId?: string, shared?: boolean, options?: any) {
             return NodesApiFp(configuration).updateNodeGroupShared(nodeId, shared, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @param {string} [nodeId] 
+         * @param {Date} [published] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateNodePublished(nodeId?: string, published?: Date, options?: any) {
+            return NodesApiFp(configuration).updateNodePublished(nodeId, published, options)(fetch, basePath);
         },
         /**
          * 
@@ -5111,6 +5180,18 @@ export class NodesApi extends BaseAPI {
      */
     public updateNodeGroupShared(nodeId?: string, shared?: boolean, options?: any) {
         return NodesApiFp(this.configuration).updateNodeGroupShared(nodeId, shared, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @param {string} [nodeId] 
+     * @param {Date} [published] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NodesApi
+     */
+    public updateNodePublished(nodeId?: string, published?: Date, options?: any) {
+        return NodesApiFp(this.configuration).updateNodePublished(nodeId, published, options)(this.fetch, this.basePath);
     }
 
     /**

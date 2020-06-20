@@ -1,13 +1,18 @@
 .account {
-  & > .avatar {
+  & > .avatar-wraper {
     margin: 40px auto 0 auto;
     display: block;
-    width: 128px;
-    height: 128px;
     border-radius: 100%;
     border-width: 5px;
     border-style: solid;
+    width: 128px;
+    height: 128px;
+    box-sizing: content-box;
     border-color: #fffc;
+    & > .avatar {
+      width: 128px;
+      height: 128px;
+    }
   }
 
   & > .user-name {
@@ -16,13 +21,13 @@
     font-size: xx-large;
   }
 
-  &>.btn{
+  & > .btn {
     margin: 20px auto;
     display: block;
     width: 50%;
   }
 }
 
-.change-pwd-panel{
-    display: flex;
+.change-pwd-panel {
+  display: flex;
 }

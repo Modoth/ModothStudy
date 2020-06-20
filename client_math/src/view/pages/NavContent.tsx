@@ -4,6 +4,9 @@ import Login from './Login'
 import { Switch, Route } from 'react-router-dom'
 import Account from './Account'
 import Library from './Library'
+import { ManageUsers } from './ManageUsers'
+import { ManageTags } from './ManageTags'
+import { ManageSubjects } from './ManageSubjects'
 
 function NavContent () {
   return (
@@ -16,6 +19,15 @@ function NavContent () {
       </Route>
       <Route path="/account">
         <Account />
+      </Route>
+      <Route path="/manage/users">
+        <ManageUsers />
+      </Route>
+      <Route path="/manage/tags">
+        <ManageTags />
+      </Route>
+      <Route path="/manage/subjects">
+        <ManageSubjects />
       </Route>
       <Route path="/login">
         <Login />

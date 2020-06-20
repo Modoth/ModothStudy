@@ -48,6 +48,8 @@ namespace ModothStudy.ServiceInterface.EntityServices
 
         Task UpdateNodeShared(Guid nodeId, bool shared);
 
+        Task UpdateNodePublished(Guid nodeId, DateTime published);
+
         Task UpdateNodeGroupShared(Guid nodeId, bool shared);
 
         Task AddTag(Guid nodeId, Guid tagId, string? value);

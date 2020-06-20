@@ -1252,6 +1252,58 @@ export class NodesService {
      * 
      * 
      * @param nodeId 
+     * @param published 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateNodePublished(nodeId?: string, published?: Date, observe?: 'body', reportProgress?: boolean): Observable<ApiResult>;
+    public updateNodePublished(nodeId?: string, published?: Date, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<ApiResult>>;
+    public updateNodePublished(nodeId?: string, published?: Date, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<ApiResult>>;
+    public updateNodePublished(nodeId?: string, published?: Date, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (nodeId !== undefined && nodeId !== null) {
+            queryParameters = queryParameters.set('nodeId', <any>nodeId);
+        }
+        if (published !== undefined && published !== null) {
+            queryParameters = queryParameters.set('published', <any>published.toISOString());
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.post<ApiResult>(`${this.basePath}/api/Nodes/UpdateNodePublished`,
+            null,
+            {
+                params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param nodeId 
      * @param shared 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

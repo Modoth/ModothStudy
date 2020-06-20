@@ -4,7 +4,7 @@ interface ApiResultG<T> extends ApiResult {
     data?: T;
 }
 
-export async function tryRun<Result> (func: () => Promise<ApiResultG<Result>>, onError:any = null): Promise<Result | undefined> {
+export async function rewindRun<Result> (func: () => Promise<ApiResultG<Result>>, onError:any = null): Promise<Result | undefined> {
   let res:ApiResultG<Result>
   try {
     res = await func()
@@ -31,6 +31,6 @@ export class ApiService<Api> {
   }
 
   protected async try<Result> (func: () => Promise<ApiResultG<Result>>): Promise<Result> {
-    return (await tryRun(func))!
+    return (await rewindRun(func))!
   }
 }

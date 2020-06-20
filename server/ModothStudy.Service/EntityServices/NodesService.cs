@@ -655,6 +655,20 @@ namespace ModothStudy.Service.EntityServices
 
         }
 
+        public async Task UpdateNodePublished(Guid nodeId, DateTime published)
+        {
+            var user = await _operatorService.CheckOperator();
+            var node = await (await GetNodeById(nodeId)).Where(n => n.User == user).FirstOrDefaultAsync();
+            if (node == null)
+            {
+                throw new ServiceException(nameof(ServiceMessages.NoSuchNode));
+            }
+            node.Published = published;
+            await this._nodesRepository.Update(node);
+            return;
+
+        }
+
         public async Task AddTag(Guid nodeId, Guid tagId, string? value)
         {
             var user = await _operatorService.CheckOperator();

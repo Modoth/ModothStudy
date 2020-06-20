@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Library.less'
+import ImageEditor from '../components/ImageEditor'
 
 export default function Library () {
-  return <>Library</>
+  const [image, setImage] = useState<Blob|undefined>(undefined)
+  return <div className="library">
+
+  </div>
 }

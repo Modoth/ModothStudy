@@ -44,6 +44,14 @@ namespace ModothStudy.App.Controllers
         }
 
         [HttpPost]
+        public async Task<ApiResult> UpdateNodePublished(Guid nodeId, DateTime published,
+        [FromServices] INodesService nodesService)
+        {
+            await nodesService.UpdateNodePublished(nodeId, published);
+            return true;
+        }
+
+        [HttpPost]
         public async Task<ApiResult> UpdateNodeGroupShared(Guid nodeId, bool shared,
         [FromServices] INodesService nodesService)
         {

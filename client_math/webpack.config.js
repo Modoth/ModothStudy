@@ -59,7 +59,8 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     proxy: {
-      '/api': 'http://localhost:5000'
+      '/api': 'http://localhost:5000',
+      '/files': 'http://localhost:5000'
     },
     port: 9080
   }
