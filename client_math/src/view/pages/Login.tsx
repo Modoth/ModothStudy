@@ -1,19 +1,23 @@
 import React, { useState } from 'react'
 import './Login.less'
-import { useLangs, useLogin, useNotify, useUser } from '../../app/contexts'
+import { useUser, useServicesLocator } from '../../app/Contexts'
 import { Input, Space, Button } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { Configs } from '../../apis'
 import { Redirect } from 'react-router-dom'
+import ILangsService from '../../domain/ILangsService'
+import ILoginService from '../../app/ILoginService'
+import IViewService from '../services/IViewService'
 
 export default function Login () {
   const user = useUser()
   if (user) {
     return <Redirect to="/account" />
   }
-  const langs = useLangs()
-  const loginService = useLogin()
-  const notify = useNotify()
+  const locator = useServicesLocator()
+  const langs = locator.locate(ILangsService)
+  const loginService = locator.locate(ILoginService)
+  const notify = locator.locate(IViewService)
   const [name, setName] = useState('')
   const [pwd, setPwd] = useState('')
   const tryLogin = async () => {

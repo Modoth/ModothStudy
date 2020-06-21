@@ -895,6 +895,8 @@ export namespace Configs {
         Workbook = <any> 'Workbook',
         Name = <any> 'Name',
         UserName = <any> 'UserName',
+        Import = <any> 'Import',
+        Export = <any> 'Export',
         Password = <any> 'Password',
         Manage = <any> 'Manage',
         User = <any> 'User',

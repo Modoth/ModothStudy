@@ -4,10 +4,22 @@ export interface ILoginUser extends LoginUser{
     managePermission: boolean
 }
 
-export default interface ILoginService {
-    login(name: string, pwd: string): Promise<LoginUser|undefined>;
-    checkLogin(): Promise<LoginUser | undefined>;
-    logout(): Promise<any>;
-    raiseUpdate() : any;
-    readonly user: ILoginUser|undefined;
+export default class ILoginService {
+  login (name: string, pwd: string): Promise<LoginUser | undefined> {
+    throw new Error('Method not implemented.')
+  }
+
+  checkLogin (): Promise<LoginUser | undefined> {
+    throw new Error('Method not implemented.')
+  }
+
+  logout (): Promise<any> {
+    throw new Error('Method not implemented.')
+  }
+
+  raiseUpdate () {
+    throw new Error('Method not implemented.')
+  }
+
+    user: ILoginUser | undefined;
 }

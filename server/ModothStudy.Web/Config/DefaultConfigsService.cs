@@ -35,6 +35,8 @@ namespace ModothStudy.Web.Generated
             Library = "浏览";
             Subject = "专题";
             Workbook = "题库";
+            Import = "导入";
+            Export = "导入";
             Name = "名称";
             UserName = "用户名";
             Password = "密码";

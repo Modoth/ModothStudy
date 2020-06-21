@@ -45,6 +45,8 @@ namespace ModothStudy.Web.Generated
         public string Workbook {get;set;}
         public string Name {get;set;}
         public string UserName {get;set;}
+        public string Import {get;set;}
+        public string Export {get;set;}
         public string Password {get;set;}
         public string Manage {get;set;}
         public string User {get;set;}

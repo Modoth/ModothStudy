@@ -3,24 +3,38 @@ import ReactDOM from 'react-dom'
 import 'antd/dist/antd.css'
 import App from './view/App'
 import LangsService from './domain/LangsService'
-import { LangsContext, NotifyContext, LoginContext } from './app/contexts'
-import NotifyService from './infras/NotifyService'
-import LoginService from './infras/LoginService'
+import { ServicesLocatorProvider } from './app/Contexts'
+import LoginService from './app/LoginService'
+import zhCN from 'antd/es/locale/zh_CN'
+import { ConfigProvider } from 'antd'
+import ServicesLocator from './common/ServicesLocator'
+import IServicesLocator from './common/IServicesLocator'
+import ILoginService from './app/ILoginService'
+import ILangsService from './domain/ILangsService'
+import ISubjectsService from './domain/ISubjectsService'
+import SubjectsService from './domain/SubjectsService'
+
+const buildServicesLocator = () => {
+  const serviceLocator = new ServicesLocator()
+  serviceLocator.registerInstance(ILoginService, new LoginService())
+  serviceLocator.registerInstance(ILangsService, new LangsService())
+  serviceLocator.register(ISubjectsService, SubjectsService)
+  return serviceLocator as IServicesLocator
+}
 
 const bootstrap = async () => {
-  const langsService = new LangsService()
-  const loginService = new LoginService()
+  const serviceLocator = buildServicesLocator()
+  const loginService = serviceLocator.locate(ILoginService)
+  const langsService = serviceLocator.locate(ILangsService)
   await Promise.all([langsService.load(), loginService.checkLogin()])
-  const notifyService = new NotifyService()
+
   ReactDOM.render(
     <React.StrictMode>
-      <LangsContext.Provider value={langsService}>
-        <NotifyContext.Provider value={notifyService}>
-          <LoginContext.Provider value={loginService}>
-            <App />
-          </LoginContext.Provider>
-        </NotifyContext.Provider>
-      </LangsContext.Provider>
+      <ServicesLocatorProvider value={serviceLocator}>
+        <ConfigProvider locale={zhCN}>
+          <App />
+        </ConfigProvider>
+      </ServicesLocatorProvider>
     </React.StrictMode>,
     document.getElementById('root')
   )

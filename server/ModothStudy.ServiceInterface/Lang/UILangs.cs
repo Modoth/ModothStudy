@@ -16,6 +16,10 @@ namespace ModothStudy.ServiceInterface.Lang
 
         UserName,
 
+        Import,
+
+        Export,
+
         Password,
         Manage,
         User,

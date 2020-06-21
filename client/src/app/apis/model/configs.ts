@@ -102,7 +102,7 @@ export namespace Configs {
         COMMENT: 'PERMISSION_COMMENT' as PermissionDescriptionsEnum,
         THIRDSHARE: 'PERMISSION_THIRD_SHARE' as PermissionDescriptionsEnum
     };
-    export type UiLangsEnum = 'Home' | 'Library' | 'Subject' | 'Workbook' | 'Name' | 'UserName' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription' | 'PythonConsole' | 'OpenFile' | 'SuccessToCopy' | 'OpenFileFromThisApp';
+    export type UiLangsEnum = 'Home' | 'Library' | 'Subject' | 'Workbook' | 'Name' | 'UserName' | 'Import' | 'Export' | 'Password' | 'Manage' | 'User' | 'Role' | 'State' | 'Normal' | 'Disabled' | 'Search' | 'Create' | 'Permission' | 'Delete' | 'RootNode' | 'AddSolution' | 'Solution' | 'Folder' | 'Blog' | 'NoSolution' | 'Select' | 'Ok' | 'Preview' | 'Cancle' | 'ConfirmNameToDelete' | 'Tags' | 'Type' | 'Value' | 'Values' | 'None' | 'Bool' | 'String' | 'Enum' | 'Number' | 'Url' | 'Private' | 'Modify' | 'Key' | 'DefaultValue' | 'Reset' | 'Configs' | 'Login' | 'Logout' | 'History' | 'Mine' | 'MySolution' | 'SolutionTo' | 'ReplySolution' | 'ViewSolution' | 'MySolutions' | 'ImageEditor' | 'LoadMore' | 'Comment' | 'ChangePwd' | 'NewPassword' | 'PasswordNotSame' | 'LivePreview' | 'BlogEditor' | 'DataWillNotSave' | 'Python' | 'CommentSuccess' | 'NoCommentsWelcomeToAdd' | 'Run' | 'TmpFileWillNotSave' | 'NoWxTokenFound' | 'InvalidApiSignature' | 'Reference' | 'PwdDescription' | 'PythonConsole' | 'OpenFile' | 'SuccessToCopy' | 'OpenFileFromThisApp';
     export const UiLangsEnum = {
         Home: 'Home' as UiLangsEnum,
         Library: 'Library' as UiLangsEnum,
@@ -110,6 +110,8 @@ export namespace Configs {
         Workbook: 'Workbook' as UiLangsEnum,
         Name: 'Name' as UiLangsEnum,
         UserName: 'UserName' as UiLangsEnum,
+        Import: 'Import' as UiLangsEnum,
+        Export: 'Export' as UiLangsEnum,
         Password: 'Password' as UiLangsEnum,
         Manage: 'Manage' as UiLangsEnum,
         User: 'User' as UiLangsEnum,

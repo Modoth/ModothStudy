@@ -1,6 +1,7 @@
 import { Configs, ConfigsApi } from '../apis'
+import ILangsService from './ILangsService'
 
-export default class LangsService {
+export default class LangsService implements ILangsService {
   private langs: { [key:string]:string}
   public async load () {
     const api = new ConfigsApi()
