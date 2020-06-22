@@ -45,6 +45,7 @@ export default class LoginService extends ApiService<LoginApi> implements ILogin
     this.mUser = value
     if (this.mUser) {
       this.mUser.managePermission = (value && value.permissions && value.permissions[Configs.PermissionDescriptionsEnum.MANAGE]) === true
+      this.mUser.editPermission = (value && value.permissions && value.permissions[Configs.PermissionDescriptionsEnum.POSTBLOG]) === true
     }
     this.setUser && this.setUser(this.user)
   }

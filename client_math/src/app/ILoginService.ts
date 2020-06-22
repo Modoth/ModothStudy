@@ -1,7 +1,8 @@
 import { LoginUser } from '../apis'
 
 export interface ILoginUser extends LoginUser{
-    managePermission: boolean
+    managePermission: boolean,
+    editPermission: boolean
 }
 
 export default class ILoginService {

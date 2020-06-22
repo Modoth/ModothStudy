@@ -7,16 +7,20 @@ import Library from './Library'
 import { ManageUsers } from './ManageUsers'
 import { ManageTags } from './ManageTags'
 import { ManageSubjects } from './ManageSubjects'
+import { useServicesLocator } from '../../app/Contexts'
+import IPluginInfo from '../../plugins/IPluginInfo'
+import Home from './Home'
 
 function NavContent () {
+  const locator = useServicesLocator()
+  const plugin = locator.locate(IPluginInfo)
   return (
     <Switch>
-      <Route path="/library">
-        <Library />
-      </Route>
-      <Route path="/subject">
-        <Subject />
-      </Route>
+      {
+        plugin.types.map(t => <Route key={t.route} path={'/' + t.route}>
+          <Library type={t}/>
+        </Route>)
+      }
       <Route path="/account">
         <Account />
       </Route>
@@ -37,14 +41,6 @@ function NavContent () {
       </Route>
     </Switch>
   )
-}
-
-function Home () {
-  return <></>
-}
-
-function Subject () {
-  return <></>
 }
 
 export default NavContent

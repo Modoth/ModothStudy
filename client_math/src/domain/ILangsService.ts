@@ -1,7 +1,7 @@
 import { Configs } from '../apis'
 
 export default class ILangsService {
-  public async load () {
+  public async load (langs?:{ [key:string]:string}) {
     throw new Error()
   }
 

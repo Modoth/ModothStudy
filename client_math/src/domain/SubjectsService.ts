@@ -67,14 +67,22 @@ export default class SubjectsService implements ISubjectsService {
         return buildSubjects(nodes)
       }
 
-      async add (name: string, parent?: Subject, init?:boolean): Promise<Subject> {
+      async init () {
         const api = new NodesApi()
-        if (init) {
-          const root = (await rewindRun(() => api.queryNodes(this.query, undefined, 0, 1))!)?.data![0]
-          if (root) {
-            await rewindRun(() => api.updateNodeShared(root.id, true))
+        const root = (await rewindRun(() => api.queryNodes({
+          where: {
+            type: Condition.TypeEnum.Contains,
+            prop: 'Path',
+            value: '/adm'
           }
+        }, undefined, 0, 1))!)?.data![0]
+        if (root) {
+          await rewindRun(() => api.updateNodeShared(root.id, true))
         }
+      }
+
+      async add (name: string, parent?: Subject): Promise<Subject> {
+        const api = new NodesApi()
         const res = await rewindRun(() => api.createNode(name, 'Folder', parent && parent.id))
         const sbj = createSubject(res!)
         sbj.parent = parent

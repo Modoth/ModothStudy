@@ -14,9 +14,11 @@ import {
   TagsOutlined
 } from '@ant-design/icons'
 import ILangsService from '../../domain/ILangsService'
+import IPluginInfo from '../../plugins/IPluginInfo'
 const { SubMenu } = Menu
 function Nav () {
   const locator = useServicesLocator()
+  const plugin = locator.locate(IPluginInfo)
   const langs = locator.locate(ILangsService)
   const user = useUser()
   return (
@@ -24,12 +26,11 @@ function Nav () {
       <Menu.Item icon={<HomeOutlined />}>
         <Link to="/">{langs.get(Configs.UiLangsEnum.Home)}</Link>
       </Menu.Item>
-      <Menu.Item icon={<ApartmentOutlined />}>
-        <Link to="/library">{langs.get(Configs.UiLangsEnum.Workbook)}</Link>
-      </Menu.Item>
-      <Menu.Item icon={<ApiOutlined />}>
-        <Link to="/subject">{langs.get(Configs.UiLangsEnum.Subject)}</Link>
-      </Menu.Item>
+      {
+        plugin.types.map(t => <Menu.Item key={t.route} icon={t.icon}>
+          <Link to={'/' + t.route}>{t.name}</Link>
+        </Menu.Item>)
+      }
       <Menu.Item disabled={true} className="menu-item-devider"></Menu.Item>
       {user && user.managePermission ? (
         <SubMenu

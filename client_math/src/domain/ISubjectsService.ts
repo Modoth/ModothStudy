@@ -5,7 +5,11 @@ export default class ISubjectsService implements ISubjectsService {
     throw new Error('Method not implemented.')
   }
 
-  add (name: string, parent?: Subject, init?:boolean): Promise<Subject> {
+  init ():Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  add (name: string, parent?: Subject): Promise<Subject> {
     throw new Error('Method not implemented.')
   }
 

@@ -1,5 +1,57 @@
 .library {
+  padding: 0 10px;
   & .image-editor {
     height: 400px;
+  }
+
+  & .btn-import,
+  & .btn-create {
+    display: block;
+    width: 100%;
+    margin: 20px auto;
+  }
+
+  & .pagination {
+    text-align: center;
+  }
+
+  & .tag-list {
+    display: block;
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 90vw;
+    box-sizing: border-box;
+  }
+
+  & .tag-item {
+    margin: 1px 2px;
+  }
+
+  & .filters,
+  & .articles {
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  & .ant-card-actions > li {
+    margin: 4px 0;
+  }
+
+  & .ant-card-bordered {
+    margin: 5px 0;
+    border-color: #0002;
+  }
+
+  & .ant-card-body {
+    min-height: 6em;
+  }
+
+  & .ant-card-actions {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    opacity: 0.4;
+    background: #40a9ff40;
+    border-style: none !important;
   }
 }

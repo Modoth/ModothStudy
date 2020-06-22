@@ -3,9 +3,14 @@ import ILangsService from './ILangsService'
 
 export default class LangsService implements ILangsService {
   private langs: { [key:string]:string}
-  public async load () {
+  public async load (langs?:{ [key:string]:string}) {
     const api = new ConfigsApi()
-    this.langs = await api.all()
+    const remoteLangs = await api.all()
+    if (langs) {
+      this.langs = Object.assign({}, remoteLangs, langs)
+    } else {
+      this.langs = remoteLangs
+    }
   }
 
   public get (name: Configs.UiLangsEnum | Configs.ServiceMessagesEnum | Configs.PermissionDescriptionsEnum): string {

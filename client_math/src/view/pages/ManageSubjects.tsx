@@ -83,6 +83,9 @@ export function ManageSubjects () {
         }
         const service: ISubjectsService = locator.locate(ISubjectsService)
         try {
+          if (subjects.length === 0) {
+            await service.init()
+          }
           await importTo(service, sbjs)
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -143,7 +146,10 @@ export function ManageSubjects () {
         const service: ISubjectsService = locator.locate(ISubjectsService)
         let subject: Subject
         try {
-          subject = await service.add(name, parent, subjects.length === 0)
+          if (subjects.length === 0) {
+            await service.init()
+          }
+          subject = await service.add(name, parent)
         } catch (e) {
           viewService!.errorKey(langs, e.message)
           return
