@@ -143,7 +143,7 @@ export function ManageSubjects () {
         const service: ISubjectsService = locator.locate(ISubjectsService)
         let subject: Subject
         try {
-          subject = await service.add(name, parent)
+          subject = await service.add(name, parent, subjects.length === 0)
         } catch (e) {
           viewService!.errorKey(langs, e.message)
           return

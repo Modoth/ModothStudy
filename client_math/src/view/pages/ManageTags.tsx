@@ -5,9 +5,10 @@ import { Redirect } from 'react-router-dom'
 import { rewindRun } from '../../common/ApiService'
 import { Configs, TagsApi, PagedResultTagItem, TagItem } from '../../apis'
 import { Pagination, Table, Button } from 'antd'
-import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
+import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
 import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
+import YAML from 'yaml'
 
 export function ManageTags () {
   const user = useUser()
@@ -23,8 +24,8 @@ export function ManageTags () {
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   const countPerPage = 10
-  const fetchTags = async (page: number) => {
-    if (page === currentPage) {
+  const fetchTags = async (page: number, force = false) => {
+    if (!force && page === currentPage) {
       return
     }
     let res: PagedResultTagItem | undefined
@@ -111,6 +112,48 @@ export function ManageTags () {
     )
   }
 
+  const importTags = () => {
+    viewService.prompt(
+      langs.get(Configs.UiLangsEnum.Import),
+      [{ type: 'TextFile', value: '', accept: 'application/x-yaml' }],
+      async (data: string) => {
+        if (!data) {
+          return false
+        }
+        let toImports:{name:string, values:string}[] = []
+        try {
+          const toTag = (y: any) => {
+            const s: any = {}
+            s.name = Object.keys(y)[0]
+            s.values = y[s.name].join(' ')
+            return s
+          }
+          toImports = YAML.parse(data).map(toTag)
+        } catch (e) {
+          console.log(e)
+          viewService.errorKey(
+            langs,
+            Configs.ServiceMessagesEnum.InvalidFileType
+          )
+          return false
+        }
+        const api = new TagsApi()
+        for (const { name, values } of toImports) {
+          try {
+            await rewindRun(() => api.addTag(name, 'Enum', values))
+          } catch (e) {
+            viewService.errorKey(
+              langs,
+              e.message
+            )
+          }
+        }
+        fetchTags(currentPage, true)
+        return true
+      }
+    )
+  }
+
   useEffect(() => {
     fetchTags(1)
   }, [])
@@ -168,6 +211,14 @@ export function ManageTags () {
         onClick={addTag}
       >
         {langs.get(Configs.UiLangsEnum.Create)}
+      </Button>
+      <Button
+        icon={<UploadOutlined />}
+        className="btn-import"
+        type="dashed"
+        onClick={importTags}
+      >
+        {langs.get(Configs.UiLangsEnum.Import)}
       </Button>
       {totalPage > 1 ? (
         <Pagination
