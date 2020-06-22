@@ -94,17 +94,21 @@ export function ManageTags () {
   }
 
   const deleteTag = (tag: TagItem) => {
-    viewService.prompt(langs.get(Configs.UiLangsEnum.Delete), [], async () => {
-      try {
-        await rewindRun(() => new TagsApi().removeTag(tag.id!))
-        const idx = tags!.indexOf(tag)
-        tags!.splice(idx, 1)
-        setTags([...tags!])
-        return true
-      } catch (e) {
-        viewService!.errorKey(langs, e.message)
+    viewService.prompt(
+      langs.get(Configs.UiLangsEnum.Delete) + ': ' + tag.name,
+      [],
+      async () => {
+        try {
+          await rewindRun(() => new TagsApi().removeTag(tag.id!))
+          const idx = tags!.indexOf(tag)
+          tags!.splice(idx, 1)
+          setTags([...tags!])
+          return true
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+        }
       }
-    })
+    )
   }
 
   useEffect(() => {

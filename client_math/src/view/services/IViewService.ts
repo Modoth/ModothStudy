@@ -1,10 +1,11 @@
 import ILangsService from '../../domain/ILangsService'
 
-export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'Image'>{
+export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'Image' | 'TextFile' | 'Video' >{
   type : TType;
   hint?: string;
   value:TValue;
   icon?: React.ReactNode
+  accept?: string;
 }
 
 export default class IViewService {

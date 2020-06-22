@@ -4,6 +4,7 @@ import { useUser, useServicesLocator } from '../../app/Contexts'
 import { Redirect } from 'react-router-dom'
 import { Configs } from '../../apis'
 import { Button, Table } from 'antd'
+import YAML from 'yaml'
 import {
   DeleteFilled,
   UploadOutlined,
@@ -17,10 +18,10 @@ import IViewService from '../services/IViewService'
 
 const importTo = async (service: ISubjectsService, data: any[]) => {
   const addSubject = async (
-    s: { title: string; children: any[] },
+    s: { name: string; children: any[] },
     parent?: Subject
   ) => {
-    const subject = await service.add(s.title, parent)
+    const subject = await service.add(s.name, parent)
     if (s.children) {
       for (const c of s.children) {
         await addSubject(c, subject)
@@ -51,14 +52,46 @@ export function ManageSubjects () {
     }
   }
 
-  const importSubjects = async () => {
-    const service: ISubjectsService = locator.locate(ISubjectsService)
-    try {
-      await importTo(service, [])
-    } catch (e) {
-      viewService!.errorKey(langs, e.message)
-    }
-    await fetchSubjects()
+  const importSubjects = () => {
+    viewService.prompt(
+      langs.get(Configs.UiLangsEnum.Import),
+      [{ type: 'TextFile', value: '', accept: 'application/x-yaml' }],
+      async (data: string) => {
+        if (!data) {
+          return false
+        }
+        let sbjs: []
+        try {
+          const toSubject = (y: any) => {
+            const s: any = {}
+            if (typeof y === 'object') {
+              s.name = Object.keys(y)[0]
+              s.children = y[s.name].map(toSubject)
+            } else {
+              s.name = y
+            }
+            return s
+          }
+          sbjs = YAML.parse(data).map(toSubject)
+        } catch (e) {
+          console.log(e)
+          viewService.errorKey(
+            langs,
+            Configs.ServiceMessagesEnum.InvalidFileType
+          )
+          return false
+        }
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        try {
+          await importTo(service, sbjs)
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return false
+        }
+        await fetchSubjects()
+        return true
+      }
+    )
   }
 
   const updateSubjectAncestors = (subject: Subject) => {
@@ -76,26 +109,30 @@ export function ManageSubjects () {
   }
 
   const deleteSubject = (subject: Subject) => {
-    viewService.prompt(langs.get(Configs.UiLangsEnum.Delete), [], async () => {
-      const service: ISubjectsService = locator.locate(ISubjectsService)
-      try {
-        await service.delete(subject)
-      } catch (e) {
-        viewService!.errorKey(langs, e.message)
-        return
+    viewService.prompt(
+      langs.get(Configs.UiLangsEnum.Delete) + ': ' + subject.name,
+      [],
+      async () => {
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        try {
+          await service.delete(subject)
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return
+        }
+        if (subject.parent) {
+          const idx = subject.parent.children!.indexOf(subject)
+          subject.parent.children!.splice(idx, 1)
+          subject.parent.children = [...subject.parent.children!]
+          updateSubjectAncestors(subject.parent)
+        } else {
+          const idx = subjects!.indexOf(subject)
+          subjects!.splice(idx, 1)
+        }
+        setSubjects([...subjects!])
+        return true
       }
-      if (subject.parent) {
-        const idx = subject.parent.children!.indexOf(subject)
-        subject.parent.children!.splice(idx, 1)
-        subject.parent.children = [...subject.parent.children!]
-        updateSubjectAncestors(subject.parent)
-      } else {
-        const idx = subjects!.indexOf(subject)
-        subjects!.splice(idx, 1)
-      }
-      setSubjects([...subjects!])
-      return true
-    })
+    )
   }
 
   const addSubject = (parent?: Subject) => {
@@ -126,7 +163,7 @@ export function ManageSubjects () {
 
   const updateSubjectName = (subject: Subject) => {
     viewService.prompt(
-      langs.get(Configs.UiLangsEnum.Delete),
+      langs.get(Configs.UiLangsEnum.Modify),
       [
         {
           type: 'Text',
@@ -218,10 +255,14 @@ export function ManageSubjects () {
       >
         {langs.get(Configs.UiLangsEnum.Create)}
       </Button>
-      {/* {
-      subjects.length ? null
-        : <Button icon={<UploadOutlined />} className="btn-import" type="dashed" onClick={importSubjects}>{langs.get(Configs.UiLangsEnum.Import)}</Button>
-    } */}
+      <Button
+        icon={<UploadOutlined />}
+        className="btn-import"
+        type="dashed"
+        onClick={importSubjects}
+      >
+        {langs.get(Configs.UiLangsEnum.Import)}
+      </Button>
     </div>
   )
 }
