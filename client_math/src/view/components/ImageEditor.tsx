@@ -135,7 +135,7 @@ class ImageCroper {
       y = e.targetTouches[0].pageY - rect.top
     } else {
       x = e.offsetX
-      y = e.e.offsetY
+      y = e.offsetY
     }
 
     const ratio = c.width / c.offsetWidth

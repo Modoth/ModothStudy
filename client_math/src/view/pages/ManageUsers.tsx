@@ -8,6 +8,7 @@ import { Pagination, Table, Button, Switch } from 'antd'
 import { PlusOutlined, UserOutlined } from '@ant-design/icons'
 import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
+import ApiConfiguration from '../../common/ApiConfiguration'
 
 export function ManageUsers () {
   const user = useUser()
@@ -30,7 +31,7 @@ export function ManageUsers () {
     let res: PagedResultUser | undefined
     try {
       res = await rewindRun(() =>
-        new UsersApi().users(undefined, (page - 1) * currentPage, countPerPage)
+        new UsersApi(ApiConfiguration).users(undefined, (page - 1) * currentPage, countPerPage)
       )
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -62,7 +63,7 @@ export function ManageUsers () {
         }
         try {
           const newUser = await rewindRun(() =>
-            new UsersApi().addUser({ name: newUserName, pwd: newUserPwd })
+            new UsersApi(ApiConfiguration).addUser({ name: newUserName, pwd: newUserPwd })
           )
           setUsers([...users!, newUser!])
           return true
@@ -77,7 +78,7 @@ export function ManageUsers () {
     try {
       const setToNormal = user.state !== User.StateEnum.Normal
       await rewindRun(() =>
-        new UsersApi().changeUserState(user.id!, setToNormal)
+        new UsersApi(ApiConfiguration).changeUserState(user.id!, setToNormal)
       )
       user.state = setToNormal
         ? User.StateEnum.Normal

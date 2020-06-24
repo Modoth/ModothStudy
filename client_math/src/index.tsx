@@ -15,13 +15,17 @@ import ISubjectsService from './domain/ISubjectsService'
 import SubjectsService from './domain/SubjectsService'
 import IPluginInfo from './plugins/IPluginInfo'
 import { MathPluginInfo } from './plugins/math'
+import { FileApiService, IFileApiService } from './domain/FileApiService'
 
 const buildServicesLocator = () => {
   const serviceLocator = new ServicesLocator()
+
   serviceLocator.registerInstance(IPluginInfo, new MathPluginInfo())
   serviceLocator.registerInstance(ILoginService, new LoginService())
   serviceLocator.registerInstance(ILangsService, new LangsService())
   serviceLocator.register(ISubjectsService, SubjectsService)
+  serviceLocator.register(IFileApiService, FileApiService)
+
   return serviceLocator as IServicesLocator
 }
 

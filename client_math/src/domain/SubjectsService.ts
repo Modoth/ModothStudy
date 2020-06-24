@@ -2,11 +2,13 @@ import { NodeItem, Condition, Query, NodesApi } from '../apis'
 import Subject from './Subject'
 import ISubjectsService from './ISubjectsService'
 import { rewindRun } from '../common/ApiService'
+import ApiConfiguration from '../common/ApiConfiguration'
 
 const createSubject = (node:NodeItem) => {
   const sbj = new Subject()
   sbj.id = node.id!
   sbj.name = node.name!
+  sbj.path = node.path
   return sbj
 }
 
@@ -40,6 +42,7 @@ const cloneSubject = (subject: Subject, parent?: Subject) => {
   const n = new Subject()
   n.id = subject.id
   n.name = subject.name
+  n.path = subject.path
   n.parent = parent
   if (subject.children) {
     n.children = subject.children.map(c => cloneSubject(c, n))
@@ -62,13 +65,13 @@ export default class SubjectsService implements ISubjectsService {
       }
 
       async all (): Promise<Subject[]> {
-        const api = new NodesApi()
+        const api = new NodesApi(ApiConfiguration)
         const nodes = (await rewindRun(() => api.queryNodes(this.query)))?.data!
         return buildSubjects(nodes)
       }
 
       async init () {
-        const api = new NodesApi()
+        const api = new NodesApi(ApiConfiguration)
         const root = (await rewindRun(() => api.queryNodes({
           where: {
             type: Condition.TypeEnum.Contains,
@@ -82,7 +85,7 @@ export default class SubjectsService implements ISubjectsService {
       }
 
       async add (name: string, parent?: Subject): Promise<Subject> {
-        const api = new NodesApi()
+        const api = new NodesApi(ApiConfiguration)
         const res = await rewindRun(() => api.createNode(name, 'Folder', parent && parent.id))
         const sbj = createSubject(res!)
         sbj.parent = parent
@@ -90,12 +93,12 @@ export default class SubjectsService implements ISubjectsService {
       }
 
       async delete (subject: Subject): Promise<void> {
-        const api = new NodesApi()
+        const api = new NodesApi(ApiConfiguration)
         await rewindRun(() => api.removeNode(subject.id))
       }
 
       async rename (name: string, subject: Subject): Promise<void> {
-        const api = new NodesApi()
+        const api = new NodesApi(ApiConfiguration)
         await rewindRun(() => api.rename(subject.id, name))
       }
 }

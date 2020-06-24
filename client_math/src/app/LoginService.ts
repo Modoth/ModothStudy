@@ -1,10 +1,11 @@
 import { LoginApi, LoginUser, Configs } from '../apis'
 import ILoginService, { ILoginUser } from './ILoginService'
 import { ApiService } from '../common/ApiService'
+import ApiConfiguration from '../common/ApiConfiguration'
 
 export default class LoginService extends ApiService<LoginApi> implements ILoginService {
   constructor () {
-    super(new LoginApi())
+    super(new LoginApi(ApiConfiguration))
   }
 
   raiseUpdate () {

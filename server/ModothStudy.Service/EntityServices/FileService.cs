@@ -28,6 +28,7 @@ namespace ModothStudy.Service.EntityServices
             "jpg",
             "gif",
             "svg",
+            "mp4",
         };
 
         public FileService(IOperatorService operatorService,

@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from 'react'
-import { ArticleViewProps } from '../../IPluginInfo'
-import { NodesApi } from '../../../apis'
-import { rewindRun } from '../../../common/ApiService'
-import { Input, Button } from 'antd'
-import { useServicesLocator } from '../../../app/Contexts'
-import ILangsService from '../../../domain/ILangsService'
-import IViewService from '../../../view/services/IViewService'
+import React, { useState } from 'react'
+import { ArticleContentEditorProps } from '../../IPluginInfo'
+import TextArea from 'antd/lib/input/TextArea'
+import './ProblemEditor.less'
+import { ArticleFile } from '../../../domain/Article'
 
-export default function ProblemEditor (props: ArticleViewProps) {
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
-  const [content, setContent] = useState('')
-  const fetchContent = async () => {
-    const api = new NodesApi()
-    const res = (await rewindRun(() => api.getBlog(props.id)))!
-    setContent(res.content!)
+export default function ProblemEditor (props: ArticleContentEditorProps) {
+  const [content, setContent] = useState(props.content?.sections?.[0]?.content)
+  const addFile = (file: ArticleFile) => {
+    setContent(content + `$$url:${file.url}$$`)
   }
-  const saveContent = async () => {
-    const api = new NodesApi()
-    try {
-      await rewindRun(() => api.updateBlogContent(props.id, JSON.stringify(content)))
-    } catch (e) {
-      viewService!.errorKey(langs, e.message)
-    }
+  const remoteFile = (file: ArticleFile) => {
+    setContent(content?.replace(`$$url:${file.url}$$`, ''))
   }
-  useEffect(() => {
-    fetchContent()
-  }, [])
-  return <div>
-    <Input value={content} onChange={e => setContent(e.target.value)}></Input>
-    <Button onClick={saveContent} >保存</Button>
-  </div>
+  props.refs.addFile = addFile
+  props.refs.remoteFile = remoteFile
+  props.refs.getEditedContent = () => ({
+    sections: [{ name: '', content: content! }]
+  })
+
+  return (
+    <div className="problem-editor">
+      <TextArea
+        rows={10}
+        className="content"
+        value={content}
+        onChange={(e) => {
+          const content = e.target.value
+          setContent(content)
+        }}
+      ></TextArea>
+    </div>
+  )
 }

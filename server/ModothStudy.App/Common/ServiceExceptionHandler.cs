@@ -43,6 +43,8 @@ namespace ModothStudy.App.Common
                 context.Request.QueryString
             }));
 
+            Console.WriteLine(exception.ToString());
+
             var result =
                 JsonConvert.SerializeObject(new ApiResult(false, msg), JsonSerializerSettings);
 

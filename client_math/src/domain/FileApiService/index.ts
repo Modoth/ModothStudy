@@ -2,7 +2,16 @@ import { ApiResultString, Configs } from '../../apis'
 import { RequestMethod } from './RequestMethod'
 import FileApiUrls from './FileApiUrls'
 
-class FileApiService {
+class IFileApiService {
+  public async fetch (
+    urlObj: { url: string; method: RequestMethod },
+    params: { blob: Blob; search?: object }
+  ): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+}
+
+class FileApiService implements IFileApiService {
   public _getFetchUrl (url: string, params?: object): string {
     if (!params) return url
     const paramsArr = []
@@ -36,4 +45,4 @@ class FileApiService {
   }
 }
 
-export { FileApiService, FileApiUrls }
+export { IFileApiService, FileApiService, FileApiUrls }

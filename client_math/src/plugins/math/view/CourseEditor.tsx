@@ -1,6 +1,6 @@
 import React from 'react'
-import { ArticleViewProps } from '../../IPluginInfo'
+import { ArticleContentEditorProps } from '../../IPluginInfo'
 
-export default function CourseEditor (props: ArticleViewProps) {
-  return <>Course Editor ${props.id}</>
+export default function CourseEditor (props: ArticleContentEditorProps) {
+  return <>Course Editor ${props.content}</>
 }

@@ -1,6 +1,6 @@
 import ILangsService from '../../domain/ILangsService'
 
-export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'Image' | 'TextFile' | 'Video' >{
+export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'File' | 'Image' | 'TextFile' | 'Video' >{
   type : TType;
   hint?: string;
   value:TValue;

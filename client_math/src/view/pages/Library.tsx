@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import './Library.less'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
-import {
-  TreeSelect,
-  Button,
-  Space,
-  Radio,
-  Input,
-  Pagination,
-  Card
-} from 'antd'
+import { TreeSelect, Button, Space, Radio, Pagination } from 'antd'
 import ILangsService from '../../domain/ILangsService'
 import {
   Configs,
@@ -19,16 +11,22 @@ import {
   NodesApi,
   Condition,
   PagedResultNodeItem,
-  NodeItem,
-  Query
+  Query,
+  NodeTag,
+  NodeItem
 } from '../../apis'
-import { PlusOutlined, EditOutlined, CloseOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { rewindRun } from '../../common/ApiService'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType } from '../../plugins/IPluginInfo'
+import ApiConfiguration from '../../common/ApiConfiguration'
+import Article, { articleFromNodeItem } from '../../domain/Article'
+import ArticleView from './ArticleView'
 
-class SubjectViewModel extends Subject {
+const ArticleViewerMemo = memo(ArticleView)
+
+export class SubjectViewModel extends Subject {
   get title () {
     return this.name
   }
@@ -45,13 +43,20 @@ class SubjectViewModel extends Subject {
 
   parent?: SubjectViewModel;
 
-  constructor (subject: Subject) {
+  constructor (subject: Subject, allSubjects?: Map<string, SubjectViewModel>) {
     super()
     Object.assign(this, subject)
+    if (allSubjects) {
+      if (allSubjects.has(subject.path!)) {
+        console.log('Subject circle error.')
+        throw new Error(Configs.ServiceMessagesEnum.ClientError.toString())
+      }
+      allSubjects.set(subject.path!, this)
+    }
     if (subject.children && subject.children.length) {
       this.children = []
       for (const c of subject.children) {
-        const child = new SubjectViewModel(c)
+        const child = new SubjectViewModel(c, allSubjects)
         child.parent = this
         this.children.push(child)
       }
@@ -59,11 +64,11 @@ class SubjectViewModel extends Subject {
   }
 }
 
-class ArticleTag {
+export class ArticleTag {
   constructor (
     public name: string,
     public values: string[],
-    public id?: string
+    public id: string
   ) {}
 
   value?: string;
@@ -93,32 +98,31 @@ export default function Library (props: LibraryProps) {
   const viewService = locator.locate(IViewService)
 
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
+  const [subjectsDict, setSubjectsDict] = useState<
+    Map<string, SubjectViewModel>
+  >(new Map())
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([])
   const fetchSubjects = async () => {
+    const subjectsDict = new Map<string, SubjectViewModel>()
     const sbjs = (await locator.locate(ISubjectsService).all()).map(
-      (s) => new SubjectViewModel(s)
+      (s) => new SubjectViewModel(s, subjectsDict)
     )
+    setSubjectsDict(subjectsDict)
     setSubjects(sbjs)
     setSelectedSubjectIds([])
   }
 
-  const yearsCount = 10
-  const currentYear = new Date().getFullYear()
-  const [timeTag, setTimeTag] = useState<ArticleTag>(
-    new ArticleTag(
-      '时间',
-      Array.from({ length: yearsCount }, (_, i) => (currentYear - i).toString())
-    )
-  )
   const [typeTag, setTypeTag] = useState<ArticleTag | undefined>(undefined)
   const [tags, setTags] = useState<ArticleTag[]>([])
   const fetchTags = async () => {
-    const nodeTags = (await rewindRun(() => new TagsApi().allTags())!)?.data!
+    const nodeTags = (
+      await rewindRun(() => new TagsApi(ApiConfiguration).allTags())!
+    )?.data!
     const tagsDict = new Map(nodeTags.map((n) => [n.name, n]))
     const typeTag = tagsDict.get(TagNames.TypeTag)
     if (typeTag) {
       setTypeTag(
-        new ArticleTag(typeTag.name!, getTagEnums(typeTag.values), typeTag.id)
+        new ArticleTag(typeTag.name!, getTagEnums(typeTag.values), typeTag.id!)
       )
     }
     const articleTags = tagsDict.get(
@@ -134,7 +138,7 @@ export default function Library (props: LibraryProps) {
     setTags(
       tagNames.map((name) => {
         const nodeTag = tagsDict.get(name)
-        return new ArticleTag(name, getTagEnums(nodeTag?.values), nodeTag?.id)
+        return new ArticleTag(name, getTagEnums(nodeTag?.values), nodeTag!.id!)
       })
     )
   }
@@ -143,11 +147,21 @@ export default function Library (props: LibraryProps) {
     setTags([...tags])
   }
 
-  const [filter, setFilter] = useState('')
-  const [articles, setArticles] = useState<NodeItem[]>([])
+  const [articles, setArticles] = useState<Article[]>([])
   const [currentPage, setCurrentPage] = useState(0)
+  const [articleHandlers] = useState<{ onDelete: {(id: string): void } }>(
+    {} as any
+  )
   const [totalPage, setTotalPage] = useState(0)
   const countPerPage = 10
+
+  const convertArticle = (node: NodeItem) => {
+    const article = articleFromNodeItem(node)
+    const ppath = node.path!.slice(0, node.path!.lastIndexOf('/'))
+    article.subjectId = subjectsDict.get(ppath)?.id
+    ;(article as any)!.key = uuidv4()
+    return article
+  }
 
   const fetchArticles = async (page?: number) => {
     if (!typeTag) {
@@ -156,26 +170,9 @@ export default function Library (props: LibraryProps) {
     if (page === undefined) {
       page = currentPage
     }
-    const api = new NodesApi()
+    const api = new NodesApi(ApiConfiguration)
     let res: PagedResultNodeItem = null!
-    const dateConditions:Condition[] = []
-    if (timeTag.value) {
-      const year = parseInt(timeTag.value)
-      dateConditions.push({
-        type: Condition.TypeEnum.And,
-        children: [
-          {
-            type: Condition.TypeEnum.GreaterThanOrEqual,
-            prop: 'Published',
-            value: new Date(year, 0, 1).getTime().toString()
-          }, {
-            type: Condition.TypeEnum.LessThenOrEqual,
-            prop: 'Published',
-            value: new Date(year + 1, 0, 1).getTime().toString()
-          }
-        ]
-      })
-    }
+    const dateConditions: Condition[] = []
     try {
       const query: Query = {
         where: {
@@ -186,14 +183,18 @@ export default function Library (props: LibraryProps) {
               prop: 'Type',
               value: 'BlogNode'
             },
-            ...(selectedSubjectIds.length ? [{
-              type: Condition.TypeEnum.Or,
-              children: selectedSubjectIds.map(sid => ({
-                type: Condition.TypeEnum.Equal,
-                prop: 'ParentId',
-                value: sid
-              }))
-            }] : []),
+            ...(selectedSubjectIds.length
+              ? [
+                {
+                  type: Condition.TypeEnum.Or,
+                  children: selectedSubjectIds.map((sid) => ({
+                    type: Condition.TypeEnum.Equal,
+                    prop: 'ParentId',
+                    value: sid
+                  }))
+                }
+              ]
+              : []),
             {
               type: Condition.TypeEnum.Equal,
               prop: typeTag!.name,
@@ -210,39 +211,51 @@ export default function Library (props: LibraryProps) {
           ]
         }
       }
-      console.log(query)
       res = (await rewindRun(() =>
-        api.queryNodes(query, filter, currentPage * (page! - 1), countPerPage)
+        api.queryNodes(
+          query,
+          undefined,
+          currentPage * (page! - 1),
+          countPerPage
+        )
       ))!
     } catch (e) {
       viewService!.errorKey(langs, e.message)
       return false
     }
-    setArticles(res.data!.map((n) => n))
+    setArticles(res.data!.map(convertArticle))
     setTotalPage(Math.ceil(res!.total! / countPerPage))
     setCurrentPage(page)
   }
 
   const updateArticleTag = async (
-    article: NodeItem,
+    article: Article,
     tag: ArticleTag,
     tagValue: string
   ) => {
-    const api = new NodesApi()
+    const api = new NodesApi(ApiConfiguration)
     try {
       await rewindRun(() => api.updateTag(article.id!, tag.id!, tagValue))
+      if (!article.tagsDict) {
+        article.tagsDict = new Map()
+        article.tags = article.tags || []
+      }
+      if (!article.tagsDict.has(tag.name)) {
+        const newTag: NodeTag = {
+          id: tag.id,
+          name: tag.name,
+          type: NodeTag.TypeEnum.Enum,
+          value: tagValue,
+          values: tag.values.join(' ')
+        }
+        article.tags!.push(newTag)
+        article.tagsDict.set(tag.name, newTag)
+      } else {
+        const updatedTag = article.tagsDict.get(tag.name)
+        updatedTag!.value = tagValue
+      }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
-    }
-  }
-
-  const updateArticlePublished = async (article: NodeItem, published: Date) => {
-    const api = new NodesApi()
-    try {
-      await rewindRun(() => api.updateNodePublished(article.id!, published))
-    } catch (e) {
-      viewService!.errorKey(langs, e.message)
-      return false
     }
   }
 
@@ -251,26 +264,20 @@ export default function Library (props: LibraryProps) {
       return
     }
     try {
-      const api = new NodesApi()
+      const api = new NodesApi(ApiConfiguration)
       const parentId = selectedSubjectIds.length
         ? selectedSubjectIds[selectedSubjectIds.length - 1]
         : subjects[subjects.length - 1]?.id
-      const newNode = (await rewindRun(() =>
-        api.createNode(name, 'Blog', parentId)
-      ))!
-      await updateArticleTag(newNode, typeTag, props.type.name)
+      const newArticle = convertArticle(
+        (await rewindRun(() => api.createNode(name, 'Blog', parentId)))!
+      )
+      await updateArticleTag(newArticle, typeTag, props.type.name)
       for (const tag of tags) {
         if (tag.value) {
-          await updateArticleTag(newNode, tag, tag.value)
+          await updateArticleTag(newArticle, tag, tag.value)
         }
       }
-      if (timeTag.value) {
-        await updateArticlePublished(
-          newNode,
-          new Date(parseInt(timeTag.value), 0, 1)
-        )
-      }
-      setArticles([...articles, newNode])
+      setArticles([...articles, newArticle])
       return true
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -296,12 +303,12 @@ export default function Library (props: LibraryProps) {
     )
   }
 
-  const deleteArticle = (article: NodeItem) => {
+  const deleteArticle = (id: string) => {
     viewService.prompt(langs.get(Configs.UiLangsEnum.Delete), [], async () => {
       try {
-        const api = new NodesApi()
-        rewindRun(() => api.removeNode(article.id!))
-        const idx = articles.indexOf(article)
+        const api = new NodesApi(ApiConfiguration)
+        rewindRun(() => api.removeNode(id))
+        const idx = articles.findIndex((a) => a.id === id)
         if (~idx) {
           articles.splice(idx, 1)
           setArticles([...articles])
@@ -314,28 +321,18 @@ export default function Library (props: LibraryProps) {
     })
   }
 
+  articleHandlers.onDelete = deleteArticle
+
   useEffect(() => {
-    fetchSubjects()
-    fetchTags()
+    fetchSubjects().then(() => fetchTags())
   }, [])
 
   useEffect(() => {
     fetchArticles(1)
   }, [typeTag])
-
   return (
     <div className="library">
       <Space className="filters" direction="vertical">
-        <TreeSelect
-          multiple
-          onChange={(value) => setSelectedSubjectIds(value)}
-          value={selectedSubjectIds}
-          treeData={subjects}
-          treeCheckable={true}
-          showCheckedStrategy={'SHOW_PARENT'}
-          style={{ width: '100%' }}
-          placeholder={langs.get(Configs.UiLangsEnum.Subject)}
-        />
         {tags.map((tag, i) => (
           <Radio.Group
             className="tag-list"
@@ -354,56 +351,47 @@ export default function Library (props: LibraryProps) {
             ))}
           </Radio.Group>
         ))}
-
-        <Radio.Group
-          className="tag-list"
-          defaultValue={timeTag.value}
-          onChange={(e) => setTimeTag({ ...timeTag, value: e.target.value })}
-          buttonStyle="solid"
-        >
-          <Radio.Button className="tag-item" value={undefined}>
-            {'全部'}
-          </Radio.Button>
-          {...timeTag.values.map((value) => (
-            <Radio.Button className="tag-item" key={value} value={value}>
-              {value}
-            </Radio.Button>
-          ))}
-        </Radio.Group>
-        <Input.Search
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder={langs.get(Configs.UiLangsEnum.Search)}
-          onSearch={() => fetchArticles()}
-          enterButton
-        />
+        <div className="search-bar">
+          <TreeSelect
+            multiple
+            className="search-subjects"
+            onChange={(value) => setSelectedSubjectIds(value)}
+            value={selectedSubjectIds}
+            treeData={subjects}
+            treeCheckable={true}
+            showCheckedStrategy={'SHOW_PARENT'}
+            style={{ width: '100%' }}
+            placeholder={langs.get(Configs.UiLangsEnum.Subject)}
+          />
+          <Button
+            className="search-btn"
+            type="primary"
+            icon={<SearchOutlined />}
+            onClick={() => fetchArticles(1)}
+          ></Button>
+        </div>
       </Space>
       <Space className="articles" direction="vertical">
         {articles.map((p) => (
-          <Card
-            key={p.id}
-            actions={
-              user?.editPermission
-                ? [
-                  <EditOutlined key="edit" />,
-                  <CloseOutlined
-                    key="delete"
-                    onClick={() => deleteArticle(p)}
-                  />
-                ]
-                : undefined
-            }
-          >
-            <div>{p.content}</div>
-          </Card>
+          <ArticleViewerMemo
+            key={(p as any)!.key}
+            article={p}
+            subjects={subjects}
+            tags={tags}
+            type={props.type}
+            articleHandlers={articleHandlers}
+          ></ArticleViewerMemo>
         ))}
-        <Button
-          icon={<PlusOutlined />}
-          className="btn-create"
-          type="primary"
-          onClick={addArticle}
-        >
-          {langs.get(Configs.UiLangsEnum.Create)}
-        </Button>
+        {user?.editPermission ? (
+          <Button
+            icon={<PlusOutlined />}
+            className="btn-create"
+            type="primary"
+            onClick={addArticle}
+          >
+            {langs.get(Configs.UiLangsEnum.Create)}
+          </Button>
+        ) : null}
         {totalPage > 1 ? (
           <Pagination
             className="pagination"

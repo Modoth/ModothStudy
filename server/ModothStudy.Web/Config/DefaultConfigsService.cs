@@ -134,7 +134,7 @@ namespace ModothStudy.Web.Generated
             CONFIG_DAILY_TAG = "首页推荐";
             CONFIG_HEAD_TAG = "doodle";
             CONFIG_AUTOPLAY_TAG = "自动运行";
-            CONFIG_MAX_FILE_SIZE = "500000";
+            CONFIG_MAX_FILE_SIZE = "20000000";
             CONFIG_LOGO = "/assets/imgs/logo.svg";
             CONFIG_BG = "/assets/imgs/logo.svg";
             CONFIG_DEFAULT_AVATAR = "/assets/imgs/logo.svg";

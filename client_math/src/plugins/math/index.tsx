@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import IPluginInfo, { ArticleType } from '../IPluginInfo'
 import ProblemViewer from './view/ProblemViewer'
 import ProblemEditor from './view/ProblemEditor'
@@ -15,16 +15,16 @@ export class MathPluginInfo implements IPluginInfo {
         route: 'library',
         name: '题库',
         icon: <ApartmentOutlined />,
-        Viewer: ProblemViewer,
-        Editor: ProblemEditor,
+        Viewer: memo(ProblemViewer) as any,
+        Editor: memo(ProblemEditor) as any,
         randomName: true
       },
       {
         route: 'subject',
         name: '专题',
         icon: <ApiOutlined />,
-        Viewer: ProblemViewer,
-        Editor: ProblemEditor
+        Viewer: memo(ProblemViewer) as any,
+        Editor: memo(ProblemEditor) as any
       }
     ]
   }

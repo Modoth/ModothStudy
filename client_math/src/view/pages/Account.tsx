@@ -5,10 +5,11 @@ import { Button, Avatar } from 'antd'
 import { Configs, LoginApi } from '../../apis'
 import { Redirect } from 'react-router-dom'
 import { rewindRun } from '../../common/ApiService'
-import { FileApiService, FileApiUrls } from '../../domain/FileApiService'
+import { FileApiUrls, IFileApiService } from '../../domain/FileApiService'
 import ILangsService from '../../domain/ILangsService'
 import ILoginService from '../../app/ILoginService'
 import IViewService from '../services/IViewService'
+import ApiConfiguration from '../../common/ApiConfiguration'
 
 export default function Account () {
   const user = useUser()
@@ -41,7 +42,9 @@ export default function Account () {
           return
         }
         try {
-          await rewindRun(() => new LoginApi().updateNickName(newName))
+          await rewindRun(() =>
+            new LoginApi(ApiConfiguration).updateNickName(newName)
+          )
           user.nickName = newName
           return true
         } catch (e) {
@@ -60,10 +63,9 @@ export default function Account () {
           return true
         }
         try {
-          const url = await new FileApiService().fetch(
-            FileApiUrls.Login_UpdateAvatar,
-            { blob: image }
-          )
+          const url = await locator
+            .locate(IFileApiService)
+            .fetch(FileApiUrls.Login_UpdateAvatar, { blob: image })
           user.avatar = url
           loginService!.raiseUpdate()
           return true
@@ -110,7 +112,10 @@ export default function Account () {
         try {
           console.log({ password: oldPwd, oldPassword: newPwd1 })
           await rewindRun(() =>
-            new LoginApi().updatePwd({ password: newPwd1, oldPassword: oldPwd })
+            new LoginApi(ApiConfiguration).updatePwd({
+              password: newPwd1,
+              oldPassword: oldPwd
+            })
           )
           return true
         } catch (e) {
@@ -119,6 +124,7 @@ export default function Account () {
       }
     )
   }
+
   return (
     <div className="account">
       <div className="avatar-wraper" onClick={changeAvatar}>

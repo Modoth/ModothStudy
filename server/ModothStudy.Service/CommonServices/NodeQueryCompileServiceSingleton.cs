@@ -183,6 +183,8 @@ namespace ModothStudy.Service.Common
                     return node => node.Name == value;
                 case nameof(Node.Type):
                     return node => node.Type == value;
+                case nameof(Node.Parent) + "Id":
+                    return node => (node.Parent != null) && (node.Parent.Id == Guid.Parse(value));
             }
             return null;
 

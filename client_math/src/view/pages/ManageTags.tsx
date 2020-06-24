@@ -9,6 +9,7 @@ import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
 import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import YAML from 'yaml'
+import ApiConfiguration from '../../common/ApiConfiguration'
 
 export function ManageTags () {
   const user = useUser()
@@ -31,7 +32,7 @@ export function ManageTags () {
     let res: PagedResultTagItem | undefined
     try {
       res = await rewindRun(() =>
-        new TagsApi().allTags(undefined, (page - 1) * currentPage, countPerPage)
+        new TagsApi(ApiConfiguration).allTags(undefined, (page - 1) * currentPage, countPerPage)
       )
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -58,7 +59,7 @@ export function ManageTags () {
         }
         try {
           const newTag = await rewindRun(() =>
-            new TagsApi().addTag(newTagName, 'Enum', newTagValue)
+            new TagsApi(ApiConfiguration).addTag(newTagName, 'Enum', newTagValue)
           )
           setTags([...tags!, newTag!])
           return true
@@ -82,7 +83,7 @@ export function ManageTags () {
       async (values: string) => {
         try {
           await rewindRun(() =>
-            new TagsApi().updateTagValues(tag!.id!, values)
+            new TagsApi(ApiConfiguration).updateTagValues(tag!.id!, values)
           )
           tag!.values = values
           setTags([...tags!])
@@ -100,7 +101,7 @@ export function ManageTags () {
       [],
       async () => {
         try {
-          await rewindRun(() => new TagsApi().removeTag(tag.id!))
+          await rewindRun(() => new TagsApi(ApiConfiguration).removeTag(tag.id!))
           const idx = tags!.indexOf(tag)
           tags!.splice(idx, 1)
           setTags([...tags!])
@@ -137,7 +138,7 @@ export function ManageTags () {
           )
           return false
         }
-        const api = new TagsApi()
+        const api = new TagsApi(ApiConfiguration)
         for (const { name, values } of toImports) {
           try {
             await rewindRun(() => api.addTag(name, 'Enum', values))
