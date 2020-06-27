@@ -3,17 +3,19 @@ import { ArticleContentEditorProps } from '../../IPluginInfo'
 import TextArea from 'antd/lib/input/TextArea'
 import './ProblemEditor.less'
 import { ArticleFile } from '../../../domain/Article'
+import { TagItem } from '../../../apis'
 
 export default function ProblemEditor (props: ArticleContentEditorProps) {
   const [content, setContent] = useState(props.content?.sections?.[0]?.content)
-  const addFile = (file: ArticleFile) => {
+  props.refs.addFile = (file: ArticleFile) => {
     setContent(content + `$$url:${file.url}$$`)
   }
-  const remoteFile = (file: ArticleFile) => {
+  props.refs.remoteFile = (file: ArticleFile) => {
     setContent(content?.replace(`$$url:${file.url}$$`, ''))
   }
-  props.refs.addFile = addFile
-  props.refs.remoteFile = remoteFile
+  props.refs.updateTag = (tag:TagItem) => {
+
+  }
   props.refs.getEditedContent = () => ({
     sections: [{ name: '', content: content! }]
   })

@@ -165,9 +165,11 @@ export default function ArticleView (props: {
           values: tag.values.join(' ')
         }
         newTags.set(tag.name, newTag)
+        editorRefs && editorRefs.updateTag(newTag)
       } else {
         const updatedTag = newTags.get(tag.name)
         updatedTag!.value = tagValue
+        editorRefs && editorRefs.updateTag(updatedTag)
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -200,7 +202,11 @@ export default function ArticleView (props: {
 
       <div className="article-body">
         {editing ? (
-          <props.type.Editor content={content} files={props.article.files} refs={editorRefs} />
+          <props.type.Editor
+            content={content}
+            files={props.article.files}
+            refs={editorRefs}
+          />
         ) : (
           <props.type.Viewer content={content} files={props.article.files} />
         )}

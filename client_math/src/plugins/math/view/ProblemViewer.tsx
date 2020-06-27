@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ArticleContentViewerProps } from '../../IPluginInfo'
 import Latex from '../../../view/components/Latex'
 import { v4 as uuidv4 } from 'uuid'
@@ -92,29 +92,32 @@ class ArticleSection {
   }
 }
 
-export default function ProblemViewer (props: ArticleContentViewerProps) {
-  const filesDict = props.files ? new Map(props.files.map(f => [f.url, f])) : new Map()
-  const sections = (props.content?.sections || []).map(
-    (s) => new ArticleSection(s.name!, s.content || '', filesDict)
-  )
-  const renderSlice = (slice: ArticleSlice) => {
-    switch (slice.type) {
-      case SliceType.Inline:
-      case SliceType.Block:
-        if (typeof slice.content === 'object') {
-          const file = slice.content as SliceFile
-          return <ArticleFileViewer file={file.file}></ArticleFileViewer>
-        }
-        return (
-          <Latex
-            inline={slice.type === SliceType.Inline}
-            content={slice.content as string}
-          ></Latex>
-        )
-      default:
-        return <span className="slice-content">{slice.content}</span>
-    }
+const renderSlice = (slice: ArticleSlice) => {
+  switch (slice.type) {
+    case SliceType.Inline:
+    case SliceType.Block:
+      if (typeof slice.content === 'object') {
+        const file = slice.content as SliceFile
+        return <ArticleFileViewer file={file.file}></ArticleFileViewer>
+      }
+      return (
+        <Latex
+          inline={slice.type === SliceType.Inline}
+          content={slice.content as string}
+        ></Latex>
+      )
+    default:
+      return <span className="slice-content">{slice.content}</span>
   }
+}
+
+export default function ProblemViewer (props: ArticleContentViewerProps) {
+  const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.url, f])) : new Map())
+  const [tagsDict] = useState(props.tags ? new Map(props.tags.map(t => [t.id, t])) : new Map())
+  const [sections] = useState((props.content?.sections || []).map(
+    (s) => new ArticleSection(s.name!, s.content || '', filesDict)
+  ))
+
   console.log(sections)
   return (
     <div className="problem-viewer">

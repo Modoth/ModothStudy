@@ -1,4 +1,5 @@
 import { ArticleFile, ArticleContent } from '../domain/Article'
+import { TagItem } from '../apis'
 
 export interface ArticleType {
     route:string;
@@ -12,12 +13,14 @@ export interface ArticleType {
 export interface ArticleContentEditorRefs{
   addFile(file:ArticleFile):void
   remoteFile(file:ArticleFile):void
+  updateTag(tag:TagItem, value?: string):void
   getEditedContent():ArticleContent
 }
 
 export class ArticleContentViewerProps {
   content: ArticleContent
   files?: ArticleFile[]
+  tags?:TagItem[]
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
