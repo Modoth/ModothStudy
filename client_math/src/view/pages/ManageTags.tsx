@@ -208,7 +208,7 @@ export function ManageTags () {
       <Button
         icon={<PlusOutlined />}
         className="btn-create"
-        type="primary"
+        type="dashed"
         onClick={addTag}
       >
         {langs.get(Configs.UiLangsEnum.Create)}

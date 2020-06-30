@@ -27,15 +27,15 @@ import ArticleView from './ArticleView'
 const ArticleViewerMemo = memo(ArticleView)
 
 export class SubjectViewModel extends Subject {
-  get title () {
+  get title() {
     return this.name
   }
 
-  get key () {
+  get key() {
     return this.id
   }
 
-  get value () {
+  get value() {
     return this.id
   }
 
@@ -43,7 +43,7 @@ export class SubjectViewModel extends Subject {
 
   parent?: SubjectViewModel;
 
-  constructor (subject: Subject, allSubjects?: Map<string, SubjectViewModel>) {
+  constructor(subject: Subject, allSubjects?: Map<string, SubjectViewModel>) {
     super()
     Object.assign(this, subject)
     if (allSubjects) {
@@ -65,11 +65,11 @@ export class SubjectViewModel extends Subject {
 }
 
 export class ArticleTag {
-  constructor (
+  constructor(
     public name: string,
     public values: string[],
     public id: string
-  ) {}
+  ) { }
 
   value?: string;
 }
@@ -91,7 +91,7 @@ const getTagEnums = (values?: string) => {
 export class LibraryProps {
   type: ArticleType;
 }
-export default function Library (props: LibraryProps) {
+export default function Library(props: LibraryProps) {
   const user = useUser()
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
@@ -101,6 +101,9 @@ export default function Library (props: LibraryProps) {
   const [subjectsDict, setSubjectsDict] = useState<
     Map<string, SubjectViewModel>
   >(new Map())
+  const [subjectsIdDict, setSubjectsIdDict] = useState<
+    Map<string, SubjectViewModel>
+  >(new Map())
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([])
   const fetchSubjects = async () => {
     const subjectsDict = new Map<string, SubjectViewModel>()
@@ -108,17 +111,19 @@ export default function Library (props: LibraryProps) {
       (s) => new SubjectViewModel(s, subjectsDict)
     )
     setSubjectsDict(subjectsDict)
+    setSubjectsIdDict(new Map(Array.from(subjectsDict.values(), (s) => [s.id, s])))
     setSubjects(sbjs)
     setSelectedSubjectIds([])
   }
 
   const [typeTag, setTypeTag] = useState<ArticleTag | undefined>(undefined)
   const [tags, setTags] = useState<ArticleTag[]>([])
+  const [nodeTags, setNodeTags] = useState(new Map<string, NodeTag>())
   const fetchTags = async () => {
-    const nodeTags = (
+    const allTags = (
       await rewindRun(() => new TagsApi(ApiConfiguration).allTags())!
     )?.data!
-    const tagsDict = new Map(nodeTags.map((n) => [n.name, n]))
+    const tagsDict = new Map(allTags.map((n) => [n.name!, n]))
     const typeTag = tagsDict.get(TagNames.TypeTag)
     if (typeTag) {
       setTypeTag(
@@ -135,6 +140,7 @@ export default function Library (props: LibraryProps) {
     if (!tagNames.length) {
       return
     }
+    setNodeTags(tagsDict)
     setTags(
       tagNames.map((name) => {
         const nodeTag = tagsDict.get(name)
@@ -149,7 +155,7 @@ export default function Library (props: LibraryProps) {
 
   const [articles, setArticles] = useState<Article[]>([])
   const [currentPage, setCurrentPage] = useState(0)
-  const [articleHandlers] = useState<{ onDelete: {(id: string): void } }>(
+  const [articleHandlers] = useState<{ onDelete: { (id: string): void }, editingArticle?: Article }>(
     {} as any
   )
   const [totalPage, setTotalPage] = useState(0)
@@ -159,7 +165,7 @@ export default function Library (props: LibraryProps) {
     const article = articleFromNodeItem(node)
     const ppath = node.path!.slice(0, node.path!.lastIndexOf('/'))
     article.subjectId = subjectsDict.get(ppath)?.id
-    ;(article as any)!.key = uuidv4()
+      ; (article as any)!.key = uuidv4()
     return article
   }
 
@@ -188,9 +194,9 @@ export default function Library (props: LibraryProps) {
                 {
                   type: Condition.TypeEnum.Or,
                   children: selectedSubjectIds.map((sid) => ({
-                    type: Condition.TypeEnum.Equal,
-                    prop: 'ParentId',
-                    value: sid
+                    type: Condition.TypeEnum.StartsWith,
+                    prop: 'Path',
+                    value: subjectsIdDict.get(sid)!.path
                   }))
                 }
               ]
@@ -277,6 +283,7 @@ export default function Library (props: LibraryProps) {
           await updateArticleTag(newArticle, tag, tag.value)
         }
       }
+      articleHandlers.editingArticle = newArticle
       setArticles([...articles, newArticle])
       return true
     } catch (e) {
@@ -286,21 +293,7 @@ export default function Library (props: LibraryProps) {
   }
 
   const addArticle = () => {
-    if (props.type.randomName) {
-      addArticleWithTags(uuidv4())
-      return
-    }
-    viewService.prompt(
-      langs.get(Configs.UiLangsEnum.Create),
-      [
-        {
-          type: 'Text',
-          value: '',
-          hint: langs.get(Configs.UiLangsEnum.Name)
-        }
-      ],
-      addArticleWithTags
-    )
+    addArticleWithTags(uuidv4())
   }
 
   const deleteArticle = (id: string) => {
@@ -380,6 +373,7 @@ export default function Library (props: LibraryProps) {
             tags={tags}
             type={props.type}
             articleHandlers={articleHandlers}
+            nodeTags={nodeTags}
           ></ArticleViewerMemo>
         ))}
         {user?.editPermission ? (

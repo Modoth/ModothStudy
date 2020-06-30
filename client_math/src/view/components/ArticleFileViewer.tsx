@@ -3,13 +3,19 @@ import './ArticleFileViewer.less'
 import { ArticleFile } from '../../domain/Article'
 import { CloseOutlined } from '@ant-design/icons'
 import { Button, Tooltip } from 'antd'
+import classNames from 'classnames'
+import { useServicesLocator } from '../../app/Contexts'
+import ILangsService from '../../domain/ILangsService'
+import { Configs } from '../../apis'
 
-export default function ArticleFileViewer (props: {
+export default function ArticleFileViewer(props: {
   align?: 'Left' | 'Center' | 'Right' | 'Stretch';
   onDelete?: { (): void };
   onClick?: { (): void };
   file: ArticleFile;
+  className?: string;
 }) {
+  const langs = useServicesLocator().locate(ILangsService)
   const type = (props.file?.name || '').toLocaleLowerCase()
   const url = props.file?.url
   const endsWith = (...s: string[]) => s.some((i) => type.endsWith(i))
@@ -37,22 +43,24 @@ export default function ArticleFileViewer (props: {
     content = <span>{props.file?.name}</span>
   }
   return (
-    <Tooltip title={props.file.name}>
+    <Tooltip className={classNames(props.className)} title={props.file.name}>
       <div className="article-file" onClick={props.onClick}>
         {content}
         {props.onDelete ? (
-          <Button
-            type="primary"
-            shape="circle"
-            danger
-            icon={<CloseOutlined />}
-            size="small"
-            className="btn-delete"
-            onClick={(e) => {
-              e.stopPropagation()
-              props.onDelete && props.onDelete()
-            }}
-          ></Button>
+          <Tooltip title={langs.get(Configs.UiLangsEnum.Delete)}>
+            <Button
+              type="default"
+              shape="circle"
+              icon={<CloseOutlined />}
+              size="small"
+              className="btn-delete"
+              onClick={(e) => {
+                e.stopPropagation()
+                props.onDelete && props.onDelete()
+              }}
+            ></Button>
+          </Tooltip>
+
         ) : null}
       </div>
     </Tooltip>

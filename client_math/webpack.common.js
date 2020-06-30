@@ -56,8 +56,6 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
-  mode: 'development',
-  devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html'
@@ -67,13 +65,5 @@ module.exports = {
         { from: '*', to: 'assets', context: 'src/assets/' }
       ]
     })
-  ],
-  devServer: {
-    historyApiFallback: true,
-    proxy: {
-      '/api': 'http://localhost:5000',
-      '/files': 'http://localhost:5000'
-    },
-    port: 9080
-  }
+  ]
 }

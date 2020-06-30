@@ -257,7 +257,7 @@ export function ManageSubjects () {
         icon={<SisternodeOutlined />}
         onClick={() => addSubject()}
         className="btn-create"
-        type="primary"
+        type="dashed"
       >
         {langs.get(Configs.UiLangsEnum.Create)}
       </Button>

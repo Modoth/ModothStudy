@@ -1,34 +1,77 @@
 import React, { useState } from 'react'
 import {
   ArticleType,
-  ArticleContentEditorRefs
+  ArticleContentEditorCallbacks,
+  ArticleContentType
 } from '../../plugins/IPluginInfo'
-import Article, { ArticleFile } from '../../domain/Article'
+import Article, { ArticleFile, ArticleContent } from '../../domain/Article'
 import { NodesApi, Configs, NodeTag } from '../../apis'
 import ApiConfiguration from '../../common/ApiConfiguration'
 import { rewindRun } from '../../common/ApiService'
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import { Card, Button, Select, Space, TreeSelect } from 'antd'
+import { Card, Button, Select, TreeSelect } from 'antd'
 import {
-  PlusOutlined,
+  UploadOutlined,
   CheckOutlined,
   EditOutlined,
   CloseOutlined
 } from '@ant-design/icons'
 import { IFileApiService, FileApiUrls } from '../../domain/FileApiService'
-import ArticleFileViewer from '../components/ArticleFileViewer'
 import { ArticleTag, SubjectViewModel } from './Library'
+import './ArticleView.less'
 
 const { Option } = Select
 
-export default function ArticleView (props: {
+const TagNames = {
+  SubTypeSurfix: '子类',
+  ArticleSectionSurfix: '章节',
+  HidenSectionPrefix: '_'
+}
+
+const typesCaches = new Map<string, any>()
+const getArticleTypeName = (baseType: string, tagsDict?: Map<string, NodeTag>) => {
+  if (!tagsDict) {
+    return baseType
+  }
+  const subType = tagsDict.get(baseType + TagNames.SubTypeSurfix)
+  if (!subType) {
+    return baseType
+  }
+  return subType.value || baseType
+}
+
+const getArticleType = (baseType: string, tagsDict?: Map<string, NodeTag>, nodeTags?: Map<string, NodeTag>) => {
+  const typeName = getArticleTypeName(baseType, tagsDict)
+  if (typesCaches.has(typeName)) {
+    return typesCaches.get(typeName)
+  }
+  let type: ArticleContentType = { name: typeName, hidenSections: new Set<string>(), allSections: new Set<string>() }
+  if (nodeTags) {
+    let sectionsTag = nodeTags.get(typeName + TagNames.ArticleSectionSurfix) || nodeTags.get(baseType + TagNames.ArticleSectionSurfix)
+    if (sectionsTag) {
+      const allsections = sectionsTag.values?.split(' ').map(s => s.trim()).filter(s => s) || []
+      for (let s of allsections) {
+        if (s.startsWith(TagNames.HidenSectionPrefix)) {
+          s = s.slice(TagNames.HidenSectionPrefix.length)
+          type.hidenSections.add(s)
+        }
+        type.allSections.add(s)
+      }
+    }
+  }
+  typesCaches.set(typeName, type)
+  return type
+}
+
+export default function ArticleView(props: {
   article: Article;
-  articleHandlers: { onDelete: { (id: string): void } };
+  articleHandlers: { onDelete: { (id: string): void }, editingArticle?: Article };
   type: ArticleType;
   subjects: SubjectViewModel[];
   tags: ArticleTag[];
+  nodeTags: Map<string, NodeTag>
 }) {
   const user = useUser()
   const locator = useServicesLocator()
@@ -37,10 +80,11 @@ export default function ArticleView (props: {
   const [files, setFiles] = useState(props.article.files)
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
-  const [editing, setEditing] = useState(false)
-  const [editorRefs, setEditorRefs] = useState<ArticleContentEditorRefs>(
+  const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
+  const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
     {} as any
   )
+  const [type, setType] = useState(getArticleType(props.type.name, tagsDict, props.nodeTags))
 
   const [content, setContent] = useState(props.article.content || {})
 
@@ -156,8 +200,9 @@ export default function ArticleView (props: {
         api.updateTag(props.article.id!, tag.id!, tagValue)
       )
       const newTags = tagsDict || new Map()
+      let newTag: NodeTag
       if (!newTags.has(tag.name)) {
-        const newTag: NodeTag = {
+        newTag = {
           id: tag.id,
           name: tag.name,
           type: NodeTag.TypeEnum.Enum,
@@ -165,28 +210,79 @@ export default function ArticleView (props: {
           values: tag.values.join(' ')
         }
         newTags.set(tag.name, newTag)
-        editorRefs && editorRefs.updateTag(newTag)
       } else {
-        const updatedTag = newTags.get(tag.name)
-        updatedTag!.value = tagValue
-        editorRefs && editorRefs.updateTag(updatedTag)
+        newTag = newTags.get(tag.name)
+        newTag!.value = tagValue
+      }
+      tagsDict?.set(newTag.name!, newTag)
+      if (newTag.name === props.type.name + TagNames.SubTypeSurfix) {
+        setType(getArticleType(props.type.name, tagsDict, props.nodeTags))
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
   }
   return (
-    <Card>
+    <Card className="article-view">
+      <div className="article-body">
+        {editing ? (
+          <props.type.Editor
+            content={content}
+            files={props.article.files}
+            callbacks={editorRefs}
+            type={type}
+          />
+        ) : (
+            <props.type.Viewer content={content} files={props.article.files} type={type} />
+          )}
+      </div>
+      {user?.editPermission ? (editing ? (<div className="actions-tags-list">{[
+        <TreeSelect
+          key="subject"
+          onChange={updateSubjectId}
+          defaultValue={subjectId}
+          treeData={props.subjects}
+          placeholder={langs.get(Configs.UiLangsEnum.Subject)}
+        />,
+        ...props.tags.map((tag) => (
+          <Select
+            key={tag.name}
+            onChange={(value) => updateTag(tag, value)}
+            defaultValue={
+              tagsDict?.get(tag.name)?.value || `(${tag.name})`
+            }
+          >
+            <Option value={undefined!}>{`(${tag.name})`}</Option>
+            {...tag.values.map((v) => (
+              <Option key={v} value={v}>
+                {v}
+              </Option>
+            ))}
+          </Select>
+        ))
+      ]}</div>) : (<div className="actions-list">{[
+        <Button type="primary" ghost icon={<EditOutlined />} onClick={toogleEditing}
+          key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
+        <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>
+          props.articleHandlers.onDelete(props.article.id!)
+        } key="delete">{langs.get(Configs.UiLangsEnum.Delete)}</Button>
+      ]}</div>))
+        : null}
       {editing ? (
         <>
           <div className="files-list">
             <Button
-              type="dashed"
-              shape="round"
-              icon={<PlusOutlined />}
+              type="primary"
+              onClick={toogleEditing}
+              key="endEdit"
+              icon={<CheckOutlined />}
+            >{langs.get(Configs.UiLangsEnum.Ok)}</Button>,
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
               onClick={addFile}
-            ></Button>
-            {files?.length
+            >{langs.get(Configs.UiLangsEnum.Import)}</Button>
+            {/* {files?.length
               ? files!.map((file) => (
                 <ArticleFileViewer
                   key={file.url}
@@ -195,73 +291,8 @@ export default function ArticleView (props: {
                   onDelete={() => deleteFile(file)}
                 ></ArticleFileViewer>
               ))
-              : null}
+              : null} */}
           </div>
-        </>
-      ) : null}
-
-      <div className="article-body">
-        {editing ? (
-          <props.type.Editor
-            content={content}
-            files={props.article.files}
-            refs={editorRefs}
-          />
-        ) : (
-          <props.type.Viewer content={content} files={props.article.files} />
-        )}
-      </div>
-      {user?.editPermission ? (
-        <>
-          <Space className="actions-list">
-            {editing
-              ? [
-                <Button
-                  type="link"
-                  onClick={toogleEditing}
-                  key="endEdit"
-                  shape="round"
-                  icon={<CheckOutlined />}
-                ></Button>,
-                <TreeSelect
-                  key="subject"
-                  onChange={updateSubjectId}
-                  defaultValue={subjectId}
-                  treeData={props.subjects}
-                  placeholder={langs.get(Configs.UiLangsEnum.Subject)}
-                />,
-                ...props.tags.map((tag) => (
-                  <Select
-                    key={tag.name}
-                    onChange={(value) => updateTag(tag, value)}
-                    defaultValue={
-                        tagsDict?.get(tag.name)?.value || `(${tag.name})`
-                    }
-                  >
-                    <Option value={undefined!}>{`(${tag.name})`}</Option>
-                      {...tag.values.map((v) => (
-                        <Option key={v} value={v}>
-                          {v}
-                        </Option>
-                      ))}
-                  </Select>
-                ))
-              ]
-              : [
-                <EditOutlined
-                  onClick={toogleEditing}
-                  key="edit"
-                  title={langs.get(Configs.UiLangsEnum.Modify)}
-                />,
-                <CloseOutlined
-                  key="delete"
-                  name={langs.get(Configs.UiLangsEnum.Delete)}
-                  onClick={() =>
-                    props.articleHandlers.onDelete(props.article.id!)
-                  }
-                />
-              ]}
-          </Space>
         </>
       ) : null}
     </Card>

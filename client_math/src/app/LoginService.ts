@@ -4,25 +4,27 @@ import { ApiService } from '../common/ApiService'
 import ApiConfiguration from '../common/ApiConfiguration'
 
 export default class LoginService extends ApiService<LoginApi> implements ILoginService {
-  constructor () {
+  constructor() {
     super(new LoginApi(ApiConfiguration))
   }
 
-  raiseUpdate () {
+  raiseUpdate() {
     this.user = this.user && { ...this.user }
   }
 
-  async logout (): Promise<any> {
-    await this.try(() => this.api.off())
+  async logout(direct?: boolean): Promise<any> {
+    if (!direct) {
+      await this.try(() => this.api.off())
+    }
     this.user = undefined
   }
 
-  async login (name: string, pwd: string): Promise<LoginUser | undefined> {
+  async login(name: string, pwd: string): Promise<LoginUser | undefined> {
     this.user = await this.try(() => this.api.pwdOn({ name, password: pwd })) as ILoginUser
     return this.user
   }
 
-  async checkLogin (): Promise<LoginUser | undefined> {
+  async checkLogin(): Promise<LoginUser | undefined> {
     let user
     try {
       const res = await this.api.on()
@@ -38,11 +40,11 @@ export default class LoginService extends ApiService<LoginApi> implements ILogin
 
   private mUser?: ILoginUser
 
-  get user (): ILoginUser | undefined {
+  get user(): ILoginUser | undefined {
     return this.mUser
   }
 
-  set user (value) {
+  set user(value) {
     this.mUser = value
     if (this.mUser) {
       this.mUser.managePermission = (value && value.permissions && value.permissions[Configs.PermissionDescriptionsEnum.MANAGE]) === true
@@ -51,6 +53,6 @@ export default class LoginService extends ApiService<LoginApi> implements ILogin
     this.setUser && this.setUser(this.user)
   }
 
-  setUser (_?:ILoginUser) {
+  setUser(_?: ILoginUser) {
   }
 }

@@ -11,6 +11,9 @@
     },
     {
       "path": "spas"
+    },
+    {
+      "path": "client_math"
     }
   ],
   "settings": {

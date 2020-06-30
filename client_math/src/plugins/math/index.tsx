@@ -17,7 +17,6 @@ export class MathPluginInfo implements IPluginInfo {
         icon: <ApartmentOutlined />,
         Viewer: memo(ProblemViewer) as any,
         Editor: memo(ProblemEditor) as any,
-        randomName: true
       },
       {
         route: 'subject',

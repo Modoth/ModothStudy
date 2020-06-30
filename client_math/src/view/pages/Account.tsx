@@ -11,7 +11,7 @@ import ILoginService from '../../app/ILoginService'
 import IViewService from '../services/IViewService'
 import ApiConfiguration from '../../common/ApiConfiguration'
 
-export default function Account () {
+export default function Account() {
   const user = useUser()
   if (!user) {
     return <Redirect to="/login" />
@@ -29,7 +29,7 @@ export default function Account () {
   const changeName = () => {
     viewService.prompt(
       langs.get(Configs.UiLangsEnum.Modify) +
-        langs.get(Configs.UiLangsEnum.UserName),
+      langs.get(Configs.UiLangsEnum.UserName),
       [
         {
           type: 'Text',
@@ -79,7 +79,7 @@ export default function Account () {
   const changePwd = () => {
     viewService.prompt(
       langs.get(Configs.UiLangsEnum.Modify) +
-        langs.get(Configs.UiLangsEnum.Password),
+      langs.get(Configs.UiLangsEnum.Password),
       [
         {
           type: 'Password',
@@ -110,13 +110,13 @@ export default function Account () {
           return
         }
         try {
-          console.log({ password: oldPwd, oldPassword: newPwd1 })
           await rewindRun(() =>
             new LoginApi(ApiConfiguration).updatePwd({
               password: newPwd1,
               oldPassword: oldPwd
             })
           )
+          await loginService.logout(true)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)

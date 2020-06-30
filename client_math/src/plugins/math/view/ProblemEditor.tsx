@@ -1,36 +1,48 @@
 import React, { useState } from 'react'
 import { ArticleContentEditorProps } from '../../IPluginInfo'
-import TextArea from 'antd/lib/input/TextArea'
 import './ProblemEditor.less'
-import { ArticleFile } from '../../../domain/Article'
-import { TagItem } from '../../../apis'
+import { ArticleFile, ArticleSection } from '../../../domain/Article'
+import SectionEditor, { ArticleSectionVm } from './SectionEditor'
+import SectionViewer from './SectionViewer'
 
-export default function ProblemEditor (props: ArticleContentEditorProps) {
-  const [content, setContent] = useState(props.content?.sections?.[0]?.content)
-  props.refs.addFile = (file: ArticleFile) => {
-    setContent(content + `$$url:${file.url}$$`)
-  }
-  props.refs.remoteFile = (file: ArticleFile) => {
-    setContent(content?.replace(`$$url:${file.url}$$`, ''))
-  }
-  props.refs.updateTag = (tag:TagItem) => {
+const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
+  const existedSections = sections ? new Map(sections.map(s => [s.name!, s])) : new Map<string, ArticleSectionVm>()
+  return Array.from(allSections, (name) => Object.assign((existedSections.get(name) || { name, content: '' }), { callbacks: {} }) as ArticleSectionVm)
+}
 
+export default function ProblemEditor(props: ArticleContentEditorProps) {
+  const [sections, setSections] = useState(getSections(props.type?.allSections!, props.content.sections))
+  const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
+  console.log(sections)
+  const [currentSection, setCurrentSection] = useState<ArticleSectionVm | undefined>(undefined)
+  const saveCurrentSectionAndChange = (next: ArticleSectionVm) => {
+    if (currentSection) {
+      currentSection.content = currentSection.callbacks.getEditedContent()
+    }
+    setCurrentSection(next)
   }
-  props.refs.getEditedContent = () => ({
-    sections: [{ name: '', content: content! }]
-  })
-
-  return (
-    <div className="problem-editor">
-      <TextArea
-        rows={10}
-        className="content"
-        value={content}
-        onChange={(e) => {
-          const content = e.target.value
-          setContent(content)
-        }}
-      ></TextArea>
-    </div>
-  )
+  props.callbacks.addFile = (file: ArticleFile) => {
+    if (currentSection) {
+      currentSection.callbacks.addFile(file)
+    }
+  }
+  props.callbacks.remoteFile = (file: ArticleFile) => {
+    for (const section of sections) {
+      section.callbacks.remoteFile(file)
+    }
+  }
+  props.callbacks.getEditedContent = () => {
+    if (currentSection) {
+      currentSection.content = currentSection.callbacks.getEditedContent()
+    }
+    return {
+      sections: sections.map(s => ({ content: s.content, name: s.name }))
+    }
+  }
+  console.log(props.type)
+  return <div className="problem-editor">
+    {sections.map(section =>
+      <SectionEditor onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
+    )}
+  </div >
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ModothStudy.RepositoryInterface;
 using ModothStudy.Service.Common;
 using ModothStudy.ServiceInterface.AppServices;
@@ -21,18 +22,20 @@ namespace ModothStudy.Service.AppServices
         private readonly IDefaultConfigsService _defaultConfigsService;
 
         private readonly IRolesService _rolesService;
-
+        private readonly IConfiguration _configuration;
         private readonly IUsersService _usersService;
 
         public DataInitService(IInitRepository initRepository, IConfigsService configsService,
         IDefaultConfigsService defaultConfigsService,
-         IUsersService usersService, IRolesService rolesService)
+         IUsersService usersService, IRolesService rolesService,
+         IConfiguration configuration)
         {
             _initRepository = initRepository;
             _configsService = configsService;
             _defaultConfigsService = defaultConfigsService;
             _usersService = usersService;
             _rolesService = rolesService;
+            _configuration = configuration;
         }
 
         public async Task Init()
@@ -78,9 +81,12 @@ namespace ModothStudy.Service.AppServices
             if (admUser == null)
             {
                 var userName = "adm";
-                var pwd = Guid.NewGuid().ToString().Substring(0, 8);
-                // var pwd = "123456";
-                Console.WriteLine($"user: {userName}, pwd: {pwd}");
+                var pwd = _configuration["DefaultPassword"];
+                if (string.IsNullOrWhiteSpace(pwd))
+                {
+                    pwd = Guid.NewGuid().ToString().Substring(0, 8);
+                    Console.WriteLine($"user: {userName}, pwd: {pwd}");
+                }
                 await _usersService.AddUser(userName, pwd, admRole);
             }
         }

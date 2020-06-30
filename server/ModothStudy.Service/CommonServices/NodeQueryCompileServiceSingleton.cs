@@ -157,6 +157,15 @@ namespace ModothStudy.Service.Common
                         }
                         return node => node.Tags.Any(t => t.Tag!.Name == cond.Prop && t.Value != null && t.Value.Contains(cond.Value));
                     }
+                case ConditionType.StartsWith:
+                    {
+                        var propContain = GetPropStartsWith(cond.Prop!, cond.Value!);
+                        if (propContain != null)
+                        {
+                            return propContain!;
+                        }
+                        return node => node.Tags.Any(t => t.Tag!.Name == cond.Prop && t.Value != null && t.Value.StartsWith(cond.Value));
+                    }
 
             }
             throw new ServiceException(nameof(ServiceMessages.InvalidQuery));
@@ -174,6 +183,20 @@ namespace ModothStudy.Service.Common
             return null;
 
         }
+
+        private ExpNode? GetPropStartsWith(string prop, string value)
+        {
+            switch (prop)
+            {
+                case nameof(Node.Name):
+                    return node => node.Name!.StartsWith(value);
+                case nameof(Node.Path):
+                    return node => node.Path!.StartsWith(value);
+            }
+            return null;
+
+        }
+
 
         private ExpNode? GetPropEqual(string prop, string value)
         {
