@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
-import { ArticleContentEditorProps } from '../../IPluginInfo'
+import React, { useState, useEffect } from 'react'
+import { ArticleContentEditorProps, ArticleContentType } from '../../IPluginInfo'
 import './ProblemEditor.less'
 import { ArticleFile, ArticleSection } from '../../../domain/Article'
 import SectionEditor, { ArticleSectionVm } from './SectionEditor'
-import SectionViewer from './SectionViewer'
 
 const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
   const existedSections = sections ? new Map(sections.map(s => [s.name!, s])) : new Map<string, ArticleSectionVm>()
@@ -11,9 +10,18 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
 }
 
 export default function ProblemEditor(props: ArticleContentEditorProps) {
-  const [sections, setSections] = useState(getSections(props.type?.allSections!, props.content.sections))
-  const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
+  const [type, setType] = useState<ArticleContentType | undefined>(undefined)
+  const [sections, setSections] = useState<ArticleSectionVm[]>([])
+  console.log(props.type)
   console.log(sections)
+  useEffect(() => {
+    if (props.type === type) {
+      return
+    }
+    setType(props.type)
+    setSections(getSections(props.type?.allSections!, props.content.sections))
+  })
+  const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
   const [currentSection, setCurrentSection] = useState<ArticleSectionVm | undefined>(undefined)
   const saveCurrentSectionAndChange = (next: ArticleSectionVm) => {
     if (currentSection) {
@@ -39,10 +47,9 @@ export default function ProblemEditor(props: ArticleContentEditorProps) {
       sections: sections.map(s => ({ content: s.content, name: s.name }))
     }
   }
-  console.log(props.type)
   return <div className="problem-editor">
     {sections.map(section =>
-      <SectionEditor onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
+      <SectionEditor key={section.name} onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
     )}
   </div >
 }

@@ -147,9 +147,11 @@ export default function ServiceView (props: {
         if (startsWith('video/')) {
           singleField.type = 'Video'
           handleVideo(file)
+          e.target.value = ''
           return
         }
         onOk(file)
+        e.target.value = ''
       }
       refFile.current!.click()
     }

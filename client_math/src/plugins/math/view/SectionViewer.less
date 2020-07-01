@@ -1,7 +1,6 @@
 .section-viewer {
   margin: 10px 0;
-  padding: 5px;
-  margin: 5px 0;
+  padding: 5px 10px;
   font-size: initial;
   line-height: 1.5em;
 
@@ -24,6 +23,7 @@
 .section-viewer.C,
 .section-viewer.D {
   background: #0001;
+  border-radius: 5px;
 
   & .section-name::after {
     content: ".";
@@ -50,14 +50,8 @@
 }
 
 .section-viewer.view-mode.标题 {
-  // background: #0008;
-  // color: white;
-  // text-shadow: 1px 1px 1px #0008;
-  // border-radius: 20px 20px 0 0;
-  font-size: large;
+  font-size: larger;
   padding: 5px 0;
-  // padding: 5px 23px 5px 23px;
-  // margin: -10px -23px 10px;
 }
 
 .section-viewer.view-mode video {
@@ -70,6 +64,7 @@
   border-radius: 5px;
   padding: 5px 0;
   background: #0001;
+  min-height: 6em;
 
   & .section-name {
     background: #0004;
@@ -80,5 +75,9 @@
     border-radius: 5px 5px 0 0;
     margin-top: -3px;
     margin-bottom: 10px;
+  }
+
+  & .section-content {
+    margin: 5px 10px;
   }
 }

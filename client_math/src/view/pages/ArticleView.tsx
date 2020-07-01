@@ -124,6 +124,7 @@ export default function ArticleView(props: {
       ],
       async (file: File) => {
         try {
+          viewService.setLoading(true)
           const fileApiService = locator.locate(IFileApiService)
           const api = new NodesApi(ApiConfiguration)
           const url = await fileApiService.fetch(FileApiUrls.Files_UploadFile, {
@@ -146,8 +147,10 @@ export default function ArticleView(props: {
           )
           setFiles(newFiles)
           editorRefs && editorRefs.addFile(newFile)
+          viewService.setLoading(false)
           return true
         } catch (e) {
+          viewService.setLoading(false)
           viewService!.errorKey(langs, e.message)
           return false
         }
@@ -228,12 +231,12 @@ export default function ArticleView(props: {
         {editing ? (
           <props.type.Editor
             content={content}
-            files={props.article.files}
+            files={files}
             callbacks={editorRefs}
             type={type}
           />
         ) : (
-            <props.type.Viewer content={content} files={props.article.files} type={type} />
+            <props.type.Viewer content={content} files={files} type={type} />
           )}
       </div>
       {user?.editPermission ? (editing ? (<div className="actions-tags-list">{[
