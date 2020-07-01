@@ -16,5 +16,5 @@ if [[ -n "$@" ]]; then
     $docker_compose $@
     exit
 fi
-$docker_compose pull
+ssh $server "docker pull ${client_image_name} && docker pull ${server_image_name}"
 $docker_compose up -d --build
