@@ -12,7 +12,8 @@ docker_compose=`realpath $PWD/docker-compose.sh`
 
 cd "$work_dir"
 
+latest_image_name="${user_name}/${image_name}:latest"
 image_name="${user_name}/${image_name}:${image_version:-latest}"
 
 server=$app_imageBuildServer image_name="$image_name" $docker_compose build
-ssh $app_imageBuildServer docker push "$image_name"
+ssh $app_imageBuildServer "docker tag '$image_name' '$latest_image_name' && docker push '$image_name' && docker push '$latest_image_name'"
