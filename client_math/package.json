@@ -55,7 +55,7 @@
     "run/server": "cd ../server/ModothStudy.Web && ASPNETCORE_ENVIRONMENT=Development dotnet bin/Debug/netcoreapp2.2/ModothStudy.Web.dll",
     "server": "npm run build/server && npm run run/server",
     "start": "webpack-dev-server --config webpack.dev.js",
-    "build-to/client-prod": "webpack --config webpack.prod.js --env.prod=1 --output-path=\"$target_dir/wwwroot\""
+    "build-to/client-prod": "webpack --config webpack.prod.js --env.prod=1 --output-path=\"$target_dir\""
   },
   "keywords": [],
   "author": "",

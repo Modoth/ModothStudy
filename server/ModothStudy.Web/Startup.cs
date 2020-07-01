@@ -42,6 +42,8 @@ namespace ModothStudy.Web
 
         private string? m_ExternAccessOrigins = null;
 
+        private bool m_BackendService = false;
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (m_ExternAccessOrigins != null)
@@ -52,33 +54,38 @@ namespace ModothStudy.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
+            else if (!m_BackendService)
             {
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
-            app.Use(async (context, next) =>
-    {
-        await next();
-        if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value))
-        {
-            context.Request.Path = "/index.html";
-            await next();
-        }
-    });
-
-            app.UseDefaultFiles(new DefaultFilesOptions { DefaultFileNames = new List<string> { "index.html" } });
-            app.UseStaticFiles();
             var dataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "files");
             if (!Directory.Exists(dataPath))
             {
                 Directory.CreateDirectory(dataPath);
             }
-            app.UseStaticFiles(new StaticFileOptions
+
+            if (!m_BackendService)
             {
-                FileProvider = new PhysicalFileProvider(dataPath),
-                RequestPath = "/files"
-            });
+                app.Use(async (context, next) =>
+                {
+                    await next();
+                    if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value))
+                    {
+                        context.Request.Path = "/index.html";
+                        await next();
+                    }
+                });
+                app.UseDefaultFiles(new DefaultFilesOptions { DefaultFileNames = new List<string> { "index.html" } });
+                app.UseStaticFiles();
+
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(dataPath),
+                    RequestPath = "/files"
+                });
+            }
+
             app.UseMiddleware<ServiceExceptionHandler>();
             app.UseSession();
             app.UseSwagger();
@@ -112,6 +119,10 @@ namespace ModothStudy.Web
                 options.Cookie.HttpOnly = true;
             });
             services.AddSwaggerGen(c => { c.SwaggerDoc("api", new Info { Title = "api", Version = "v2.0" }); });
+            if (!string.IsNullOrWhiteSpace(Configuration["BackendService"]))
+            {
+                m_BackendService = true;
+            }
             var originsStr = Configuration["CorsOrigins"];
             if (!string.IsNullOrWhiteSpace(originsStr))
             {
