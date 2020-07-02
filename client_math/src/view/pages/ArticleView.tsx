@@ -65,6 +65,19 @@ const getArticleType = (baseType: string, tagsDict?: Map<string, NodeTag>, nodeT
   return type
 }
 
+const generateNewFileNames = (name: string, existedName: Set<string>) => {
+  while (existedName.has(name)) {
+    let match = name.match(/^(.*?)(_(\d*))?(\.\w*)$/)
+    if (match) {
+      name = match[1] + '_' + ((parseInt(match[3]) || 0) + 1) + match[4]
+    }
+    else {
+      return name
+    }
+  }
+  return name
+}
+
 export default function ArticleView(props: {
   article: Article;
   articleHandlers: { onDelete: { (id: string): void }, editingArticle?: Article };
@@ -113,13 +126,13 @@ export default function ArticleView(props: {
     }
   }
 
-  const addFile = () => {
+  const addFile = (file?: File) => {
     viewService.prompt(
       langs.get(Configs.UiLangsEnum.Import),
       [
         {
           type: 'File',
-          value: undefined
+          value: file
         }
       ],
       async (file: File) => {
@@ -131,7 +144,8 @@ export default function ArticleView(props: {
             blob: file
           })
           const newFiles = [...(files || [])]
-          const newFile = { name: file.name, url }
+          const newFileName = generateNewFileNames(file.name, new Set(newFiles.map(f => f.name!)))
+          const newFile = { name: newFileName, url }
           newFiles.push(newFile)
           await rewindRun(() =>
             api.updateBlogContent(
@@ -230,6 +244,7 @@ export default function ArticleView(props: {
       <div className="article-body">
         {editing ? (
           <props.type.Editor
+            onpaste={addFile}
             content={content}
             files={files}
             callbacks={editorRefs}
@@ -283,7 +298,7 @@ export default function ArticleView(props: {
             <Button
               type="primary"
               icon={<UploadOutlined />}
-              onClick={addFile}
+              onClick={() => addFile()}
             >{langs.get(Configs.UiLangsEnum.Import)}</Button>
             {/* {files?.length
               ? files!.map((file) => (

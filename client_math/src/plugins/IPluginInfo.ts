@@ -30,6 +30,7 @@ export class ArticleContentViewerProps {
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
   callbacks: ArticleContentEditorCallbacks<ArticleContent>
+  onpaste: (file: File) => void
 }
 
 export default class IPluginInfo {

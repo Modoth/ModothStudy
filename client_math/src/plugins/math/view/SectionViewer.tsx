@@ -120,6 +120,7 @@ export default function SectionViewer(props: {
     pureViewMode: boolean
 }) {
     const [section] = useState(new ArticleSectionVm(props.section.name!, props.section.content || '', props.filesDict))
+    console.log(section, props.section.content, props.filesDict)
     return <div onClick={props.onClick} className={classNames('section-viewer', section.name, props.pureViewMode ? 'view-mode' : 'edit-mode')} key={section.name}>
         <label className="section-name">{section.name}</label>
         {section.slices.map((slice) => renderSlice(slice, props.onClick))}

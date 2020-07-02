@@ -6,18 +6,18 @@ import ILangsService from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
 
 class ViewService implements IViewService {
-  errorKey (langs: ILangsService, key: any, timeout?: number | undefined): void {
+  errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
     this.error(langs.get(key), timeout)
   }
 
-  error (msg: string, timeout: number = 1000): void {
+  error(msg: string, timeout: number = 1000): void {
     message.error(msg, timeout / 1000)
   }
 
-  constructor (public setLoading: any, public prompt: any) {}
+  constructor(public setLoading: any, public prompt: any) { }
 }
 
-export default function ServiceView (props: {
+export default function ServiceView(props: {
   provide: { (viewService: IViewService): void };
 }) {
   const refFile = useRef<HTMLInputElement | null>(null)
@@ -119,12 +119,7 @@ export default function ServiceView (props: {
         onchange = handleVideo
       }
 
-      refFile.current!.accept = fields[0].accept || accept
-      refFile.current!.onchange = (e: any) => {
-        const file: File = e.target.files && e.target.files![0]
-        if (!file) {
-          return
-        }
+      const handleFile = (file: File, e?: any) => {
         if (onchange) {
           onchange(file)
           return
@@ -147,11 +142,29 @@ export default function ServiceView (props: {
         if (startsWith('video/')) {
           singleField.type = 'Video'
           handleVideo(file)
-          e.target.value = ''
+          if (e) {
+            e.target.value = ''
+          }
           return
         }
         onOk(file)
-        e.target.value = ''
+        if (e) {
+          e.target.value = ''
+        }
+      }
+
+      if (singleField.value) {
+        handleFile(singleField.value)
+        return
+      }
+
+      refFile.current!.accept = fields[0].accept || accept
+      refFile.current!.onchange = (e: any) => {
+        const file: File = e.target.files && e.target.files![0]
+        if (!file) {
+          return
+        }
+        handleFile(file, e)
       }
       refFile.current!.click()
     }
