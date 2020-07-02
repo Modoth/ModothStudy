@@ -7,7 +7,7 @@ rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
 cp templates-push/docker-compose.yml "$work_dir"
-cp templates-push/Dockerfile.${image_name} "$work_dir/Dockerfile"
+cp templates-push/${image_name}/* "$work_dir"
 docker_compose=`realpath $PWD/docker-compose.sh`
 
 cd "$work_dir"
