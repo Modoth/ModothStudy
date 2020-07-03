@@ -1,75 +1,76 @@
 .article-view {
+  & .actions-list {
+    display: flex;
+    padding: 10px 0;
+    overflow-x: auto;
+    justify-content: space-around;
+    border-radius: 0 0 20px 20px;
+    border-color: #0002;
+    border-top-color: #0001;
+    border-width: 1px;
+    border-style: solid;
+    background: #0001;
+    margin: 20px -21px -11px -21px;
 
-    & .actions-list {
-        display: flex;
-        padding: 10px 0;
-        overflow-x: auto;
-        justify-content: space-around;
-        border-radius: 0 0 20px 20px;
-        border-color: #0002;
-        border-top-color: #0001;
-        border-width: 1px;
-        border-style: solid;
-        background: #0001;
-        margin: 20px -21px -11px -21px;
-
-        & button {
-            opacity: 1;
-            border-radius: 20px;
-            border-style: dashed;
-            color: #0008;
-            border-color: #0008;
-            background-color: white !important;
-        }
-
-        & button:hover {
-            opacity: 1;
-        }
+    & button {
+      opacity: 1;
+      border-radius: 10px;
+      color: #0008;
+      border-color: #0002;
+      background-color: white !important;
     }
 
-    & .files-list {
-        display: flex;
-        overflow-x: auto;
-        background: #0001;
-        padding: 5px;
-        margin: 0 -21px -20px -21px;
-        margin-bottom: -10px;
-        padding: 0 21px 10px 21px;
-        border-radius: 0 0 20px 20px;
-        border-color: #0002;
-        border-width: 0px 1px 1px 1px;
-        border-style: solid;
-        align-items: center;
-        justify-content: space-evenly;
+    & button:hover {
+      opacity: 1;
+    }
+  }
 
-        &>button {
-            border-radius: 20px;
-            border-style: dashed;
-            color: #0008;
-            border-color: #0008;
-            background: white;
-        }
+  & .files-list {
+    display: flex;
+    overflow-x: auto;
+    background: #0001;
+    padding: 5px;
+    margin: 0 -21px -20px -21px;
+    margin-bottom: -10px;
+    padding: 0 21px 10px 21px;
+    border-radius: 0 0 20px 20px;
+    border-color: #0002;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    align-items: center;
+    justify-content: space-between;
+
+    & > button {
+      border-radius: 10px;
+      color: #0008;
+      border-color: #0002;
+      background-color: white !important;
+    }
+  }
+
+  & .actions-tags-list {
+    display: flex;
+    box-sizing: border-box;
+    overflow-x: auto;
+    background: #0001;
+    margin: 20px -21px 0 -21px;
+    padding: 20px 21px 10px 21px;
+    border-color: #0002;
+    border-style: solid;
+    border-width: 1px 1px 0 1px;
+    border-top-color: #0001;
+
+    & .ant-tree-select {
+      flex: 1;
+      min-width: 12em;
     }
 
-    & .actions-tags-list {
-        display: flex;
-        box-sizing: border-box;
-        overflow-x: auto;
-        background: #0001;
-        margin: 20px -21px 0 -21px;
-        padding: 20px 21px 10px 21px;
-        border-color: #0002;
-        border-style: solid;
-        border-width: 1px 1px 0 1px;
-        border-top-color: #0001;
-
-        & .ant-tree-select {
-            flex: 1;
-            min-width: 12em;
-        }
-
-        &>* {
-            margin-right: 8px;
-        }
+    & .ant-select-selector {
+      border-radius: 10px;
     }
+
+    & > * {
+      margin-right: 8px;
+    }
+  }
 }

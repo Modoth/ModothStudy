@@ -14,7 +14,8 @@ class ViewService implements IViewService {
     message.error(msg, timeout / 1000)
   }
 
-  constructor(public setLoading: any, public prompt: any) { }
+  constructor(public setLoading: any, public prompt: any, public previewImage: any) { }
+
 }
 
 export default function ServiceView(props: {
@@ -32,6 +33,8 @@ export default function ServiceView(props: {
   const [onModalOk, setOnModalOk] = useState<{
     onOk(...p: any): Promise<boolean | undefined>;
   }>()
+
+  const [previewImgUrl, setPreviewImgUrl] = useState('')
 
   const updateField = (
     i: number,
@@ -167,6 +170,9 @@ export default function ServiceView(props: {
         handleFile(file, e)
       }
       refFile.current!.click()
+    },
+    (url: string) => {
+      setPreviewImgUrl(url)
     }
   )
   props.provide && props.provide(viewService)
@@ -235,6 +241,13 @@ export default function ServiceView(props: {
           })}
         </Space>
       </Modal>
+      {
+        previewImgUrl ? <div className="img-preview" onClick={() => setPreviewImgUrl('')}>
+          <div className="img-panel" onClick={e => e.stopPropagation()}>
+            <img src={previewImgUrl}></img>
+          </div>
+        </div> : null
+      }
     </>
   )
 }

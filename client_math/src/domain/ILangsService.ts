@@ -5,7 +5,7 @@ export default class ILangsService {
     throw new Error()
   }
 
-  public get (name: Configs.UiLangsEnum | Configs.ServiceMessagesEnum | Configs.PermissionDescriptionsEnum): string {
+  public get (name: Configs.UiLangsEnum | Configs.ServiceMessagesEnum | Configs.PermissionDescriptionsEnum | any): string {
     throw new Error()
   }
 }

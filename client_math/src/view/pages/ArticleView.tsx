@@ -239,9 +239,19 @@ export default function ArticleView(props: {
       viewService!.errorKey(langs, e.message)
     }
   }
+  const ref = React.createRef<HTMLDivElement>()
+  // const shareArticle = async () => {
+  //   if (!ref.current) {
+  //     return
+  //   }
+  //   // const canvas = await html2canvas(ref.current)
+  //   // const imgUrl = canvas.toDataURL('image/png')
+  //   const imgUrl = await htmlToImage.toPng(ref.current)
+  //   viewService.previewImage(imgUrl)
+  // }
   return (
     <Card className="article-view">
-      <div className="article-body">
+      <div ref={ref} className="article-body">
         {editing ? (
           <props.type.Editor
             onpaste={addFile}
@@ -254,7 +264,7 @@ export default function ArticleView(props: {
             <props.type.Viewer content={content} files={files} type={type} />
           )}
       </div>
-      {user?.editPermission ? (editing ? (<div className="actions-tags-list">{[
+      {editing ? (<div className="actions-tags-list">{[
         <TreeSelect
           key="subject"
           onChange={updateSubjectId}
@@ -278,14 +288,14 @@ export default function ArticleView(props: {
             ))}
           </Select>
         ))
-      ]}</div>) : (<div className="actions-list">{[
+      ]}</div>) : (user?.editPermission ? (<div className="actions-list">{[
         <Button type="primary" ghost icon={<EditOutlined />} onClick={toogleEditing}
           key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
         <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>
           props.articleHandlers.onDelete(props.article.id!)
         } key="delete">{langs.get(Configs.UiLangsEnum.Delete)}</Button>
-      ]}</div>))
-        : null}
+      ]} </div>) : null)
+      }
       {editing ? (
         <>
           <div className="files-list">

@@ -3,6 +3,8 @@
   padding: 5px 10px;
   font-size: initial;
   line-height: 1.5em;
+  user-select: none;
+  -webkit-user-select: none;
 
   & .slice-content {
     white-space: pre-wrap;
@@ -15,6 +17,7 @@
 
   & .section-name {
     margin-right: 10px;
+    font-weight: bold;
   }
 }
 
@@ -24,6 +27,10 @@
 .section-viewer.D {
   background: #0001;
   border-radius: 5px;
+
+  & .section-name {
+    font-weight: normal;
+  }
 
   & .section-name::after {
     content: ".";
@@ -59,25 +66,22 @@
   border-radius: 5px;
 }
 
+.section-viewer.view-mode img {
+  margin: 0 0 0 auto !important;
+}
+
 .section-viewer.view-mode.解析,
 .section-viewer.view-mode.答案 {
   border-radius: 5px;
-  padding: 5px 0;
   background: #0001;
   min-height: 6em;
 
   & .section-name {
     background: #0001;
-    // color: white;
     padding: 5px 10px;
-    width: 100%;
+    width: calc(100% + 20px);
     display: block;
     border-radius: 5px 5px 0 0;
-    margin-top: -3px;
-    margin-bottom: 10px;
-  }
-
-  & .section-content {
-    margin: 5px 10px;
+    margin: -3px -10px 10px -10px;
   }
 }
