@@ -11,8 +11,26 @@ export interface ArticleSectionVm extends ArticleSection {
     callbacks: ArticleContentEditorCallbacks<string>
 }
 
+const normalizeString = (slice: string) => {
+    let newSlice = "";
+    const ignoreChars = new Set(['⬚'])
+    for (var i = 0; i < slice.length; i++) {
+        if (slice.charCodeAt(i) >= 65281 && slice.charCodeAt(i) <= 65374) {
+            newSlice += String.fromCharCode(slice.charCodeAt(i) - 65248)
+        } else if (slice.charCodeAt(i) == 12288) {
+            newSlice += ' ';
+        } else if (ignoreChars.has(slice[i])) {
+            continue
+        }
+        else {
+            newSlice += slice[i];
+        }
+    }
+    return newSlice;
+}
+
 const translateWordContent = (slice: string) => {
-    return slice.replace(/[\x00-\x7F]+/g, e => '$' + e + '$')
+    return normalizeString(slice).replace(/[\x20-\x7Fα-ωΑ-Ω]+/g, e => e.match(/[a-zA-Zα-ωΑ-Ω]/) ? '$' + e + '$' : e)
 }
 
 export default function SectionEditor(props: {

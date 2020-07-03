@@ -9,7 +9,13 @@ export default function Latex(props: { inline?: boolean, content?: string, class
   useEffect(() => {
     const content = props.content
     if (content && refElement.current) {
-      katex.render(content, refElement.current, { throwOnError: false })
+      katex.render(content, refElement.current, {
+        throwOnError: true,
+        macros: {
+          "\\[": "",
+          "\\]": ""
+        }
+      })
     }
   }, [])
   return <span className={classNames(props.className, props.inline ? 'inline-latex' : 'block-latex')} ref={refElement}>{props.content || ''}</span>
