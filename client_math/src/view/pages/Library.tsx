@@ -23,6 +23,7 @@ import { ArticleType } from '../../plugins/IPluginInfo'
 import ApiConfiguration from '../../common/ApiConfiguration'
 import Article, { articleFromNodeItem } from '../../domain/Article'
 import ArticleView from './ArticleView'
+import ArticleList from './ArticleList'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -158,7 +159,7 @@ export default function Library(props: LibraryProps) {
   const [articleHandlers] = useState<{ onDelete: { (id: string): void }, editingArticle?: Article }>(
     {} as any
   )
-  const [totalPage, setTotalPage] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
 
   const convertArticle = (node: NodeItem) => {
@@ -221,7 +222,7 @@ export default function Library(props: LibraryProps) {
         api.queryNodes(
           query,
           undefined,
-          currentPage * (page! - 1),
+          countPerPage * (page! - 1),
           countPerPage
         )
       ))!
@@ -230,7 +231,7 @@ export default function Library(props: LibraryProps) {
       return false
     }
     setArticles(res.data!.map(convertArticle))
-    setTotalPage(Math.ceil(res!.total! / countPerPage))
+    setTotalCount(Math.ceil(res!.total!))
     setCurrentPage(page)
   }
 
@@ -323,6 +324,8 @@ export default function Library(props: LibraryProps) {
   useEffect(() => {
     fetchArticles(1)
   }, [typeTag])
+
+  console.log(totalCount)
   return (
     <div className="library">
       <Space className="filters" direction="vertical">
@@ -386,13 +389,18 @@ export default function Library(props: LibraryProps) {
             {langs.get(Configs.UiLangsEnum.Create)}
           </Button>
         ) : null}
-        {totalPage > 1 ? (
+        {totalCount > countPerPage ? (
           <Pagination
             className="pagination"
             onChange={(page) => fetchArticles(page)}
-            total={totalPage}
+            pageSize={countPerPage}
+            current={currentPage}
+            total={totalCount}
           ></Pagination>
         ) : null}
+      </Space>
+      <Space className="float-menus">
+        <ArticleList></ArticleList>
       </Space>
     </div>
   )

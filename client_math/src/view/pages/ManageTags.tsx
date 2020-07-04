@@ -23,7 +23,7 @@ export function ManageTags () {
 
   const [tags, setTags] = useState<TagItem[] | undefined>()
   const [currentPage, setCurrentPage] = useState(0)
-  const [totalPage, setTotalPage] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
   const fetchTags = async (page: number, force = false) => {
     if (!force && page === currentPage) {
@@ -32,13 +32,13 @@ export function ManageTags () {
     let res: PagedResultTagItem | undefined
     try {
       res = await rewindRun(() =>
-        new TagsApi(ApiConfiguration).allTags(undefined, (page - 1) * currentPage, countPerPage)
+        new TagsApi(ApiConfiguration).allTags(undefined, (page - 1) * countPerPage, countPerPage)
       )
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
     setTags(res!.data!)
-    setTotalPage(Math.ceil(res!.total! / countPerPage))
+    setTotalCount(Math.ceil(res!.total!))
     setCurrentPage(page)
   }
 
@@ -221,11 +221,12 @@ export function ManageTags () {
       >
         {langs.get(Configs.UiLangsEnum.Import)}
       </Button>
-      {totalPage > 1 ? (
+      {totalCount > countPerPage ? (
         <Pagination
           className="pagination"
           onChange={(page) => fetchTags(page)}
-          total={totalPage}
+          pageSize={countPerPage}
+          total={totalCount}
         ></Pagination>
       ) : null}
     </div>

@@ -15,7 +15,7 @@ export default function ProblemViewer(props: ArticleContentViewerProps) {
   const [showHidden, setShowHidden] = useState(false)
   return (
     <div className="problem-viewer" onClick={() => setShowHidden(!showHidden)}>
-      {sections.filter(s => showHidden || !props.type?.hidenSections.has(s.name!)).map((section) => (
+      {sections.filter(s => s.content && s.content.match(/\S/)).filter(s => showHidden || !props.type?.hidenSections.has(s.name!)).map((section) => (
         <SectionViewer key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
       ))}
     </div>

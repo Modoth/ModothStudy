@@ -18,6 +18,7 @@ import {
   EditOutlined,
   FileAddOutlined,
   FileExcelOutlined,
+  ContainerOutlined,
   CloseOutlined
 } from '@ant-design/icons'
 import { IFileApiService, FileApiUrls } from '../../domain/FileApiService'
@@ -294,19 +295,19 @@ export default function ArticleView(props: {
           </Select>
         ))
       ]}</div>) : (user?.editPermission ? (<div className="actions-list">{[
+        <Button type="primary" ghost icon={<EditOutlined />} onClick={toggleEditing}
+        key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
         inArticleList ?
-          <Button type="primary" ghost icon={<FileExcelOutlined />} onClick={() => {
+          <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
             articleListService.remove(props.article.id!)
             setInArticleList(articleListService.has(props.article.id!))
           }}
             key={LangKeys.RemoveFromArticleList}>{langs.get(LangKeys.RemoveFromArticleList)}</Button> :
-          <Button type="primary" ghost icon={<FileAddOutlined />} onClick={() => {
+          <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
             articleListService.add(props.article.id!)
             setInArticleList(articleListService.has(props.article.id!))
           }}
             key={LangKeys.AddToArticleList}>{langs.get(LangKeys.AddToArticleList)}</Button>,
-        <Button type="primary" ghost icon={<EditOutlined />} onClick={toggleEditing}
-          key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
         <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>
           props.articleHandlers.onDelete(props.article.id!)
         } key="delete">{langs.get(Configs.UiLangsEnum.Delete)}</Button>

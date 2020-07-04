@@ -10,7 +10,7 @@ import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import ApiConfiguration from '../../common/ApiConfiguration'
 
-export function ManageUsers () {
+export function ManageUsers() {
   const user = useUser()
   if (!user || !user.managePermission) {
     return <Redirect to="/login" />
@@ -21,7 +21,7 @@ export function ManageUsers () {
 
   const [users, setUsers] = useState<User[] | undefined>()
   const [currentPage, setCurrentPage] = useState(0)
-  const [totalPage, setTotalPage] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
 
   const fetchUsers = async (page: number) => {
@@ -31,13 +31,13 @@ export function ManageUsers () {
     let res: PagedResultUser | undefined
     try {
       res = await rewindRun(() =>
-        new UsersApi(ApiConfiguration).users(undefined, (page - 1) * currentPage, countPerPage)
+        new UsersApi(ApiConfiguration).users(undefined, (page - 1) * countPerPage, countPerPage)
       )
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
     setUsers(res!.data!)
-    setTotalPage(Math.ceil(res!.total! / countPerPage))
+    setTotalCount(Math.ceil(res!.total!))
     setCurrentPage(page)
   }
 
@@ -136,11 +136,12 @@ export function ManageUsers () {
       >
         {langs.get(Configs.UiLangsEnum.Create)}
       </Button>
-      {totalPage > 1 ? (
+      {totalCount > countPerPage ? (
         <Pagination
           className="pagination"
           onChange={(page) => fetchUsers(page)}
-          total={totalPage}
+          pageSize={countPerPage}
+          total={totalCount}
         ></Pagination>
       ) : null}
     </div>

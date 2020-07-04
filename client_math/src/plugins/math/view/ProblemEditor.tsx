@@ -19,7 +19,7 @@ export default function ProblemEditor(props: ArticleContentEditorProps) {
       return
     }
     setType(props.type)
-    setSections(getSections(props.type?.allSections!, props.content.sections))
+    setSections(getSections(props.type?.allSections!, sections.length ? sections : props.content.sections))
   })
   const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
   const [currentSection, setCurrentSection] = useState<ArticleSectionVm | undefined>(undefined)
