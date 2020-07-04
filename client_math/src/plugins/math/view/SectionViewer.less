@@ -85,3 +85,19 @@
     margin: -3px -10px 10px -10px;
   }
 }
+
+.article-list {
+  counter-reset: section;
+
+  & > .article > .section-viewer:first-child::before {
+    counter-increment: section;
+    content: counter(section) "、 ";
+  }
+
+  & > .article.problem-viewer {
+    &.解答,
+    &.证明 {
+      margin-bottom: 80px;
+    }
+  }
+}

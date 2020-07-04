@@ -46,12 +46,12 @@ const getArticleTypeName = (baseType: string, tagsDict?: Map<string, NodeTag>) =
   return subType.value || baseType
 }
 
-const getArticleType = (baseType: string, tagsDict?: Map<string, NodeTag>, nodeTags?: Map<string, NodeTag>) => {
+const getArticleType = (viewer: any, baseType: string, tagsDict?: Map<string, NodeTag>, nodeTags?: Map<string, NodeTag>) => {
   const typeName = getArticleTypeName(baseType, tagsDict)
   if (typesCaches.has(typeName)) {
     return typesCaches.get(typeName)
   }
-  let type: ArticleContentType = { name: typeName, hidenSections: new Set<string>(), allSections: new Set<string>() }
+  let type: ArticleContentType = { Viewer: viewer, name: typeName, hidenSections: new Set<string>(), allSections: new Set<string>() }
   if (nodeTags) {
     let sectionsTag = nodeTags.get(typeName + TagNames.ArticleSectionSurfix) || nodeTags.get(baseType + TagNames.ArticleSectionSurfix)
     if (sectionsTag) {
@@ -96,15 +96,14 @@ export default function ArticleView(props: {
   const viewService = locator.locate(IViewService)
   const articleListService = locator.locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
-  const [inArticleList, setInArticleList] = useState(articleListService.has(props.article.id!))
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
   const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
   const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
     {} as any
   )
-  const [type, setType] = useState(getArticleType(props.type.name, tagsDict, props.nodeTags))
-
+  const [type, setType] = useState(getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
+  const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
 
   const deleteFile = async (file: ArticleFile) => {
@@ -239,7 +238,7 @@ export default function ArticleView(props: {
       }
       tagsDict?.set(newTag.name!, newTag)
       if (newTag.name === props.type.name + TagNames.SubTypeSurfix) {
-        setType(getArticleType(props.type.name, tagsDict, props.nodeTags))
+        setType(getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -296,16 +295,16 @@ export default function ArticleView(props: {
         ))
       ]}</div>) : (user?.editPermission ? (<div className="actions-list">{[
         <Button type="primary" ghost icon={<EditOutlined />} onClick={toggleEditing}
-        key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
+          key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
         inArticleList ?
           <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
-            articleListService.remove(props.article.id!)
-            setInArticleList(articleListService.has(props.article.id!))
+            articleListService.remove(props.article)
+            setInArticleList(articleListService.has(props.article))
           }}
             key={LangKeys.RemoveFromArticleList}>{langs.get(LangKeys.RemoveFromArticleList)}</Button> :
           <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
-            articleListService.add(props.article.id!)
-            setInArticleList(articleListService.has(props.article.id!))
+            articleListService.add(props.article, type)
+            setInArticleList(articleListService.has(props.article))
           }}
             key={LangKeys.AddToArticleList}>{langs.get(LangKeys.AddToArticleList)}</Button>,
         <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>

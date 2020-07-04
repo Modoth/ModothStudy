@@ -18,7 +18,8 @@ export interface ArticleContentEditorCallbacks<T> {
 export interface ArticleContentType {
   name: string,
   hidenSections: Set<string>,
-  allSections: Set<string>
+  allSections: Set<string>,
+  Viewer: (props: ArticleContentViewerProps) => JSX.Element;
 }
 
 export class ArticleContentViewerProps {
@@ -26,6 +27,7 @@ export class ArticleContentViewerProps {
   files?: ArticleFile[]
   tags?: TagItem[]
   type?: ArticleContentType
+  className?: string
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {

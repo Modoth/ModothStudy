@@ -1,17 +1,20 @@
+import { ArticleContentType } from "../plugins/IPluginInfo"
+import Article from "./Article";
+
 export interface IArticleListChangedListener {
     (): void
 }
 
 export default class IArticleListService {
-    add(id: string) {
+    add(article: Article, type: ArticleContentType) {
         throw new Error('Method not implemented.')
     }
 
-    has(id: string): boolean {
+    has(article: Article): boolean {
         throw new Error('Method not implemented.')
     }
 
-    remove(id: string) {
+    remove(article: Article) {
         throw new Error('Method not implemented.')
     }
 
@@ -19,7 +22,7 @@ export default class IArticleListService {
         throw new Error('Method not implemented.')
     }
 
-    all(): string[] {
+    all(): [Article, ArticleContentType][] {
         throw new Error('Method not implemented.')
     }
 
@@ -33,38 +36,37 @@ export default class IArticleListService {
 }
 
 export class ArticleListSingletonService implements IArticleListService {
-
-    private all_: string[] = []
-    private allDict_ = new Set<string>()
+    private all_: Article[] = []
+    private types_ = new Map<string, ArticleContentType>()
     private listeners_ = new Set<IArticleListChangedListener>()
 
-    add(id: string): void {
-        if (this.has(id)) {
+    add(article: Article, type: ArticleContentType): void {
+        if (this.has(article)) {
             return
         }
-        this.allDict_.add(id)
-        this.all_.push(id)
+        this.types_.set(article.id!, type)
+        this.all_.push(article)
         this.raiseChange_()
     }
 
-    has(id: string): boolean {
-        return this.allDict_.has(id)
+    has(article: Article): boolean {
+        return this.types_.has(article.id!)
     }
 
-    remove(id: string): void {
-        this.allDict_.delete(id)
-        this.all_ = this.all_.filter(i => id !== i)
+    remove(article: Article): void {
+        this.types_.delete(article.id!)
+        this.all_ = this.all_.filter(i => article.id !== i.id)
         this.raiseChange_()
     }
 
     clear(): void {
-        this.allDict_ = new Set()
+        this.types_ = new Map()
         this.all_ = []
         this.raiseChange_()
     }
 
-    all(): string[] {
-        return Array.from(this.all_)
+    all(): [Article, ArticleContentType][] {
+        return this.all_.map(a => [a, this.types_.get(a.id!)!])
     }
 
     addChangeListener(listener: IArticleListChangedListener): void {
