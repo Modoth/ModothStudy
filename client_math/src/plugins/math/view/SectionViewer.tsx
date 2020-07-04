@@ -56,7 +56,8 @@ class ArticleSectionVm {
             }
         }
         for (let i = 0; i < section.length; i++) {
-            if (section[i] !== SEP || section[i - 1] === ESC) {
+            if (section[i] !== SEP) {
+                //|| section[i - 1] === ESC
                 continue
             }
             const currentType = nextType

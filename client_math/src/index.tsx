@@ -16,6 +16,8 @@ import SubjectsService from './domain/SubjectsService'
 import IPluginInfo from './plugins/IPluginInfo'
 import { MathPluginInfo } from './plugins/math'
 import { FileApiService, IFileApiService } from './domain/FileApiService'
+import IArticleListService, { ArticleListSingletonService } from './domain/IArticleListService'
+import Langs from './view/Langs'
 
 const buildServicesLocator = () => {
   const serviceLocator = new ServicesLocator()
@@ -23,6 +25,7 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IPluginInfo, new MathPluginInfo())
   serviceLocator.registerInstance(ILoginService, new LoginService())
   serviceLocator.registerInstance(ILangsService, new LangsService())
+  serviceLocator.registerInstance(IArticleListService, new ArticleListSingletonService())
   serviceLocator.register(ISubjectsService, SubjectsService)
   serviceLocator.register(IFileApiService, FileApiService)
 
@@ -34,7 +37,7 @@ const bootstrap = async () => {
   const loginService = serviceLocator.locate(ILoginService)
   const langsService = serviceLocator.locate(ILangsService)
   const plugin = serviceLocator.locate(IPluginInfo)
-  await Promise.all([langsService.load(plugin.langs), loginService.checkLogin()])
+  await Promise.all([langsService.load(Langs, plugin.langs), loginService.checkLogin()])
 
   ReactDOM.render(
     <React.StrictMode>

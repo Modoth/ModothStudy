@@ -9,18 +9,21 @@ import { NodesApi, Configs, NodeTag } from '../../apis'
 import ApiConfiguration from '../../common/ApiConfiguration'
 import { rewindRun } from '../../common/ApiService'
 import { useUser, useServicesLocator } from '../../app/Contexts'
-import ILangsService from '../../domain/ILangsService'
+import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import { Card, Button, Select, TreeSelect } from 'antd'
 import {
   UploadOutlined,
   CheckOutlined,
   EditOutlined,
+  FileAddOutlined,
+  FileExcelOutlined,
   CloseOutlined
 } from '@ant-design/icons'
 import { IFileApiService, FileApiUrls } from '../../domain/FileApiService'
 import { ArticleTag, SubjectViewModel } from './Library'
 import './ArticleView.less'
+import IArticleListService from '../../domain/IArticleListService'
 
 const { Option } = Select
 
@@ -90,7 +93,9 @@ export default function ArticleView(props: {
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
+  const articleListService = locator.locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
+  const [inArticleList, setInArticleList] = useState(articleListService.has(props.article.id!))
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
   const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
@@ -182,7 +187,7 @@ export default function ArticleView(props: {
     }
   }
 
-  const toogleEditing = async () => {
+  const toggleEditing = async () => {
     if (!editing) {
       setEditing(true)
       return
@@ -289,7 +294,18 @@ export default function ArticleView(props: {
           </Select>
         ))
       ]}</div>) : (user?.editPermission ? (<div className="actions-list">{[
-        <Button type="primary" ghost icon={<EditOutlined />} onClick={toogleEditing}
+        inArticleList ?
+          <Button type="primary" ghost icon={<FileExcelOutlined />} onClick={() => {
+            articleListService.remove(props.article.id!)
+            setInArticleList(articleListService.has(props.article.id!))
+          }}
+            key={LangKeys.RemoveFromArticleList}>{langs.get(LangKeys.RemoveFromArticleList)}</Button> :
+          <Button type="primary" ghost icon={<FileAddOutlined />} onClick={() => {
+            articleListService.add(props.article.id!)
+            setInArticleList(articleListService.has(props.article.id!))
+          }}
+            key={LangKeys.AddToArticleList}>{langs.get(LangKeys.AddToArticleList)}</Button>,
+        <Button type="primary" ghost icon={<EditOutlined />} onClick={toggleEditing}
           key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
         <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>
           props.articleHandlers.onDelete(props.article.id!)
@@ -301,7 +317,7 @@ export default function ArticleView(props: {
           <div className="files-list">
             <Button
               type="primary"
-              onClick={toogleEditing}
+              onClick={toggleEditing}
               key="endEdit"
               icon={<CheckOutlined />}
             >{langs.get(Configs.UiLangsEnum.Ok)}</Button>,

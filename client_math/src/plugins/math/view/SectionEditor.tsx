@@ -11,6 +11,34 @@ export interface ArticleSectionVm extends ArticleSection {
     callbacks: ArticleContentEditorCallbacks<string>
 }
 
+export class ILatexTranslator {
+    test(slice: string): boolean {
+        throw new Error('Method not implemented.')
+    }
+
+    translate(slice: string): string {
+        throw new Error('Method not implemented.')
+    }
+}
+
+export class DefaultLatexTranslator implements ILatexTranslator {
+    test(_: string): boolean {
+        return true
+    }
+    translate(slice: string): string {
+        return slice.replace(/[\x20-\x7Fα-ωΑ-Ω]+/g, e => e.match(/[a-zA-Zα-ωΑ-Ω]/) ? '$' + e + '$' : e)
+    }
+}
+
+export class WikipediaLatexTranslator implements ILatexTranslator {
+    test(slice: string): boolean {
+        return slice.indexOf('<math>') >= 0
+    }
+    translate(slice: string): string {
+        return slice.replace(/\r?\n?<math>|<\/math>\r?\n?/g, () => '$')
+    }
+}
+
 const normalizeString = (slice: string) => {
     let newSlice = "";
     const ignoreChars = new Set(['⬚'])
@@ -30,7 +58,9 @@ const normalizeString = (slice: string) => {
 }
 
 const translateWordContent = (slice: string) => {
-    return normalizeString(slice).replace(/[\x20-\x7Fα-ωΑ-Ω]+/g, e => e.match(/[a-zA-Zα-ωΑ-Ω]/) ? '$' + e + '$' : e)
+    slice = normalizeString(slice)
+    const translator: ILatexTranslator = [new WikipediaLatexTranslator()].find(t => t.test(slice)) || new DefaultLatexTranslator()
+    return translator.translate(slice)
 }
 
 export default function SectionEditor(props: {

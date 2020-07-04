@@ -10,7 +10,7 @@ export default function Latex(props: { inline?: boolean, content?: string, class
     const content = props.content
     if (content && refElement.current) {
       katex.render(content, refElement.current, {
-        throwOnError: true,
+        throwOnError: false,
         macros: {
           "\\[": "",
           "\\]": ""
