@@ -4,6 +4,7 @@ import { Spin, message, Modal, Input, Space } from 'antd'
 import IViewService, { IPromptField } from '../services/IViewService'
 import ILangsService from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
+import ArticleList from './ArticleList'
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
@@ -14,12 +15,13 @@ class ViewService implements IViewService {
     message.error(msg, timeout / 1000)
   }
 
-  constructor(public setLoading: any, public prompt: any, public previewImage: any) { }
+  constructor(public setLoading: any, public prompt: any, public previewImage: any, public previewArticleList: any) { }
 
 }
 
 export default function ServiceView(props: {
   provide: { (viewService: IViewService): void };
+  setContentVisiable: { (visiable: boolean): void }
 }) {
   const refFile = useRef<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)
@@ -35,6 +37,8 @@ export default function ServiceView(props: {
   }>()
 
   const [previewImgUrl, setPreviewImgUrl] = useState('')
+
+  const [previewArticleList, setPreviewArticleList] = useState(false)
 
   const updateField = (
     i: number,
@@ -173,6 +177,13 @@ export default function ServiceView(props: {
     },
     (url: string) => {
       setPreviewImgUrl(url)
+    },
+    (visiable: boolean): void => {
+      if (visiable === previewArticleList) {
+        return
+      }
+      props.setContentVisiable(!visiable)
+      setPreviewArticleList(visiable)
     }
   )
   props.provide && props.provide(viewService)
@@ -247,6 +258,9 @@ export default function ServiceView(props: {
             <img src={previewImgUrl}></img>
           </div>
         </div> : null
+      }
+      {
+        previewArticleList ? <ArticleList></ArticleList> : null
       }
     </>
   )

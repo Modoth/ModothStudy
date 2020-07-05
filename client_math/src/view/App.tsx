@@ -10,26 +10,38 @@ import IViewService from './services/IViewService'
 import ServicesLocator from '../common/ServicesLocator'
 import ServiceView from './pages/ServiceView'
 
-export default function App () {
+export default function App() {
   const locator = useServicesLocator() as ServicesLocator
   const loginService: LoginService = (locator.locate(
     ILoginService
   ) as any) as LoginService
   const [user, setUser] = useState<ILoginUser | undefined>(loginService.user)
   loginService.setUser = setUser
-
+  const ref = React.createRef<HTMLDivElement>()
   return (
     <>
-      <ServiceView
-        provide={(s) => locator.registerInstance(IViewService, s)}
-      ></ServiceView>
       <UserContext.Provider value={user}>
-        <Router>
-          <Nav></Nav>
-          <div className="nav-content-wrapper">
-            <NavContent></NavContent>
-          </div>
-        </Router>
+        <ServiceView
+          provide={(s) => locator.registerInstance(IViewService, s)}
+          setContentVisiable={(v) => {
+            if (!ref.current) {
+              return
+            }
+            if (v) {
+              ref.current!.classList.remove('hidden')
+            } else {
+              ref.current!.classList.add('hidden')
+            }
+          }}
+        ></ServiceView>
+        <div ref={ref}>
+          <Router >
+            <Nav></Nav>
+            <div className="nav-content-wrapper">
+              <NavContent></NavContent>
+            </div>
+          </Router>
+        </div>
       </UserContext.Provider>
     </>
   )

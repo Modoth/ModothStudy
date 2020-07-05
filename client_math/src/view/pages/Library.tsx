@@ -23,7 +23,7 @@ import { ArticleType } from '../../plugins/IPluginInfo'
 import ApiConfiguration from '../../common/ApiConfiguration'
 import Article, { articleFromNodeItem } from '../../domain/Article'
 import ArticleView from './ArticleView'
-import ArticleList from './ArticleList'
+import ArticleListSummary from './ArticleListSummary'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -400,7 +400,7 @@ export default function Library(props: LibraryProps) {
         ) : null}
       </Space>
       <Space className="float-menus">
-        <ArticleList></ArticleList>
+        <ArticleListSummary></ArticleListSummary>
       </Space>
     </div>
   )

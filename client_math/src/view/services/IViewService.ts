@@ -28,4 +28,8 @@ export default class IViewService {
   previewImage(url: string): void {
     throw new Error('Method not implemented.')
   }
+
+  previewArticleList(visiable: boolean): void {
+    throw new Error('Method not implemented.')
+  }
 }
