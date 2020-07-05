@@ -1,17 +1,19 @@
 .article-list-menus {
-  right: 25px;
-  top: 25px;
+  right: 10px;
+  top: 10px;
   position: fixed;
   display: flex;
 
   & > * {
     margin-left: 10px;
-    opacity: 0.5;
   }
 }
 
 .article-list {
   padding: 20px;
+  padding-top: 60px;
+  background: white;
+  min-height: 100vh;
 }
 
 .article-list.column-count-1 {
@@ -29,6 +31,8 @@
 
   .article-list {
     padding: 0;
+    background: transparent;
+    min-height: unset;
   }
 
   .article-list.column-count-2 {
