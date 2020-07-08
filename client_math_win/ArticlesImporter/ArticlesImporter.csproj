@@ -73,7 +73,8 @@
     <Compile Include="Article.cs" />
     <Compile Include="ArticleConverter.cs" />
     <Compile Include="ConvertContext.cs" />
-    <Compile Include="FormulaConverter.cs" />
+    <Compile Include="Converters\EmfToPngConverter.cs" />
+    <Compile Include="Converters\FormulaConverter.cs" />
     <Compile Include="SliceConverters\ISliceConverter.cs" />
     <Compile Include="MainController.cs" />
     <Compile Include="MainForm.cs">

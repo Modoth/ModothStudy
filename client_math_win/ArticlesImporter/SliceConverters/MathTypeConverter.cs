@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArticlesImporter.Converts;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,11 +15,12 @@ namespace ArticlesImporter.SliceConverters
         public bool Convert(XmlNode node, ConvertContext ctx)
         {
             var srcNode = node.LastChild.ChildNodes.FirstOrDefaultChildOfName("v:shape");
-            if(srcNode == null || srcNode.LastChild == null)
+            if(srcNode == null)
             {
                 return false;
             }
-            var id = srcNode.LastChild.Attributes["r:id"].Value;
+            var imgNode = srcNode.ChildNodes.FirstOrDefaultChildOfName("v:imagedata");
+            var id = imgNode.Attributes["r:id"].Value;
             var conv = new FormulaConverter();
             var latex = conv.Convert(Path.Combine(ctx.TempBaseDir, "word", ctx.Resoures[id]));
             if(latex == null)
@@ -27,6 +29,8 @@ namespace ArticlesImporter.SliceConverters
             }
             latex= latex.Replace("\r\n<math>", "");
             latex = latex.Replace("</math>\r\n", "");
+            latex = latex.Replace("<math>", "");
+            latex = latex.Replace("</math>", "");
             ctx.InsertFormula(latex);
             return true;
         }

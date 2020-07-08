@@ -93,6 +93,9 @@ namespace ArticlesImporter
             var fIn = dialog.FileName;
             if (String.IsNullOrWhiteSpace(fIn))
             {
+                Running = false;
+                PropChangedHandler(nameof(Running));
+                UpdateProgress(1);
                 return;
             }
             var reg = new Regex(String.IsNullOrWhiteSpace(HeaderReg) ? @"^\d+、" : HeaderReg);
@@ -260,7 +263,7 @@ namespace ArticlesImporter
 
         private void UpdateProgress(float progress)
         {
-            Progress = (int)Math.Floor(progress * 100);
+            Progress = (int)Math.Floor(progress * 10000);
             PropChangedHandler(nameof(Progress));
         }
 

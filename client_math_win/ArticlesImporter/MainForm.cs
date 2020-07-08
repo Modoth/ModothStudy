@@ -46,7 +46,7 @@ namespace ArticlesImporter
                     txbSubject.Text = m_Controller.TargetSubject;
                     break;
                 case nameof(MainController.HeaderReg):
-                    txbReg.Text = m_Controller.TargetSubject;
+                    txbReg.Text = m_Controller.HeaderReg;
                     break;
             }
         }
@@ -63,7 +63,7 @@ namespace ArticlesImporter
             foreach (var article in articles)
             {
                 ListViewItem item = new ListViewItem();
-                item.Text = idx.ToString();
+                item.Text = (idx + 1).ToString();
                 item.SubItems.Add(article.Content);
                 lvwArticles.Items.Add(item);
                 idx++;

@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ArticlesImporter
+namespace ArticlesImporter.Converts
 {
     public class FormulaConverter
     {

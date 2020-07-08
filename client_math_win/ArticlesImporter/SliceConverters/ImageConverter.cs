@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArticlesImporter.Converters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,15 @@ namespace ArticlesImporter.SliceConverters
             }
             var blip = graphic.LastChild.LastChild.ChildNodes.FirstOrDefaultChildOfName("pic:blipFill");
             var id = blip.FirstChild.Attributes["r:embed"].Value;
-            ctx.InsertFile(id + ".png", Path.Combine(ctx.TempBaseDir, "word", ctx.Resoures[id]));
+            var path = Path.Combine(ctx.TempBaseDir, "word", ctx.Resoures[id]);
+            if (string.Compare(Path.GetExtension(path), ".emf", true) == 0)
+            {
+                var newPath = path + ".png";
+                var converter = new EmfToPngConverter();
+                converter.Convert(path, newPath);
+                path = newPath;
+            }
+            ctx.InsertFile(id + ".png", path);
             return true;
         }
 

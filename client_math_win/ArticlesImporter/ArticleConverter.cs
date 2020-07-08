@@ -57,7 +57,7 @@ namespace ArticlesImporter
 				onprogress(idx / pars.ChildNodes.Count);
 				idx++;
 			}
-
+			ctx.NewArticle();
 			return ctx.Articles;
 
         }
