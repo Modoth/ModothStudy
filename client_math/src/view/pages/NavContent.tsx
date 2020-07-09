@@ -17,7 +17,7 @@ function NavContent () {
   return (
     <Switch>
       {
-        plugin.types.map(t => <Route key={t.route} path={'/' + t.route}>
+        plugin.types.map(t => <Route key={t.route} path={'/' + t.route + '/:subjectId?'}>
           <Library type={t}/>
         </Route>)
       }

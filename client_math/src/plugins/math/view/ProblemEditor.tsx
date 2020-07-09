@@ -12,8 +12,6 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
 export default function ProblemEditor(props: ArticleContentEditorProps) {
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
   const [sections, setSections] = useState<ArticleSectionVm[]>([])
-  console.log(props.type)
-  console.log(sections)
   useEffect(() => {
     if (props.type === type) {
       return

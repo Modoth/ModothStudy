@@ -25,6 +25,8 @@ import { IFileApiService, FileApiUrls } from '../../domain/FileApiService'
 import { ArticleTag, SubjectViewModel } from './Library'
 import './ArticleView.less'
 import IArticleListService from '../../domain/IArticleListService'
+import classNames from 'classnames'
+import { generateRandomStyle } from './common'
 
 const { Option } = Select
 
@@ -253,9 +255,9 @@ export default function ArticleView(props: {
   //   // const imgUrl = canvas.toDataURL('image/png')
   //   const imgUrl = await htmlToImage.toPng(ref.current)
   //   viewService.previewImage(imgUrl)
-  // }
+  // }generateRandomStyle(),
   return (
-    <Card className="article-view">
+    <Card className={classNames("article-view")}>
       <div ref={ref} className="article-body">
         {editing ? (
           <props.type.Editor

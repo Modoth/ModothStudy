@@ -118,7 +118,6 @@ export default function SectionEditor(props: {
                         return
                     }
                     const types = e.clipboardData.types.join(' ')
-                    console.log(types)
                     switch (types) {
                         case 'text/plain text/html text/rtf':
                         case 'text/plain text/html text/rtf Files':

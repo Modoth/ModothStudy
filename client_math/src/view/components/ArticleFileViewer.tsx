@@ -43,7 +43,7 @@ export default function ArticleFileViewer(props: {
     content = <span>{props.file?.name}</span>
   }
   return (
-    <Tooltip className={classNames(props.className)} title={props.file.name}>
+    <div className={classNames(props.className)}>
       <div className="article-file" onClick={props.onClick}>
         {content}
         {props.onDelete ? (
@@ -63,6 +63,6 @@ export default function ArticleFileViewer(props: {
 
         ) : null}
       </div>
-    </Tooltip>
+    </div>
   )
 }

@@ -3,7 +3,7 @@ import './Library.less'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
-import { TreeSelect, Button, Space, Radio, Pagination, Drawer } from 'antd'
+import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table } from 'antd'
 import ILangsService from '../../domain/ILangsService'
 import {
   Configs,
@@ -24,6 +24,7 @@ import ApiConfiguration from '../../common/ApiConfiguration'
 import Article, { articleFromNodeItem } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
+import { useParams } from 'react-router-dom'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -89,6 +90,10 @@ const getTagEnums = (values?: string) => {
     : []
 }
 
+interface Params {
+  subjectId?: string;
+}
+
 export class LibraryProps {
   type: ArticleType;
 }
@@ -98,6 +103,7 @@ export default function Library(props: LibraryProps) {
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
 
+  const params = useParams<Params>()
   const [showFilter, setShowFilter] = useState(false);
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
   const [subjectsDict, setSubjectsDict] = useState<
@@ -106,7 +112,7 @@ export default function Library(props: LibraryProps) {
   const [subjectsIdDict, setSubjectsIdDict] = useState<
     Map<string, SubjectViewModel>
   >(new Map())
-  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([])
+  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(params.subjectId ? [params.subjectId!] : [])
   const fetchSubjects = async () => {
     const subjectsDict = new Map<string, SubjectViewModel>()
     const sbjs = (await locator.locate(ISubjectsService).all()).map(
@@ -115,7 +121,7 @@ export default function Library(props: LibraryProps) {
     setSubjectsDict(subjectsDict)
     setSubjectsIdDict(new Map(Array.from(subjectsDict.values(), (s) => [s.id, s])))
     setSubjects(sbjs)
-    setSelectedSubjectIds([])
+    setSelectedSubjectIds(params.subjectId ? [params.subjectId!] : [])
   }
 
   const [typeTag, setTypeTag] = useState<ArticleTag | undefined>(undefined)
@@ -330,10 +336,19 @@ export default function Library(props: LibraryProps) {
     fetchArticles(1)
   }, [typeTag])
 
-  console.log(totalCount)
   return (
     <div className="library">
       <Space className="articles" direction="vertical">
+        {
+          articles.length ? null : <Table
+            rowKey="name"
+            showHeader={false}
+            columns={[
+            ]}
+            dataSource={[]}
+            pagination={false}
+          ></Table>
+        }
         {articles.map((p) => (
           <ArticleViewerMemo
             key={(p as any)!.key}
