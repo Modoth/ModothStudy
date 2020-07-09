@@ -7,6 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -24,6 +27,8 @@ namespace ArticlesImporter
 
         public string TargetSubject { get; set; }
 
+        public bool IgnoreSslError { get; set; }
+
         public void CopyFrom(Config config)
         {
             UserName = config.UserName;
@@ -31,6 +36,7 @@ namespace ArticlesImporter
             BasePath = config.BasePath;
             TargetSubject = config.TargetSubject;
             HeaderReg = config.HeaderReg;
+            IgnoreSslError = config.IgnoreSslError;
         }
 
         public Config CloneConfig()
@@ -60,6 +66,8 @@ namespace ArticlesImporter
                 PropChangedHandler(nameof(Password));
                 PropChangedHandler(nameof(TargetSubject));
                 PropChangedHandler(nameof(HeaderReg));
+                PropChangedHandler(nameof(IgnoreSslError));
+
             }
             catch
             {
@@ -98,7 +106,7 @@ namespace ArticlesImporter
                 UpdateProgress(1);
                 return;
             }
-            var reg = new Regex(String.IsNullOrWhiteSpace(HeaderReg) ? @"^\d+、" : HeaderReg);
+            var reg = new Regex(String.IsNullOrWhiteSpace(HeaderReg) ? @"^\d+(、|．)" : HeaderReg);
             var conv = new ArticleConverter();
 
             Articles = conv.Convert(fIn, reg, UpdateProgress);
@@ -127,6 +135,11 @@ namespace ArticlesImporter
                 return;
             }
             SaveConfig();
+            ServicePointManager.ServerCertificateValidationCallback = null;
+            if (IgnoreSslError)
+            {
+                ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            }
             if (Articles == null || !Articles.Any())
             {
                 MessageBox.Show("请先打开文件");

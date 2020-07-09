@@ -43,13 +43,14 @@
             this.txbServer = new System.Windows.Forms.TextBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.pgbRunning = new System.Windows.Forms.ProgressBar();
+            this.ckbIgnoreSsl = new System.Windows.Forms.CheckBox();
             this.pnlMenus.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOpen
             // 
             this.btnOpen.Location = new System.Drawing.Point(6, 6);
-            this.btnOpen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOpen.Margin = new System.Windows.Forms.Padding(2);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(56, 22);
             this.btnOpen.TabIndex = 0;
@@ -61,7 +62,7 @@
             // 
             this.lvwArticles.HideSelection = false;
             this.lvwArticles.Location = new System.Drawing.Point(6, 126);
-            this.lvwArticles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lvwArticles.Margin = new System.Windows.Forms.Padding(2);
             this.lvwArticles.Name = "lvwArticles";
             this.lvwArticles.Size = new System.Drawing.Size(576, 284);
             this.lvwArticles.TabIndex = 1;
@@ -72,6 +73,7 @@
             // 
             this.pnlMenus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.pnlMenus.Controls.Add(this.ckbIgnoreSsl);
             this.pnlMenus.Controls.Add(this.label5);
             this.pnlMenus.Controls.Add(this.txbReg);
             this.pnlMenus.Controls.Add(this.label3);
@@ -85,7 +87,7 @@
             this.pnlMenus.Controls.Add(this.btnUpload);
             this.pnlMenus.Controls.Add(this.btnOpen);
             this.pnlMenus.Location = new System.Drawing.Point(6, 6);
-            this.pnlMenus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlMenus.Margin = new System.Windows.Forms.Padding(2);
             this.pnlMenus.Name = "pnlMenus";
             this.pnlMenus.Size = new System.Drawing.Size(574, 93);
             this.pnlMenus.TabIndex = 2;
@@ -103,7 +105,7 @@
             // txbReg
             // 
             this.txbReg.Location = new System.Drawing.Point(174, 70);
-            this.txbReg.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txbReg.Margin = new System.Windows.Forms.Padding(2);
             this.txbReg.Name = "txbReg";
             this.txbReg.Size = new System.Drawing.Size(152, 21);
             this.txbReg.TabIndex = 10;
@@ -122,7 +124,7 @@
             // txbPassword
             // 
             this.txbPassword.Location = new System.Drawing.Point(416, 40);
-            this.txbPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txbPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txbPassword.Name = "txbPassword";
             this.txbPassword.PasswordChar = '*';
             this.txbPassword.Size = new System.Drawing.Size(152, 21);
@@ -142,7 +144,7 @@
             // txbUserName
             // 
             this.txbUserName.Location = new System.Drawing.Point(416, 10);
-            this.txbUserName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txbUserName.Margin = new System.Windows.Forms.Padding(2);
             this.txbUserName.Name = "txbUserName";
             this.txbUserName.Size = new System.Drawing.Size(152, 21);
             this.txbUserName.TabIndex = 6;
@@ -161,7 +163,7 @@
             // txbSubject
             // 
             this.txbSubject.Location = new System.Drawing.Point(174, 40);
-            this.txbSubject.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txbSubject.Margin = new System.Windows.Forms.Padding(2);
             this.txbSubject.Name = "txbSubject";
             this.txbSubject.Size = new System.Drawing.Size(152, 21);
             this.txbSubject.TabIndex = 4;
@@ -180,7 +182,7 @@
             // txbServer
             // 
             this.txbServer.Location = new System.Drawing.Point(174, 10);
-            this.txbServer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txbServer.Margin = new System.Windows.Forms.Padding(2);
             this.txbServer.Name = "txbServer";
             this.txbServer.Size = new System.Drawing.Size(152, 21);
             this.txbServer.TabIndex = 2;
@@ -189,7 +191,7 @@
             // btnUpload
             // 
             this.btnUpload.Location = new System.Drawing.Point(6, 38);
-            this.btnUpload.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnUpload.Margin = new System.Windows.Forms.Padding(2);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(56, 22);
             this.btnUpload.TabIndex = 1;
@@ -200,11 +202,22 @@
             // pgbRunning
             // 
             this.pgbRunning.Location = new System.Drawing.Point(8, 102);
-            this.pgbRunning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pgbRunning.Margin = new System.Windows.Forms.Padding(2);
             this.pgbRunning.Maximum = 10000;
             this.pgbRunning.Name = "pgbRunning";
             this.pgbRunning.Size = new System.Drawing.Size(574, 21);
             this.pgbRunning.TabIndex = 3;
+            // 
+            // ckbIgnoreSsl
+            // 
+            this.ckbIgnoreSsl.AutoSize = true;
+            this.ckbIgnoreSsl.Location = new System.Drawing.Point(336, 72);
+            this.ckbIgnoreSsl.Name = "ckbIgnoreSsl";
+            this.ckbIgnoreSsl.Size = new System.Drawing.Size(145, 27);
+            this.ckbIgnoreSsl.TabIndex = 14;
+            this.ckbIgnoreSsl.Text = "高级(忽略证书错误)";
+            this.ckbIgnoreSsl.UseVisualStyleBackColor = true;
+            this.ckbIgnoreSsl.CheckedChanged += new System.EventHandler(this.ckbIgnoreSsl_CheckedChanged);
             // 
             // MainForm
             // 
@@ -215,7 +228,7 @@
             this.Controls.Add(this.pnlMenus);
             this.Controls.Add(this.lvwArticles);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
@@ -244,6 +257,7 @@
         private System.Windows.Forms.ProgressBar pgbRunning;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txbReg;
+        private System.Windows.Forms.CheckBox ckbIgnoreSsl;
     }
 }
 

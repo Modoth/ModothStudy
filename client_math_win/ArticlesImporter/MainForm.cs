@@ -48,6 +48,9 @@ namespace ArticlesImporter
                 case nameof(MainController.HeaderReg):
                     txbReg.Text = m_Controller.HeaderReg;
                     break;
+                case nameof(MainController.IgnoreSslError):
+                    ckbIgnoreSsl.Checked = m_Controller.IgnoreSslError;
+                    break;
             }
         }
 
@@ -113,6 +116,11 @@ namespace ArticlesImporter
         private void txbReg_TextChanged(object sender, EventArgs e)
         {
             m_Controller.HeaderReg = txbReg.Text;
+        }
+
+        private void ckbIgnoreSsl_CheckedChanged(object sender, EventArgs e)
+        {
+            m_Controller.IgnoreSslError = ckbIgnoreSsl.Checked;
         }
     }
 }

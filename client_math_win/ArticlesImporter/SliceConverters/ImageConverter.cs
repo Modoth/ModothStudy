@@ -14,7 +14,7 @@ namespace ArticlesImporter.SliceConverters
 
         public bool Convert(XmlNode node, ConvertContext ctx)
         {
-            var archorNode = node.LastChild.ChildNodes.FirstOrDefaultChildOfName("wp:anchor");
+            var archorNode = node.LastChild.ChildNodes.FirstOrDestult(n => n.Name == "wp:anchor" || n.Name == "wp:inline");
             if (archorNode == null)
             {
                 return false;
