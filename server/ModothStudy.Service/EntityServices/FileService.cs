@@ -28,7 +28,7 @@ namespace ModothStudy.Service.EntityServices
             "jpg",
             "gif",
             "svg",
-            "mp4",
+            "mp4"
         };
 
         public FileService(IOperatorService operatorService,
@@ -44,6 +44,9 @@ namespace ModothStudy.Service.EntityServices
 
         public Task<FileResource> CreateImageFile(Func<Stream, Task> file, string contentType, long length)
         {
+            if(contentType == "application/octet-stream"){
+                contentType = "image/png";
+            }
             return CreateFile(file, _validImageType, contentType, length);
         }
 
