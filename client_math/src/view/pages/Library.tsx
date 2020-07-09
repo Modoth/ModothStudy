@@ -3,7 +3,7 @@ import './Library.less'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
-import { TreeSelect, Button, Space, Radio, Pagination } from 'antd'
+import { TreeSelect, Button, Space, Radio, Pagination, Drawer } from 'antd'
 import ILangsService from '../../domain/ILangsService'
 import {
   Configs,
@@ -15,7 +15,7 @@ import {
   NodeTag,
   NodeItem
 } from '../../apis'
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import { rewindRun } from '../../common/ApiService'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
@@ -98,6 +98,7 @@ export default function Library(props: LibraryProps) {
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
 
+  const [showFilter, setShowFilter] = useState(false);
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
   const [subjectsDict, setSubjectsDict] = useState<
     Map<string, SubjectViewModel>
@@ -161,6 +162,8 @@ export default function Library(props: LibraryProps) {
   )
   const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
+
+  const bottomRef = React.createRef<HTMLDivElement>();
 
   const convertArticle = (node: NodeItem) => {
     const article = articleFromNodeItem(node)
@@ -233,6 +236,7 @@ export default function Library(props: LibraryProps) {
     setArticles(res.data!.map(convertArticle))
     setTotalCount(Math.ceil(res!.total!))
     setCurrentPage(page)
+    window.scrollTo(0, 0);
   }
 
   const updateArticleTag = async (
@@ -294,6 +298,7 @@ export default function Library(props: LibraryProps) {
   }
 
   const addArticle = () => {
+    bottomRef.current && bottomRef.current.scrollIntoView({ behavior: "smooth" });
     addArticleWithTags(uuidv4())
   }
 
@@ -328,45 +333,6 @@ export default function Library(props: LibraryProps) {
   console.log(totalCount)
   return (
     <div className="library">
-      <Space className="filters" direction="vertical">
-        {tags.map((tag, i) => (
-          <Radio.Group
-            className="tag-list"
-            key={tag.name}
-            defaultValue={tag.value}
-            onChange={(e) => updateTagValue(i, tag, e.target.value)}
-            buttonStyle="solid"
-          >
-            <Radio.Button className="tag-item" value={undefined}>
-              {'全部'}
-            </Radio.Button>
-            {...tag.values.map((value) => (
-              <Radio.Button className="tag-item" key={value} value={value}>
-                {value}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
-        ))}
-        <div className="search-bar">
-          <TreeSelect
-            multiple
-            className="search-subjects"
-            onChange={(value) => setSelectedSubjectIds(value)}
-            value={selectedSubjectIds}
-            treeData={subjects}
-            treeCheckable={true}
-            showCheckedStrategy={'SHOW_PARENT'}
-            style={{ width: '100%' }}
-            placeholder={langs.get(Configs.UiLangsEnum.Subject)}
-          />
-          <Button
-            className="search-btn"
-            type="primary"
-            icon={<SearchOutlined />}
-            onClick={() => fetchArticles(1)}
-          ></Button>
-        </div>
-      </Space>
       <Space className="articles" direction="vertical">
         {articles.map((p) => (
           <ArticleViewerMemo
@@ -379,29 +345,86 @@ export default function Library(props: LibraryProps) {
             nodeTags={nodeTags}
           ></ArticleViewerMemo>
         ))}
+        {totalCount > countPerPage ? (
+          <>
+            <Pagination
+              className="pagination"
+              onChange={(page) => fetchArticles(page)}
+              pageSize={countPerPage}
+              current={currentPage}
+              total={totalCount}
+            ></Pagination>
+            <div ref={bottomRef}></div>
+          </>
+        ) : null}
+      </Space>
+      <div className="float-menus">
+        <ArticleListSummary></ArticleListSummary>
+        <Button onClick={() => setShowFilter(true)} type="default" size="large" shape="circle" icon={<SearchOutlined />} />
         {user?.editPermission ? (
           <Button
             icon={<PlusOutlined />}
-            className="btn-create"
-            type="primary"
+            type="default"
+            size="large" shape="circle"
             onClick={addArticle}
           >
-            {langs.get(Configs.UiLangsEnum.Create)}
           </Button>
         ) : null}
-        {totalCount > countPerPage ? (
-          <Pagination
-            className="pagination"
-            onChange={(page) => fetchArticles(page)}
-            pageSize={countPerPage}
-            current={currentPage}
-            total={totalCount}
-          ></Pagination>
-        ) : null}
-      </Space>
-      <Space className="float-menus">
-        <ArticleListSummary></ArticleListSummary>
-      </Space>
+      </div>
+      <Drawer closable={false} className="filter-panel" height="80%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
+        <Space className="filters" direction="vertical">
+          <TreeSelect
+            multiple
+            showSearch={false}
+            className="search-subjects"
+            onChange={(value) => setSelectedSubjectIds(value)}
+            value={selectedSubjectIds}
+            treeData={subjects}
+            treeCheckable={true}
+            showCheckedStrategy={'SHOW_PARENT'}
+            style={{ width: '100%' }}
+            placeholder={langs.get(Configs.UiLangsEnum.Subject)}
+          />
+
+          {tags.map((tag, i) => (
+            <Radio.Group
+              className="tag-list"
+              key={tag.name}
+              defaultValue={tag.value}
+              buttonStyle="solid"
+              onChange={(e) => updateTagValue(i, tag, e.target.value)}
+
+            >
+              <Radio.Button className="tag-item" value={undefined}>
+                {'全部'}
+              </Radio.Button>
+              {...tag.values.map((value) => (
+                <Radio.Button className="tag-item" key={value} value={value}>
+                  {value}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          ))}
+          <div className="filter-menus">
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={() => {
+                setShowFilter(false)
+                fetchArticles(1);
+              }}
+            >{langs.get(Configs.UiLangsEnum.Ok)}</Button>
+            <Button
+              type="primary"
+              danger
+              icon={<CloseOutlined />}
+              onClick={() => {
+                setShowFilter(false)
+              }}
+            >{langs.get(Configs.UiLangsEnum.Cancle)}</Button>
+          </div>
+        </Space>
+      </Drawer>
     </div>
   )
 }

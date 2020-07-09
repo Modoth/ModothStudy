@@ -1,38 +1,8 @@
 .library {
-  padding: 10px;
+  padding: 0 10px;
 
   & .image-editor {
     height: 400px;
-  }
-
-  & .tag-list {
-    display: block;
-    box-sizing: border-box;
-    border-bottom: 1px solid #0001;
-    // background-color: #0001;
-    padding: 2px;
-    // border-radius: 10px;
-  }
-
-  & .tag-item {
-    margin: 1px 2px 5px 2px;
-    border-radius: 20px;
-  }
-
-  & .tag-item::before {
-    display: none;
-  }
-
-  & .filters {
-    width: 100%;
-    padding: 10px 14px 20px 14px;
-    border-radius: 0 0 20px 20px;
-    border: 1px solid #0002;
-    border-top: none;
-    background: transparent;
-    margin-top: -10px;
-    user-select: none;
-    -webkit-user-select: none;
   }
 
   & .articles {
@@ -41,8 +11,9 @@
   }
 
   & .ant-card-bordered {
-    border-radius: 20px;
-    border: 1px solid #0002;
+    border-radius: 2px;
+    box-shadow: 0px 0px 1px #0008;
+    background: #fffe;
   }
 
   & .ant-card-body {
@@ -53,31 +24,86 @@
     padding: 0 2px;
     background: white;
     display: block;
-  }
-
-  & .search-bar {
-    display: flex;
-
-    & .ant-select-selector {
-      border-radius: 20px;
-    }
-
-    & .search-subjects {
-      flex: 1;
-    }
-
-    & .search-btn {
-      margin-left: 5px;
-      border-radius: 20px;
-      width: 3em;
-      text-align: center;
-    }
+    min-height: 8em;
   }
 
   & .float-menus {
     position: fixed;
     right: 0;
     margin: 10px;
-    z-index: 3;
+    z-index: 2;
+    display: flex;
+    bottom: 1em;
+    flex-direction: column;
+    opacity: 0.6;
+
+    & button {
+      box-shadow: 1px 1px 3px #0008;
+      margin-block-end: 10px;
+    }
+  }
+}
+
+& .filter-panel {
+  & .ant-drawer .ant-drawer-content {
+    border-radius: 10px 10px 0 0;
+  }
+
+  & .ant-drawer-body{
+    padding: 10px !important;
+  }
+
+  & .filters {
+    width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    max-width: 780px;
+    display: block;
+    margin: 0 auto;
+    padding-bottom: 40px;
+
+    &>.ant-space-item {
+      margin: 10px 0;
+    }
+
+    & .tag-list {
+      display: block;
+      box-sizing: border-box;
+      padding: 3px 0;
+    }
+
+    & .tag-item {
+      margin: 3px;
+      border-radius: 10px;
+      border-left-width: 1px;
+    }
+
+    & .tag-item::before {
+      display: none;
+    }
+
+    & .ant-select-selector {
+      border-radius: 10px;
+      padding: 5px;
+    }
+
+    & .filter-menus {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(0deg, #fff, #fff0);
+      backdrop-filter: blur(5px);
+
+      &>button {
+        border-radius: 10px;
+        margin: 0 20px;
+      }
+    }
   }
 }

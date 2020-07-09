@@ -294,35 +294,36 @@ export default function ArticleView(props: {
           </Select>
         ))
       ]}</div>) : (user?.editPermission ? (<div className="actions-list">{[
-        <Button type="primary" ghost icon={<EditOutlined />} onClick={toggleEditing}
-          key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>,
+        <Button type="link" ghost danger icon={<CloseOutlined />} onClick={() =>
+          props.articleHandlers.onDelete(props.article.id!)
+        } key="delete">{langs.get(Configs.UiLangsEnum.Delete)}</Button>,
         inArticleList ?
-          <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
+          <Button type="link" ghost icon={<ContainerOutlined />} onClick={() => {
             articleListService.remove(props.article)
             setInArticleList(articleListService.has(props.article))
           }}
             key={LangKeys.RemoveFromArticleList}>{langs.get(LangKeys.RemoveFromArticleList)}</Button> :
-          <Button type="primary" ghost icon={<ContainerOutlined />} onClick={() => {
+          <Button type="link" ghost icon={<ContainerOutlined />} onClick={() => {
             articleListService.add(props.article, type)
             setInArticleList(articleListService.has(props.article))
           }}
             key={LangKeys.AddToArticleList}>{langs.get(LangKeys.AddToArticleList)}</Button>,
-        <Button type="primary" ghost danger icon={<CloseOutlined />} onClick={() =>
-          props.articleHandlers.onDelete(props.article.id!)
-        } key="delete">{langs.get(Configs.UiLangsEnum.Delete)}</Button>
+        <Button type="link" ghost icon={<EditOutlined />} onClick={toggleEditing}
+          key="edit">{langs.get(Configs.UiLangsEnum.Modify)}</Button>
+
       ]} </div>) : null)
       }
       {editing ? (
         <>
           <div className="files-list">
             <Button
-              type="primary"
+              type="link"
               onClick={toggleEditing}
               key="endEdit"
               icon={<CheckOutlined />}
             >{langs.get(Configs.UiLangsEnum.Ok)}</Button>,
             <Button
-              type="primary"
+              type="link"
               icon={<UploadOutlined />}
               onClick={() => addFile()}
             >{langs.get(Configs.UiLangsEnum.Import)}</Button>

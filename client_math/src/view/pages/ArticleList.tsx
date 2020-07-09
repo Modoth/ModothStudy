@@ -36,10 +36,10 @@ export default function ArticleList() {
             <div ref={ref} className={classNames(`column-count-${columnCount}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(([article, type]) => <type.Viewer className="article" content={article.content!} files={article.files} type={type}></type.Viewer>)}
             </div>
             <div className="article-list-menus" onClick={e => e.stopPropagation()}>
-                {columnCount !== 1 ? <Button type="primary" shape="circle" icon={<ProfileOutlined />} onClick={() => setColumnCount(1)} /> : null}
-                {columnCount !== 2 ? <Button type="primary" shape="circle" icon={<ReadOutlined />} onClick={() => setColumnCount(2)} /> : null}
-                <Button type="primary" shape="circle" icon={<PrinterOutlined />} onClick={() => window.print()} />
-                <Button type="primary" danger shape="circle" icon={<CloseOutlined />} onClick={close} />
+                {columnCount !== 1 ? <Button type="primary" size="large" shape="circle" icon={<ProfileOutlined />} onClick={() => setColumnCount(1)} /> : null}
+                {columnCount !== 2 ? <Button type="primary" size="large" shape="circle" icon={<ReadOutlined />} onClick={() => setColumnCount(2)} /> : null}
+                <Button type="primary" size="large" shape="circle" icon={<PrinterOutlined />} onClick={() => window.print()} />
+                <Button type="primary" size="large" danger shape="circle" icon={<CloseOutlined />} onClick={close} />
             </div>
         </>
     )
