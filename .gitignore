@@ -43,3 +43,6 @@ build
 wwwroot
 .local.*
 vms
+.vs
+packages
+
