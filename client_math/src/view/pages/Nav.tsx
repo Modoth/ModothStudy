@@ -89,7 +89,7 @@ function Nav() {
           </Menu.Item>
         ) : (
             <Menu.Item icon={<UserOutlined />}>
-              <Link to="/login">{langs.get(Configs.UiLangsEnum.Login)}</Link>
+              <Link to="/login"></Link>
             </Menu.Item>
           )}
       </Menu>
