@@ -29,6 +29,8 @@ namespace ArticlesImporter
 
         public bool IgnoreSslError { get; set; }
 
+        public bool ItalicAsFormula { get; set; }
+
         public void CopyFrom(Config config)
         {
             UserName = config.UserName;
@@ -37,6 +39,7 @@ namespace ArticlesImporter
             TargetSubject = config.TargetSubject;
             HeaderReg = config.HeaderReg;
             IgnoreSslError = config.IgnoreSslError;
+            ItalicAsFormula = config.ItalicAsFormula;
         }
 
         public Config CloneConfig()
@@ -67,6 +70,7 @@ namespace ArticlesImporter
                 PropChangedHandler(nameof(TargetSubject));
                 PropChangedHandler(nameof(HeaderReg));
                 PropChangedHandler(nameof(IgnoreSslError));
+                PropChangedHandler(nameof(ItalicAsFormula));
 
             }
             catch
@@ -108,8 +112,7 @@ namespace ArticlesImporter
             }
             var reg = new Regex(String.IsNullOrWhiteSpace(HeaderReg) ? @"^\d+(、|．)" : HeaderReg);
             var conv = new ArticleConverter();
-
-            Articles = conv.Convert(fIn, reg, UpdateProgress);
+            Articles = conv.Convert(fIn, reg, ItalicAsFormula, UpdateProgress);
             PropChangedHandler(nameof(Articles));
             UpdateProgress(1);
             Running = false;

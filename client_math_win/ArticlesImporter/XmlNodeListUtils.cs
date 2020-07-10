@@ -21,6 +21,12 @@ namespace ArticlesImporter
             return null;
         }
 
+        public static bool Has(this XmlNodeList list, Func<XmlNode, bool> filter)
+        {
+            var node = list.FirstOrDestult(filter);
+            return node != null;
+        }
+
         public static XmlNode FirstOrDefaultChildOfName(this XmlNodeList list, string name)
         {
             return list.FirstOrDestult(n => n.Name == name);

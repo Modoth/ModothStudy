@@ -26,7 +26,7 @@ namespace ArticlesImporter
 			return res;
 		}
 
-		public IEnumerable<Article> Convert(string fIn, Regex speReg, Action<float> onprogress)
+		public IEnumerable<Article> Convert(string fIn, Regex speReg, bool italicAsFormula, Action<float> onprogress)
         {
 			var baseDir = Path.Combine(Path.GetTempPath(), Path.GetFileName(fIn));
 			if (Directory.Exists(baseDir))
@@ -47,7 +47,8 @@ namespace ArticlesImporter
 			var ctx = new ConvertContext
 			{
 				Resoures = LoadResources(baseDir),
-				TempBaseDir = baseDir
+				TempBaseDir = baseDir,
+				ItalicAsFormula = italicAsFormula
 			};
 			var paragraphConv = new ParagraphConverter();
 			float idx = 0;

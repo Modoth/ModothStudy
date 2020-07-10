@@ -51,6 +51,9 @@ namespace ArticlesImporter
                 case nameof(MainController.IgnoreSslError):
                     ckbIgnoreSsl.Checked = m_Controller.IgnoreSslError;
                     break;
+                case nameof(MainController.ItalicAsFormula):
+                    ckbItalicAsFormula.Checked = m_Controller.ItalicAsFormula;
+                    break;
             }
         }
 
@@ -121,6 +124,11 @@ namespace ArticlesImporter
         private void ckbIgnoreSsl_CheckedChanged(object sender, EventArgs e)
         {
             m_Controller.IgnoreSslError = ckbIgnoreSsl.Checked;
+        }
+
+        private void ckbItalicAsFormula_CheckedChanged(object sender, EventArgs e)
+        {
+            m_Controller.ItalicAsFormula = ckbItalicAsFormula.Checked;
         }
     }
 }

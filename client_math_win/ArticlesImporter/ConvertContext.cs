@@ -13,18 +13,22 @@ namespace ArticlesImporter
 
         private StringBuilder sb = null;
         private List<ArticleFile> files = null;
+        private bool lastisItalic = false;
 
         public Dictionary<string, string> Resoures;
 
         public string TempBaseDir;
 
-        public bool Start  { get{ return sb != null; } }
+        public bool ItalicAsFormula { get; set; }
+
+        public bool Start { get { return sb != null; } }
 
         public void NewArticle()
         {
             if (sb != null)
             {
-                foreach(var f in files)
+                FinishLastFormula();
+                foreach (var f in files)
                 {
                     sb.Append($"$$:{f.Name}$$");
                 }
@@ -34,12 +38,31 @@ namespace ArticlesImporter
             files = new List<ArticleFile>();
         }
 
-        public void Insert(string content)
+        private void FinishLastFormula()
+        {
+            if (ItalicAsFormula && lastisItalic)
+            {
+                sb.Append("$");
+                lastisItalic = false;
+            }
+        }
+
+        public void Insert(string content, bool isItalic)
         {
             if (!Start)
             {
                 return;
             }
+            if (ItalicAsFormula)
+            {
+                if (lastisItalic != isItalic)
+                {
+                    sb.Append("$");
+                    lastisItalic = isItalic;
+                }
+
+            }
+
             sb.Append(content);
         }
 
@@ -49,6 +72,7 @@ namespace ArticlesImporter
             {
                 return;
             }
+            FinishLastFormula();
             if (String.IsNullOrWhiteSpace(formula))
             {
                 return;
@@ -64,6 +88,7 @@ namespace ArticlesImporter
             {
                 return;
             }
+            FinishLastFormula();
             files.Add(new ArticleFile { Name = name, Path = path });
         }
     }

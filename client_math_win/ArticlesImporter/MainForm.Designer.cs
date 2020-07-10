@@ -31,6 +31,7 @@
             this.btnOpen = new System.Windows.Forms.Button();
             this.lvwArticles = new System.Windows.Forms.ListView();
             this.pnlMenus = new System.Windows.Forms.Panel();
+            this.ckbIgnoreSsl = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txbReg = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -43,7 +44,7 @@
             this.txbServer = new System.Windows.Forms.TextBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.pgbRunning = new System.Windows.Forms.ProgressBar();
-            this.ckbIgnoreSsl = new System.Windows.Forms.CheckBox();
+            this.ckbItalicAsFormula = new System.Windows.Forms.CheckBox();
             this.pnlMenus.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,6 +74,7 @@
             // 
             this.pnlMenus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.pnlMenus.Controls.Add(this.ckbItalicAsFormula);
             this.pnlMenus.Controls.Add(this.ckbIgnoreSsl);
             this.pnlMenus.Controls.Add(this.label5);
             this.pnlMenus.Controls.Add(this.txbReg);
@@ -91,6 +93,17 @@
             this.pnlMenus.Name = "pnlMenus";
             this.pnlMenus.Size = new System.Drawing.Size(574, 93);
             this.pnlMenus.TabIndex = 2;
+            // 
+            // ckbIgnoreSsl
+            // 
+            this.ckbIgnoreSsl.AutoSize = true;
+            this.ckbIgnoreSsl.Location = new System.Drawing.Point(336, 72);
+            this.ckbIgnoreSsl.Name = "ckbIgnoreSsl";
+            this.ckbIgnoreSsl.Size = new System.Drawing.Size(109, 27);
+            this.ckbIgnoreSsl.TabIndex = 14;
+            this.ckbIgnoreSsl.Text = "忽略证书错误";
+            this.ckbIgnoreSsl.UseVisualStyleBackColor = true;
+            this.ckbIgnoreSsl.CheckedChanged += new System.EventHandler(this.ckbIgnoreSsl_CheckedChanged);
             // 
             // label5
             // 
@@ -208,16 +221,16 @@
             this.pgbRunning.Size = new System.Drawing.Size(574, 21);
             this.pgbRunning.TabIndex = 3;
             // 
-            // ckbIgnoreSsl
+            // ckbItalicAsFormula
             // 
-            this.ckbIgnoreSsl.AutoSize = true;
-            this.ckbIgnoreSsl.Location = new System.Drawing.Point(336, 72);
-            this.ckbIgnoreSsl.Name = "ckbIgnoreSsl";
-            this.ckbIgnoreSsl.Size = new System.Drawing.Size(145, 27);
-            this.ckbIgnoreSsl.TabIndex = 14;
-            this.ckbIgnoreSsl.Text = "高级(忽略证书错误)";
-            this.ckbIgnoreSsl.UseVisualStyleBackColor = true;
-            this.ckbIgnoreSsl.CheckedChanged += new System.EventHandler(this.ckbIgnoreSsl_CheckedChanged);
+            this.ckbItalicAsFormula.AutoSize = true;
+            this.ckbItalicAsFormula.Location = new System.Drawing.Point(459, 72);
+            this.ckbItalicAsFormula.Name = "ckbItalicAsFormula";
+            this.ckbItalicAsFormula.Size = new System.Drawing.Size(109, 27);
+            this.ckbItalicAsFormula.TabIndex = 15;
+            this.ckbItalicAsFormula.Text = "斜体作为公式";
+            this.ckbItalicAsFormula.UseVisualStyleBackColor = true;
+            this.ckbItalicAsFormula.CheckedChanged += new System.EventHandler(this.ckbItalicAsFormula_CheckedChanged);
             // 
             // MainForm
             // 
@@ -258,6 +271,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txbReg;
         private System.Windows.Forms.CheckBox ckbIgnoreSsl;
+        private System.Windows.Forms.CheckBox ckbItalicAsFormula;
     }
 }
 

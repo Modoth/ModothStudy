@@ -13,7 +13,13 @@ namespace ArticlesImporter.SliceConverters
         public bool Convert(XmlNode node, ConvertContext ctx)
         {
             var content = node.LastChild.InnerText;
-            ctx.Insert(content);
+            var rPr = node.ChildNodes.FirstOrDefaultChildOfName("w:rPr");
+            var isItalic = false;
+            if (rPr != null && rPr.ChildNodes != null)
+            {
+                isItalic = rPr.ChildNodes.Has(n => n.Name == "w:i" || n.Name == "w:iCs");
+            }
+            ctx.Insert(content, isItalic);
             return true;
         }
 
