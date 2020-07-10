@@ -1,3 +1,19 @@
+.side-nav-panel {
+  .side-nav {
+    border: none;
+    background: transparent;
+  }
+
+  .ant-drawer-content {
+    background-color: #fffffff0 !important;
+    backdrop-filter: blur(5px) !important;
+  }
+
+  .ant-drawer-body {
+    padding: 0;
+  }
+}
+
 .nav {
   display: flex;
   user-select: none;
@@ -6,17 +22,17 @@
   background: #fffe;
   padding: 2px 0;
 
+  & .nav-home {
+    flex: 1;
+    text-align: center;
+  }
+
   & .ant-menu-item {
     border-bottom: unset !important;
   }
 
-  &>.menu-item-devider {
-    flex: 1;
-    padding: 0;
-  }
-
   & .avatar {
-    border-radius: 10px;
+    border-radius: 100%;
     border-width: 1px;
     padding: 1px;
     border-style: solid;
