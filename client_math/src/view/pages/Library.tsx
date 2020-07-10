@@ -25,6 +25,9 @@ import Article, { articleFromNodeItem } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
 import { useParams } from 'react-router-dom'
+import ITagsService, { TagNames } from '../../domain/ITagsService'
+import { generateRandomStyle } from './common'
+import classNames from 'classnames'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -76,11 +79,6 @@ export class ArticleTag {
   value?: string;
 }
 
-const TagNames = {
-  ArticleTagsSurfix: '标签',
-  TypeTag: '类型'
-}
-
 const getTagEnums = (values?: string) => {
   return values
     ? values
@@ -128,9 +126,8 @@ export default function Library(props: LibraryProps) {
   const [tags, setTags] = useState<ArticleTag[]>([])
   const [nodeTags, setNodeTags] = useState(new Map<string, NodeTag>())
   const fetchTags = async () => {
-    const allTags = (
-      await rewindRun(() => new TagsApi(ApiConfiguration).allTags())!
-    )?.data!
+    const tagsService = locator.locate(ITagsService)
+    const allTags = await tagsService.all()
     const tagsDict = new Map(allTags.map((n) => [n.name!, n]))
     const typeTag = tagsDict.get(TagNames.TypeTag)
     if (typeTag) {
@@ -386,7 +383,7 @@ export default function Library(props: LibraryProps) {
           </Button>
         ) : null}
       </div>
-      <Drawer closable={false} className="filter-panel" height="80%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
+      <Drawer closable={false} className={classNames(generateRandomStyle(), "filter-panel")} height="80%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
         <Space className="filters" direction="vertical">
           <TreeSelect
             multiple

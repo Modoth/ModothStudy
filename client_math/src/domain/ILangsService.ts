@@ -2,6 +2,7 @@ import { Configs } from '../apis'
 
 export enum LangKeys {
   AddToArticleList = <any>'AddToArticleList',
+  Latest = <any>'Latest',
   RemoveFromArticleList = <any>'RemoveFromArticleList',
 }
 

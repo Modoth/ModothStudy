@@ -10,8 +10,9 @@ import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import YAML from 'yaml'
 import ApiConfiguration from '../../common/ApiConfiguration'
+import ITagsService from '../../domain/ITagsService'
 
-export function ManageTags () {
+export function ManageTags() {
   const user = useUser()
   if (!user || !user.managePermission) {
     return <Redirect to="/login" />
@@ -62,6 +63,7 @@ export function ManageTags () {
             new TagsApi(ApiConfiguration).addTag(newTagName, 'Enum', newTagValue)
           )
           setTags([...tags!, newTag!])
+          locator.locate(ITagsService).clearCache()
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -87,6 +89,7 @@ export function ManageTags () {
           )
           tag!.values = values
           setTags([...tags!])
+          locator.locate(ITagsService).clearCache()
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -105,6 +108,7 @@ export function ManageTags () {
           const idx = tags!.indexOf(tag)
           tags!.splice(idx, 1)
           setTags([...tags!])
+          locator.locate(ITagsService).clearCache()
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -121,7 +125,7 @@ export function ManageTags () {
         if (!data) {
           return false
         }
-        let toImports:{name:string, values:string}[] = []
+        let toImports: { name: string, values: string }[] = []
         try {
           const toTag = (y: any) => {
             const s: any = {}

@@ -1,4 +1,6 @@
 import ILangsService from '../../domain/ILangsService'
+import { ArticleContentType } from '../../plugins/IPluginInfo'
+import Article from '../../domain/Article'
 
 export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'File' | 'Image' | 'TextFile' | 'Video'> {
   type: TType;
@@ -30,6 +32,10 @@ export default class IViewService {
   }
 
   previewArticleList(visiable: boolean): void {
+    throw new Error('Method not implemented.')
+  }
+
+  previewArticle(article?: Article, type?: ArticleContentType): void {
     throw new Error('Method not implemented.')
   }
 }

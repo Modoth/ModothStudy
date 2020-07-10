@@ -1,5 +1,6 @@
 import { ArticleFile, ArticleContent } from '../domain/Article'
 import { TagItem } from '../apis'
+import { MouseEventHandler } from 'react'
 
 export interface ArticleType {
   route: string;
@@ -28,6 +29,8 @@ export class ArticleContentViewerProps {
   tags?: TagItem[]
   type?: ArticleContentType
   className?: string
+  onClick?: MouseEventHandler<any>;
+  showHiddens?: boolean;
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {

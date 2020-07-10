@@ -13,9 +13,16 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
 export default function ProblemViewer(props: ArticleContentViewerProps) {
   const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
   const [sections] = useState((getSections(props.type?.allSections!, props.content!.sections!)))
-  const [showHidden, setShowHidden] = useState(false)
+  const [showHidden, setShowHidden] = useState(props.showHiddens == true)
   return (
-    <div className={classNames(props.className, props.type?.name, "problem-viewer")} onClick={() => setShowHidden(!showHidden)}>
+    <div className={classNames(props.className, props.type?.name, "problem-viewer")} onClick={(e) => {
+      if (props.onClick) {
+        props.onClick(e)
+      } else {
+        setShowHidden(!showHidden)
+      }
+    }
+    }>
       {sections.filter(s => s.content && s.content.match(/\S/)).filter(s => showHidden || !props.type?.hidenSections.has(s.name!)).map((section) => (
         <SectionViewer key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
       ))}

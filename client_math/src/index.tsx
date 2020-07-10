@@ -18,6 +18,9 @@ import { MathPluginInfo } from './plugins/math'
 import { FileApiService, IFileApiService } from './domain/FileApiService'
 import IArticleListService, { ArticleListSingletonService } from './domain/IArticleListService'
 import Langs from './view/Langs'
+import ITextImageService, { TextImageServiceSingleton } from './view/services/ITextImageService'
+import ITagsService, { TagsServiceSingleton } from './domain/ITagsService'
+import IArticleViewServie, { ArticleViewServieSingleton } from './view/services/IArticleViewService'
 
 const buildServicesLocator = () => {
   const serviceLocator = new ServicesLocator()
@@ -26,6 +29,9 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(ILoginService, new LoginService())
   serviceLocator.registerInstance(ILangsService, new LangsService())
   serviceLocator.registerInstance(IArticleListService, new ArticleListSingletonService())
+  serviceLocator.registerInstance(ITextImageService, new TextImageServiceSingleton())
+  serviceLocator.registerInstance(ITagsService, new TagsServiceSingleton())
+  serviceLocator.registerInstance(IArticleViewServie, new ArticleViewServieSingleton())
   serviceLocator.register(ISubjectsService, SubjectsService)
   serviceLocator.register(IFileApiService, FileApiService)
 

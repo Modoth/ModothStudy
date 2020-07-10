@@ -5,6 +5,9 @@ import IViewService, { IPromptField } from '../services/IViewService'
 import ILangsService from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
 import ArticleList from './ArticleList'
+import ArticleSingle from './ArticleSingle'
+import { ArticleContentType } from '../../plugins/IPluginInfo'
+import Article from '../../domain/Article'
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
@@ -15,7 +18,7 @@ class ViewService implements IViewService {
     message.error(msg, timeout / 1000)
   }
 
-  constructor(public setLoading: any, public prompt: any, public previewImage: any, public previewArticleList: any) { }
+  constructor(public setLoading: any, public prompt: any, public previewImage: any, public previewArticleList: any, public previewArticle: any) { }
 
 }
 
@@ -39,6 +42,7 @@ export default function ServiceView(props: {
   const [previewImgUrl, setPreviewImgUrl] = useState('')
 
   const [previewArticleList, setPreviewArticleList] = useState(false)
+  const [previewArticle, setPreviewArticle] = useState<{ article: Article, type: ArticleContentType } | undefined>(undefined)
 
   const updateField = (
     i: number,
@@ -184,6 +188,16 @@ export default function ServiceView(props: {
       }
       props.setContentVisiable(!visiable)
       setPreviewArticleList(visiable)
+    },
+    (article: Article, type: ArticleContentType): void => {
+      if (article) {
+        props.setContentVisiable(false)
+        setPreviewArticle({ article, type })
+      }
+      else {
+        props.setContentVisiable(true)
+        setPreviewArticle(undefined)
+      }
     }
   )
   props.provide && props.provide(viewService)
@@ -261,6 +275,9 @@ export default function ServiceView(props: {
       }
       {
         previewArticleList ? <ArticleList></ArticleList> : null
+      }
+      {
+        previewArticle ? <ArticleSingle {...previewArticle}></ArticleSingle> : null
       }
     </>
   )

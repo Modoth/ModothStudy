@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Nav.less'
 import { Link } from 'react-router-dom'
 import { useUser, useServicesLocator } from '../../app/Contexts'
@@ -15,16 +15,31 @@ import {
 } from '@ant-design/icons'
 import ILangsService from '../../domain/ILangsService'
 import IPluginInfo from '../../plugins/IPluginInfo'
+import { generateRandomStyle } from './common'
+import classNames from 'classnames'
+import ITagsService, { TagNames } from '../../domain/ITagsService'
 const { SubMenu } = Menu
-function Nav () {
+function Nav() {
   const locator = useServicesLocator()
   const plugin = locator.locate(IPluginInfo)
   const langs = locator.locate(ILangsService)
+  const [title,setTitile] = useState(langs.get(Configs.UiLangsEnum.Home))
   const user = useUser()
+  const fetchTitle = async () => {
+    var titles = await locator.locate(ITagsService).getValues(TagNames.TitleTag)
+    if (!titles.length) {
+      return
+    }
+    var title = titles[Math.floor(Math.random() * titles.length)]
+    setTitile(title)
+  }
+  useEffect(() => {
+    fetchTitle()
+  }, [])
   return (
-    <Menu mode="horizontal" className="nav">
+    <Menu mode="horizontal" className={classNames("nav", generateRandomStyle())}>
       <Menu.Item icon={<HomeOutlined />}>
-        <Link to="/">{langs.get(Configs.UiLangsEnum.Home)}</Link>
+        <Link to="/">{title}</Link>
       </Menu.Item>
       {
         plugin.types.map(t => <Menu.Item key={t.route} icon={t.icon}>
@@ -65,10 +80,10 @@ function Nav () {
           <Link to="/account"></Link>
         </Menu.Item>
       ) : (
-        <Menu.Item icon={<UserOutlined />}>
-          <Link to="/login">{langs.get(Configs.UiLangsEnum.Login)}</Link>
-        </Menu.Item>
-      )}
+          <Menu.Item icon={<UserOutlined />}>
+            <Link to="/login">{langs.get(Configs.UiLangsEnum.Login)}</Link>
+          </Menu.Item>
+        )}
     </Menu>
   )
 }

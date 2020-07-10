@@ -1,5 +1,6 @@
 .article-file {
   position: relative;
+
   & .btn-delete {
     position: absolute;
     right: -10px;
@@ -10,9 +11,14 @@
     // font-size: 1px;
   }
 
-  & img, & video{
-      max-width: 100%;
-      margin: 0 auto;
-      display: block;
+  & img,
+  & video {
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+  }
+
+  & img {
+    mix-blend-mode: multiply;
   }
 }

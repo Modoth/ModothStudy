@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   ArticleType,
   ArticleContentEditorCallbacks,
-  ArticleContentType
 } from '../../plugins/IPluginInfo'
 import Article, { ArticleFile, ArticleContent } from '../../domain/Article'
 import { NodesApi, Configs, NodeTag } from '../../apis'
@@ -27,49 +26,10 @@ import './ArticleView.less'
 import IArticleListService from '../../domain/IArticleListService'
 import classNames from 'classnames'
 import { generateRandomStyle } from './common'
+import { TagNames } from '../../domain/ITagsService'
+import IArticleViewServie from '../services/IArticleViewService'
 
 const { Option } = Select
-
-const TagNames = {
-  SubTypeSurfix: '子类',
-  ArticleSectionSurfix: '章节',
-  HidenSectionPrefix: '_'
-}
-
-const typesCaches = new Map<string, any>()
-const getArticleTypeName = (baseType: string, tagsDict?: Map<string, NodeTag>) => {
-  if (!tagsDict) {
-    return baseType
-  }
-  const subType = tagsDict.get(baseType + TagNames.SubTypeSurfix)
-  if (!subType) {
-    return baseType
-  }
-  return subType.value || baseType
-}
-
-const getArticleType = (viewer: any, baseType: string, tagsDict?: Map<string, NodeTag>, nodeTags?: Map<string, NodeTag>) => {
-  const typeName = getArticleTypeName(baseType, tagsDict)
-  if (typesCaches.has(typeName)) {
-    return typesCaches.get(typeName)
-  }
-  let type: ArticleContentType = { Viewer: viewer, name: typeName, hidenSections: new Set<string>(), allSections: new Set<string>() }
-  if (nodeTags) {
-    let sectionsTag = nodeTags.get(typeName + TagNames.ArticleSectionSurfix) || nodeTags.get(baseType + TagNames.ArticleSectionSurfix)
-    if (sectionsTag) {
-      const allsections = sectionsTag.values?.split(' ').map(s => s.trim()).filter(s => s) || []
-      for (let s of allsections) {
-        if (s.startsWith(TagNames.HidenSectionPrefix)) {
-          s = s.slice(TagNames.HidenSectionPrefix.length)
-          type.hidenSections.add(s)
-        }
-        type.allSections.add(s)
-      }
-    }
-  }
-  typesCaches.set(typeName, type)
-  return type
-}
 
 const generateNewFileNames = (name: string, existedName: Set<string>) => {
   while (existedName.has(name)) {
@@ -104,7 +64,7 @@ export default function ArticleView(props: {
   const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
     {} as any
   )
-  const [type, setType] = useState(getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
+  const [type, setType] = useState(locator.locate(IArticleViewServie).getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
 
@@ -240,7 +200,7 @@ export default function ArticleView(props: {
       }
       tagsDict?.set(newTag.name!, newTag)
       if (newTag.name === props.type.name + TagNames.SubTypeSurfix) {
-        setType(getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
+        setType(locator.locate(IArticleViewServie).getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -255,9 +215,9 @@ export default function ArticleView(props: {
   //   // const imgUrl = canvas.toDataURL('image/png')
   //   const imgUrl = await htmlToImage.toPng(ref.current)
   //   viewService.previewImage(imgUrl)
-  // }generateRandomStyle(),
+  // } 
   return (
-    <Card className={classNames("article-view")}>
+    <Card className={classNames(generateRandomStyle(), "article-view")}>
       <div ref={ref} className="article-body">
         {editing ? (
           <props.type.Editor
@@ -268,7 +228,9 @@ export default function ArticleView(props: {
             type={type}
           />
         ) : (
-            <props.type.Viewer content={content} files={files} type={type} />
+            <props.type.Viewer content={content} files={files} type={type} onClick={() => {
+              locator.locate(IViewService).previewArticle({ content, files }, type)
+            }} />
           )}
       </div>
       {editing ? (<div className="actions-tags-list">{[
