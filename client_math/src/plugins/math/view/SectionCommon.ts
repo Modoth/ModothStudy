@@ -37,10 +37,8 @@ export const getSlices = (section: string, files?: Map<string, ArticleFile>): Ar
             }
         } else if (content.startsWith(FILE_PREFIX)) {
             const fileKey = content.slice(FILE_PREFIX.length)
-            const file = files && files.get(fileKey)
-            if (file) {
-                slices.push(new ArticleSlice(type, new SliceFile(file), start, end))
-            }
+            const file = files && files.get(fileKey) || { name: fileKey }
+            slices.push(new ArticleSlice(type, new SliceFile(file), start, end))
         } else {
             slices.push(new ArticleSlice(type, content, start, end))
         }

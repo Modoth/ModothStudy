@@ -52,6 +52,10 @@ interface Formula {
 const getFormulaAtPos = (content: string, pos: number): Formula | undefined => {
     var slices = getSlices(content)
     var slice = slices.find(s => s.end >= pos)
+    console.log(slices);
+    console.log(slice);
+    console.log(pos);
+    (window as any).slice = slice;
     if (!slice || slice.type === SliceType.Normal) {
         return { start: pos, end: pos, content: '', newFormula: true }
     }
@@ -144,10 +148,13 @@ export default function SectionEditor(props: {
                 return
             }
             const textArea = refs.textArea!
-            textArea.setSelectionRange(formula.start, formula.start + formula.end)
+            textArea.setSelectionRange(formula.start, formula.start + (formula.content.length || 0))
             textArea.focus()
         }
         const newFormula = (await props.formulaEditor!.edit(formula.content)) || ' '
+        if(formula.newFormula && (!newFormula || !newFormula.trim())){
+            return;
+        } 
         setContent(content.slice(0, formula.start) + (formula.newFormula ? `$${newFormula}$` : newFormula) + content.slice(formula.end))
         setTimeout(() => {
             if (!refs.textArea) {
@@ -155,7 +162,7 @@ export default function SectionEditor(props: {
             }
             const textArea = refs.textArea!
             const start = formula.newFormula ? formula.start + 1 : formula.start;
-            textArea.setSelectionRange(start, start + newFormula.length)
+            textArea.setSelectionRange(start, start + (newFormula?.length || 0))
             textArea.focus()
         }, 0);
     }
