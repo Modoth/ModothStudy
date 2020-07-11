@@ -66,7 +66,7 @@ namespace ArticlesImporter.Bounds
                     return origin;
                 }
                 var process = new Process();
-                process.StartInfo = new ProcessStartInfo(editorPath, $"-new {randomFile}");
+                process.StartInfo = new ProcessStartInfo(editorPath, $"{randomFile}");
                 process.Start();
                 editTask_ = new TaskCompletionSource<bool>();
                 using (FileSystemWatcher watcher = new FileSystemWatcher())

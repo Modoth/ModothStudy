@@ -52,6 +52,7 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.label6 = new System.Windows.Forms.Label();
             this.btnFormulaEditorPath = new System.Windows.Forms.Button();
+            this.ckbCleanNext = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -77,16 +78,15 @@
             this.lvwArticles.Location = new System.Drawing.Point(8, 196);
             this.lvwArticles.Margin = new System.Windows.Forms.Padding(4);
             this.lvwArticles.Name = "lvwArticles";
-            this.lvwArticles.Size = new System.Drawing.Size(1116, 556);
+            this.lvwArticles.Size = new System.Drawing.Size(1116, 552);
             this.lvwArticles.TabIndex = 1;
             this.lvwArticles.UseCompatibleStateImageBehavior = false;
             this.lvwArticles.View = System.Windows.Forms.View.Details;
             // 
             // ckbItalicAsFormula
             // 
-            this.ckbItalicAsFormula.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ckbItalicAsFormula.AutoSize = true;
-            this.ckbItalicAsFormula.Location = new System.Drawing.Point(662, 92);
+            this.ckbItalicAsFormula.Location = new System.Drawing.Point(170, 93);
             this.ckbItalicAsFormula.Margin = new System.Windows.Forms.Padding(6);
             this.ckbItalicAsFormula.Name = "ckbItalicAsFormula";
             this.ckbItalicAsFormula.Size = new System.Drawing.Size(186, 28);
@@ -98,7 +98,7 @@
             // ckbIgnoreSsl
             // 
             this.ckbIgnoreSsl.AutoSize = true;
-            this.ckbIgnoreSsl.Location = new System.Drawing.Point(170, 92);
+            this.ckbIgnoreSsl.Location = new System.Drawing.Point(28, 214);
             this.ckbIgnoreSsl.Margin = new System.Windows.Forms.Padding(6);
             this.ckbIgnoreSsl.Name = "ckbIgnoreSsl";
             this.ckbIgnoreSsl.Size = new System.Drawing.Size(186, 28);
@@ -236,16 +236,17 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl1.Name = "tabControl1";
+            this.tabControl1.Padding = new System.Drawing.Point(0, 0);
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1174, 828);
             this.tabControl1.TabIndex = 17;
             // 
             // tbpEdit
             // 
-            this.tbpEdit.Location = new System.Drawing.Point(8, 39);
+            this.tbpEdit.Location = new System.Drawing.Point(8, 43);
             this.tbpEdit.Margin = new System.Windows.Forms.Padding(0);
             this.tbpEdit.Name = "tbpEdit";
-            this.tbpEdit.Size = new System.Drawing.Size(1158, 781);
+            this.tbpEdit.Size = new System.Drawing.Size(1158, 777);
             this.tbpEdit.TabIndex = 0;
             this.tbpEdit.Text = "编辑";
             this.tbpEdit.UseVisualStyleBackColor = true;
@@ -254,7 +255,6 @@
             // 
             this.tabPage2.Controls.Add(this.ckbItalicAsFormula);
             this.tabPage2.Controls.Add(this.lvwArticles);
-            this.tabPage2.Controls.Add(this.ckbIgnoreSsl);
             this.tabPage2.Controls.Add(this.pgbRunning);
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.txbReg);
@@ -262,18 +262,20 @@
             this.tabPage2.Controls.Add(this.txbSubject);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.btnUpload);
-            this.tabPage2.Location = new System.Drawing.Point(8, 39);
+            this.tabPage2.Location = new System.Drawing.Point(8, 43);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage2.Size = new System.Drawing.Size(1158, 781);
+            this.tabPage2.Size = new System.Drawing.Size(1158, 777);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "导入";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.ckbCleanNext);
             this.tabPage3.Controls.Add(this.btnFormulaEditorPath);
+            this.tabPage3.Controls.Add(this.ckbIgnoreSsl);
             this.tabPage3.Controls.Add(this.label6);
             this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.txbServer);
@@ -281,10 +283,10 @@
             this.tabPage3.Controls.Add(this.txbUserName);
             this.tabPage3.Controls.Add(this.label3);
             this.tabPage3.Controls.Add(this.txbPassword);
-            this.tabPage3.Location = new System.Drawing.Point(8, 39);
+            this.tabPage3.Location = new System.Drawing.Point(8, 43);
             this.tabPage3.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1158, 781);
+            this.tabPage3.Size = new System.Drawing.Size(1158, 777);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "配置";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -292,7 +294,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(24, 220);
+            this.label6.Location = new System.Drawing.Point(24, 348);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(178, 24);
@@ -303,12 +305,24 @@
             // 
             this.btnFormulaEditorPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFormulaEditorPath.Location = new System.Drawing.Point(249, 213);
+            this.btnFormulaEditorPath.Location = new System.Drawing.Point(249, 341);
             this.btnFormulaEditorPath.Name = "btnFormulaEditorPath";
             this.btnFormulaEditorPath.Size = new System.Drawing.Size(905, 39);
             this.btnFormulaEditorPath.TabIndex = 12;
             this.btnFormulaEditorPath.UseVisualStyleBackColor = true;
             this.btnFormulaEditorPath.Click += new System.EventHandler(this.btnFormulaEditorPath_Click);
+            // 
+            // ckbCleanNext
+            // 
+            this.ckbCleanNext.AutoSize = true;
+            this.ckbCleanNext.Location = new System.Drawing.Point(28, 275);
+            this.ckbCleanNext.Margin = new System.Windows.Forms.Padding(6);
+            this.ckbCleanNext.Name = "ckbCleanNext";
+            this.ckbCleanNext.Size = new System.Drawing.Size(186, 28);
+            this.ckbCleanNext.TabIndex = 16;
+            this.ckbCleanNext.Text = "使用上次缓存";
+            this.ckbCleanNext.UseVisualStyleBackColor = true;
+            this.ckbCleanNext.CheckedChanged += new System.EventHandler(this.ckbCleanNext_CheckedChanged);
             // 
             // MainForm
             // 
@@ -356,6 +370,7 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnFormulaEditorPath;
+        private System.Windows.Forms.CheckBox ckbCleanNext;
     }
 }
 

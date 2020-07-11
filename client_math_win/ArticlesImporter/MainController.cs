@@ -31,6 +31,8 @@ namespace ArticlesImporter
 
         public bool ItalicAsFormula { get; set; }
 
+        public bool UseCache { get; set; }
+
         public string FormulaEditorPath { get; set; }
 
         public void CopyFrom(Config config)
@@ -43,6 +45,7 @@ namespace ArticlesImporter
             IgnoreSslError = config.IgnoreSslError;
             ItalicAsFormula = config.ItalicAsFormula;
             FormulaEditorPath = config.FormulaEditorPath;
+            UseCache = config.UseCache;
         }
 
         public Config CloneConfig()
@@ -75,6 +78,7 @@ namespace ArticlesImporter
                 PropChangedHandler(nameof(IgnoreSslError));
                 PropChangedHandler(nameof(ItalicAsFormula));
                 PropChangedHandler(nameof(FormulaEditorPath));
+                PropChangedHandler(nameof(UseCache));
             }
             catch
             {

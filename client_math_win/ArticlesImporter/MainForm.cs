@@ -64,6 +64,9 @@ namespace ArticlesImporter
                 case nameof(MainController.FormulaEditorPath):
                     btnFormulaEditorPath.Text = m_Controller.FormulaEditorPath;
                     break;
+                case nameof(MainController.UseCache):
+                    ckbCleanNext.Checked = m_Controller.UseCache;
+                    break;
 
             }
         }
@@ -181,6 +184,12 @@ namespace ArticlesImporter
                 btnFormulaEditorPath.Text = m_Controller.FormulaEditorPath;
                 m_Controller.SaveConfig();
             }
+        }
+
+        private void ckbCleanNext_CheckedChanged(object sender, EventArgs e)
+        {
+            m_Controller.UseCache = ckbCleanNext.Checked;
+            m_Controller.SaveConfig();
         }
     }
 }

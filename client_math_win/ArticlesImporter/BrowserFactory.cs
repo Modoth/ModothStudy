@@ -1,5 +1,6 @@
 ﻿using ArticlesImporter.Bounds;
 using CefSharp;
+using CefSharp.Handler;
 using CefSharp.WinForms;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,24 @@ namespace ArticlesImporter
 {
     public static class BrowserFactory
     {
+        private static string GetCachePath()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CefSharp", "Cache"); 
+        }
+
         public static ChromiumWebBrowser create(Form form, MainController controller, string url)
         {
+            var cachePath = GetCachePath();
+            if (!controller.UseCache && Directory.Exists(cachePath))
+            {
+                Directory.Delete(cachePath, true);
+            }
             var settings = new CefSettings();
-            settings.CachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CefSharp", "Cache");
+            settings.CachePath = cachePath;
+            if (controller.IgnoreSslError)
+            {
+                settings.CefCommandLineArgs.Add("ignore-certificate-errors", string.Empty);
+            }
             CefSharpSettings.LegacyJavascriptBindingEnabled = true;
             CefSharpSettings.ConcurrentTaskExecution = true;
             Cef.Initialize(settings);
