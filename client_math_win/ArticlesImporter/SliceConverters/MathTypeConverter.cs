@@ -27,10 +27,6 @@ namespace ArticlesImporter.SliceConverters
             {
                 return false;
             }
-            latex= latex.Replace("\r\n<math>", "");
-            latex = latex.Replace("</math>\r\n", "");
-            latex = latex.Replace("<math>", "");
-            latex = latex.Replace("</math>", "");
             ctx.InsertFormula(latex);
             return true;
         }

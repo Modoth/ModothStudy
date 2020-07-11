@@ -1,12 +1,18 @@
-﻿using System;
+﻿using ArticlesImporter.Bounds;
+using ArticlesImporter.Converts;
+using CefSharp;
+using CefSharp.WinForms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace ArticlesImporter
 {
@@ -35,6 +41,7 @@ namespace ArticlesImporter
                     break;
                 case nameof(MainController.BasePath):
                     txbServer.Text = m_Controller.BasePath;
+                    RefreshEditing();
                     break;
                 case nameof(MainController.UserName):
                     txbUserName.Text = m_Controller.UserName;
@@ -54,6 +61,27 @@ namespace ArticlesImporter
                 case nameof(MainController.ItalicAsFormula):
                     ckbItalicAsFormula.Checked = m_Controller.ItalicAsFormula;
                     break;
+                case nameof(MainController.FormulaEditorPath):
+                    btnFormulaEditorPath.Text = m_Controller.FormulaEditorPath;
+                    break;
+
+            }
+        }
+
+        private void RefreshEditing()
+        {
+            var url = string.IsNullOrEmpty(m_Controller.BasePath) ? "about://blank" : m_Controller.BasePath;
+            if (browser == null)
+            {
+                browser = BrowserFactory.create(this, m_Controller, url);
+                tbpEdit.Controls.Add(browser);
+                browser.Dock = DockStyle.Fill;
+                browser.Margin = new Padding(0, 0, 0, 0);
+                browser.Padding = new Padding(0, 0, 0, 0);
+            }
+            else
+            {
+                browser.Load(url);
             }
         }
 
@@ -84,11 +112,14 @@ namespace ArticlesImporter
             this.m_Controller.Import();
         }
 
+        private ChromiumWebBrowser browser;
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             lvwArticles.Columns.Add("");
             lvwArticles.Columns.Add("内容");
             m_Controller.Init();
+
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
@@ -99,36 +130,57 @@ namespace ArticlesImporter
         private void txbServer_TextChanged(object sender, EventArgs e)
         {
             m_Controller.BasePath = txbServer.Text;
+            m_Controller.SaveConfig();
+            RefreshEditing();
         }
 
         private void txbUserName_TextChanged(object sender, EventArgs e)
         {
             m_Controller.UserName = txbUserName.Text;
+            m_Controller.SaveConfig();
         }
 
         private void txbSubject_TextChanged(object sender, EventArgs e)
         {
             m_Controller.TargetSubject = txbSubject.Text;
+            m_Controller.SaveConfig();
         }
 
         private void txbPassword_TextChanged(object sender, EventArgs e)
         {
             m_Controller.Password = txbPassword.Text;
+            m_Controller.SaveConfig();
         }
 
         private void txbReg_TextChanged(object sender, EventArgs e)
         {
             m_Controller.HeaderReg = txbReg.Text;
+            m_Controller.SaveConfig();
         }
 
         private void ckbIgnoreSsl_CheckedChanged(object sender, EventArgs e)
         {
             m_Controller.IgnoreSslError = ckbIgnoreSsl.Checked;
+            m_Controller.SaveConfig();
         }
 
         private void ckbItalicAsFormula_CheckedChanged(object sender, EventArgs e)
         {
             m_Controller.ItalicAsFormula = ckbItalicAsFormula.Checked;
+            m_Controller.SaveConfig();
+        }
+
+        private void btnFormulaEditorPath_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "可执行程序(*.exe)|*.exe";
+            var res = dialog.ShowDialog();
+            if((res == DialogResult.OK || res == DialogResult.Yes )&& dialog.FileName != null && File.Exists(dialog.FileName))
+            {
+                m_Controller.FormulaEditorPath = dialog.FileName;
+                btnFormulaEditorPath.Text = m_Controller.FormulaEditorPath;
+                m_Controller.SaveConfig();
+            }
         }
     }
 }

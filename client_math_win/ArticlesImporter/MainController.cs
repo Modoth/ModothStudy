@@ -31,6 +31,8 @@ namespace ArticlesImporter
 
         public bool ItalicAsFormula { get; set; }
 
+        public string FormulaEditorPath { get; set; }
+
         public void CopyFrom(Config config)
         {
             UserName = config.UserName;
@@ -40,6 +42,7 @@ namespace ArticlesImporter
             HeaderReg = config.HeaderReg;
             IgnoreSslError = config.IgnoreSslError;
             ItalicAsFormula = config.ItalicAsFormula;
+            FormulaEditorPath = config.FormulaEditorPath;
         }
 
         public Config CloneConfig()
@@ -71,7 +74,7 @@ namespace ArticlesImporter
                 PropChangedHandler(nameof(HeaderReg));
                 PropChangedHandler(nameof(IgnoreSslError));
                 PropChangedHandler(nameof(ItalicAsFormula));
-
+                PropChangedHandler(nameof(FormulaEditorPath));
             }
             catch
             {
@@ -79,7 +82,7 @@ namespace ArticlesImporter
             }
         }
 
-        private void SaveConfig()
+        public void SaveConfig()
         {
             try
             {
