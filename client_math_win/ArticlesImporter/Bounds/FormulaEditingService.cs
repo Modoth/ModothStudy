@@ -50,7 +50,7 @@ namespace ArticlesImporter.Bounds
                 {
                     try
                     {
-                        if (!conv.ConvertTo(randomFile, $"\r\n<math>{origin}</math>\r\n"))
+                        if (!conv.ConvertTo(randomFile, $"\r\n<math>{origin??""}</math>\r\n"))
                         {
                             failed = true;
                         }

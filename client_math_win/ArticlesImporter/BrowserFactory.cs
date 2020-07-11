@@ -3,6 +3,7 @@ using CefSharp;
 using CefSharp.WinForms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace ArticlesImporter
         public static ChromiumWebBrowser create(Form form, MainController controller, string url)
         {
             var settings = new CefSettings();
+            settings.CachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CefSharp", "Cache");
             CefSharpSettings.LegacyJavascriptBindingEnabled = true;
             CefSharpSettings.ConcurrentTaskExecution = true;
             Cef.Initialize(settings);

@@ -36,9 +36,10 @@ namespace ArticlesImporter.Converts
 
         public bool ConvertTo(string fOut, string formula)
         {
-            Clipboard.SetText(formula,TextDataFormat.UnicodeText);
+            var fIn = fOut + ".in";
+            File.WriteAllText(fIn, formula);
             ConvertEquation ce = new ConvertEquation();
-            return ce.Convert(new EquationInputClipboardText(ClipboardFormats.cfTeX),
+            return ce.Convert(new EquationInputFileText(fIn, ClipboardFormats.cfTeX),
                        new EquationOutputFileWMF(fOut));
         }
     }
