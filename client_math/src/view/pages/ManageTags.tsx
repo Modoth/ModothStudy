@@ -231,6 +231,7 @@ export function ManageTags() {
           onChange={(page) => fetchTags(page)}
           pageSize={countPerPage}
           total={totalCount}
+          showSizeChanger={false}
         ></Pagination>
       ) : null}
     </div>

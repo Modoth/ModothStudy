@@ -365,6 +365,7 @@ export default function Library(props: LibraryProps) {
               pageSize={countPerPage}
               current={currentPage}
               total={totalCount}
+              showSizeChanger={false}
             ></Pagination>
             <div ref={bottomRef}></div>
           </>

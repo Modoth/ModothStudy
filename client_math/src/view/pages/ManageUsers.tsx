@@ -142,6 +142,7 @@ export function ManageUsers() {
           onChange={(page) => fetchUsers(page)}
           pageSize={countPerPage}
           total={totalCount}
+          showSizeChanger={false}
         ></Pagination>
       ) : null}
     </div>
