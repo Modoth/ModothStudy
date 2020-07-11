@@ -52,10 +52,6 @@ interface Formula {
 const getFormulaAtPos = (content: string, pos: number): Formula | undefined => {
     var slices = getSlices(content)
     var slice = slices.find(s => s.end >= pos)
-    console.log(slices);
-    console.log(slice);
-    console.log(pos);
-    (window as any).slice = slice;
     if (!slice || slice.type === SliceType.Normal) {
         return { start: pos, end: pos, content: '', newFormula: true }
     }
