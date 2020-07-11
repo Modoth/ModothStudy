@@ -47,7 +47,7 @@ export default function ProblemEditor(props: ArticleContentEditorProps) {
   }
   return <div className="problem-editor">
     {sections.map(section =>
-      <SectionEditor onpaste={props.onpaste} key={section.name} onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
+      <SectionEditor formulaEditor={props.formulaEditor} onpaste={props.onpaste} key={section.name} onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
     )}
   </div >
 }

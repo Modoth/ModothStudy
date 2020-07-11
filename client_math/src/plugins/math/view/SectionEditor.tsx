@@ -3,8 +3,11 @@ import { ArticleContentEditorCallbacks } from '../../IPluginInfo'
 import './SectionEditor.less'
 import { ArticleFile, ArticleSection } from '../../../domain/Article'
 import SectionViewer from './SectionViewer'
-import { Input } from 'antd'
+import { Input, Button } from 'antd'
+import { FunctionOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
+import IFormulaEditingService from '../../../domain/IFormulaEditingService'
+import { getSlices, SliceType, SliceFile } from './SectionCommon'
 const TextArea = Input.TextArea
 
 export interface ArticleSectionVm extends ArticleSection {
@@ -39,6 +42,27 @@ export class WikipediaLatexTranslator implements ILatexTranslator {
     }
 }
 
+interface Formula {
+    start: number;
+    end: number;
+    content: string;
+    newFormula: boolean
+}
+
+const getFormulaAtPos = (content: string, pos: number): Formula | undefined => {
+    var slices = getSlices(content)
+    var slice = slices.find(s => s.end >= pos)
+    if (!slice || slice.type === SliceType.Normal) {
+        return { start: pos, end: pos, content: '', newFormula: true }
+    }
+
+    if (typeof slice.content !== 'string') {
+        return
+    }
+
+    return { start: slice.start, end: slice.end, content: slice.content as string, newFormula: false }
+}
+
 const normalizeString = (slice: string) => {
     let newSlice = "";
     const ignoreChars = new Set(['⬚'])
@@ -69,6 +93,7 @@ export default function SectionEditor(props: {
     editing?: boolean
     onpaste: (file: File) => void
     onClick?: MouseEventHandler<any>
+    formulaEditor?: IFormulaEditingService
 }) {
     const [filesDict] = useState(props.filesDict || new Map())
     const [content, setContent] = useState(props.section.content)
@@ -97,6 +122,43 @@ export default function SectionEditor(props: {
     props.section.callbacks.getEditedContent = () => {
         return content
     }
+    const getFormula = (): Formula | undefined => {
+        if (!refs.textArea) {
+            return {
+                start: content.length,
+                end: content.length,
+                content: '',
+                newFormula: true
+            }
+        }
+        const textArea = refs.textArea!
+        return getFormulaAtPos(content, textArea.selectionStart)
+    }
+    const editFormula = async () => {
+        const formula = getFormula()
+        if (!formula) {
+            return
+        }
+        {
+            if (!refs.textArea) {
+                return
+            }
+            const textArea = refs.textArea!
+            textArea.setSelectionRange(formula.start, formula.start + formula.end)
+            textArea.focus()
+        }
+        const newFormula = (await props.formulaEditor!.edit(formula.content)) || ' '
+        setContent(content.slice(0, formula.start) + (formula.newFormula ? `$${newFormula}$` : newFormula) + content.slice(formula.end))
+        setTimeout(() => {
+            if (!refs.textArea) {
+                return
+            }
+            const textArea = refs.textArea!
+            const start = formula.newFormula ? formula.start + 1 : formula.start;
+            textArea.setSelectionRange(start, start + newFormula.length)
+            textArea.focus()
+        }, 0);
+    }
     return (props.editing ?
         <div className={classNames('section-editor', props.section.name)}>
             <label className="section-name">{props.section.name}</label>
@@ -108,6 +170,11 @@ export default function SectionEditor(props: {
                 value={content}
                 onFocus={(e) => {
                     refs.textArea = e.target as HTMLTextAreaElement
+                }}
+                onKeyDown={(e) => {
+                    if (e.key == 'f' && e.ctrlKey && !e.shiftKey && !e.metaKey && props.formulaEditor) {
+                        editFormula()
+                    }
                 }}
                 onChange={(e) => {
                     refs.textArea = e.target
@@ -135,6 +202,9 @@ export default function SectionEditor(props: {
                     }
                 }}
             ></TextArea>
+            {
+                props.formulaEditor ? <Button type="link" onClick={() => { editFormula() }} className="btn-formula" icon={<FunctionOutlined />}></Button> : null
+            }
         </div >
         :
         <SectionViewer onClick={props.onClick} section={Object.assign({}, props.section, { content })} filesDict={filesDict} pureViewMode={false}></SectionViewer>

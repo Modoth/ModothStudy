@@ -28,6 +28,7 @@ import classNames from 'classnames'
 import { generateRandomStyle } from './common'
 import { TagNames } from '../../domain/ITagsService'
 import IArticleViewServie from '../services/IArticleViewService'
+import IFormulaEditingService from '../../domain/IFormulaEditingService'
 
 const { Option } = Select
 
@@ -67,7 +68,24 @@ export default function ArticleView(props: {
   const [type, setType] = useState(locator.locate(IArticleViewServie).getArticleType(props.type.Viewer, props.type.name, tagsDict, props.nodeTags))
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
-
+  var formulaEditor = locator.locate(IFormulaEditingService)
+  if (formulaEditor) {
+    var fe = formulaEditor
+    formulaEditor = Object.assign({}, fe, {
+      edit: async (origin: string) => {
+        try {
+          viewService.setLoading(true)
+          var res = await fe.edit(origin)
+          viewService.setLoading(false)
+          return res;
+        }
+        catch{
+          viewService.setLoading(false)
+          return origin;
+        }
+      }
+    })
+  }
   const deleteFile = async (file: ArticleFile) => {
     try {
       const idx = files!.indexOf(file)
@@ -226,6 +244,7 @@ export default function ArticleView(props: {
             files={files}
             callbacks={editorRefs}
             type={type}
+            formulaEditor={formulaEditor}
           />
         ) : (
             <props.type.Viewer content={content} files={files} type={type} onClick={() => {

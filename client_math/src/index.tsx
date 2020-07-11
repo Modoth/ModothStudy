@@ -21,6 +21,8 @@ import Langs from './view/Langs'
 import ITextImageService, { TextImageServiceSingleton } from './view/services/ITextImageService'
 import ITagsService, { TagsServiceSingleton } from './domain/ITagsService'
 import IArticleViewServie, { ArticleViewServieSingleton } from './view/services/IArticleViewService'
+import IAutoAccountService from './domain/IAutoAccountService'
+import IFormulaEditingService from './domain/IFormulaEditingService'
 
 const buildServicesLocator = () => {
   const serviceLocator = new ServicesLocator()
@@ -32,6 +34,13 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(ITextImageService, new TextImageServiceSingleton())
   serviceLocator.registerInstance(ITagsService, new TagsServiceSingleton())
   serviceLocator.registerInstance(IArticleViewServie, new ArticleViewServieSingleton())
+  let w = window as any;
+  if (w.autoAccountService) {
+    serviceLocator.registerInstance(IAutoAccountService, w.autoAccountService)
+  }
+  if (w.formulaEditingService) {
+    serviceLocator.registerInstance(IFormulaEditingService, w.formulaEditingService)
+  }
   serviceLocator.register(ISubjectsService, SubjectsService)
   serviceLocator.register(IFileApiService, FileApiService)
 
@@ -43,8 +52,10 @@ const bootstrap = async () => {
   const loginService = serviceLocator.locate(ILoginService)
   const langsService = serviceLocator.locate(ILangsService)
   const plugin = serviceLocator.locate(IPluginInfo)
-  await Promise.all([langsService.load(Langs, plugin.langs), loginService.checkLogin()])
-
+  const autoAccountService = serviceLocator.locate(IAutoAccountService)
+  const account = await autoAccountService?.get()
+  await Promise.all([langsService.load(Langs, plugin.langs), account && account.userName && account.password ?
+    loginService.login(account.userName!, account.password!).catch((e)=>console.log(e)) : loginService.checkLogin()])
   ReactDOM.render(
     <React.StrictMode>
       <ServicesLocatorProvider value={serviceLocator}>

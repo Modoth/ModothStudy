@@ -1,6 +1,7 @@
 import { ArticleFile, ArticleContent } from '../domain/Article'
 import { TagItem } from '../apis'
 import { MouseEventHandler } from 'react'
+import IFormulaEditingService from '../domain/IFormulaEditingService'
 
 export interface ArticleType {
   route: string;
@@ -36,6 +37,7 @@ export class ArticleContentViewerProps {
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
   callbacks: ArticleContentEditorCallbacks<ArticleContent>
   onpaste: (file: File) => void
+  formulaEditor?: IFormulaEditingService
 }
 
 export default class IPluginInfo {

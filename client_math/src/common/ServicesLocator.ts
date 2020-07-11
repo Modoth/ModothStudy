@@ -25,7 +25,7 @@ export default class ServicesLocator implements IServicesLocator {
         instance.locate = this.locate
         return instance
       }
-      throw new Error('Not Registered')
+      return null as any
     }
 
     register<TInt, TImp extends TInt> (int : {new():TInt}, imp : {new():TImp}, singleton = false):any {
